@@ -60,7 +60,7 @@ void clear_caches()
   int fd;
   char* data = "3";
 
-  sync();
+  sync(); // Not sure we should include, this increases the # of files
   fd = open("/proc/sys/vm/drop_caches", O_WRONLY);
   write(fd, data, sizeof(char));
   close(fd);

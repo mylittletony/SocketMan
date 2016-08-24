@@ -72,6 +72,8 @@ void *parse_config(char *buffer)
             strcpy(options.host, json_object_get_string(val));
           if (strcmp(key, "url") == 0)
             strcpy(options.url, json_object_get_string(val));
+          if (strcmp(key, "backup_url") == 0)
+            strcpy(options.backup_url, json_object_get_string(val));
           if (strcmp(key, "mac") == 0)
             strcpy(options.mac, json_object_get_string(val));
           if (strcmp(key, "mac_file") == 0)

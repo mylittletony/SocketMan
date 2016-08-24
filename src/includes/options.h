@@ -8,6 +8,7 @@ struct _options {
   char config[128];
   char host[128];
   char url[128];
+  char backup_url[128];
   char mac[18];
   char mac_file[128];
   char *id;

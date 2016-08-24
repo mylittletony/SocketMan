@@ -39,17 +39,36 @@ int should_collect() {
   return 0;
 }
 
+char append_url_token(char *url, char *token, char *buf)
+{
+  strcpy(buf, url);
+  strcat(buf, "/");
+  strcat(buf, "?access_token=");
+  strcat(buf, options.token);
+}
+
+CURLcode do_curl(CURL *curl, char *url,
+    struct curl_slist *headers, json_object *json
+    )
+{
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+  return curl_easy_perform(curl);
+}
+
 int post(json_object *json) {
 
-  /* char url[strlen(options.url) + strlen(options.mac) + strlen(options.token) +16]; */
-
-  /* strcpy(url, options.url); */
-  /* strcat(url, "/"); */
-  /* strcat(url, options.mac); */
-  /* strcat(url, "?access_token="); */
-  /* strcat(url, options.token); */
-
-  char *url = options.url;
+  char url[100];
+  int tried_backup = 0;
+  long http_code = 0;
 
   CURL *curl;
   CURLcode res;
@@ -64,27 +83,30 @@ int post(json_object *json) {
   curl = curl_easy_init();
 
   if(curl)
-  {
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    append_url_token(options.url, options.token, url);
+    res = do_curl(curl, url, headers, json);
 
-    res = curl_easy_perform(curl);
+  if(res == CURLE_OK)
+  curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
+  if (http_code != 200 && res != CURLE_ABORTED_BY_CALLBACK)
+  {
+    char buff[100];
+    buff[0] = '\0';
+    debug("Could not connect to %s.", url);
+    if (tried_backup == 0) {
+      tried_backup = 1;
+      append_url_token(options.backup_url, options.token, buff);
+      if (buff[0] != '\0') {
+        debug("Attempting to send to backup URL");
+        res = do_curl(curl, buff, headers, json);
+      }
+    }
   }
 
   curl_easy_cleanup(curl);
   curl_global_cleanup();
   curl_slist_free_all(headers);
-  if(res == CURLE_OK)
-    return 1;
-
-  return 0;
+  return 1;
 }
 
 void *format_ssids(const struct iw_ops *iw,
@@ -581,7 +603,7 @@ void collect_data()
     // Do something here about the curl issue, init
   }
 
-  if (info.percent_used >= (float)0.55) {
+  if (info.percent_used >= (float)0.95) {
     int pu = (float)info.percent_used * 100;
     debug("MEMORY USAGE AT %d% WIPING", pu);
     clear_caches();
