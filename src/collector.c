@@ -570,7 +570,6 @@ void collect_data()
   json_object_object_add(jattr, "procs", jprocs);
 
   // MISSING!!!!!!!
-  // LOAD AVERAGE
   // INTERFACES
   // CAPS
 
