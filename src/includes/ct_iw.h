@@ -62,6 +62,7 @@ struct iw_ssid_entry {
   unsigned char *mode;
   int channel;
   int index;
+  int phy;
 };
 
 struct nl80211_stationlist {
@@ -206,6 +207,6 @@ const struct iw_ops nl80211_exec;
 int nl80211_handler(struct nl80211_state *state, char *cmd, void *dev);
 void format_encryption(struct crypto_entry *c, char *buf);
 
+/* int scan(const struct iw_ops *iw, json_object *jscan_array, const struct iw_ssid_entry *e, int len, char *ssids); */
 
-void run_scan(const struct iw_ops *iw, struct iw_ssid_entry *e);
 #endif

@@ -296,6 +296,65 @@ void *format_scan(struct iw_scanlist_entry *s, json_object *jscan)
   json_object_object_add(jscan, "last_seen", jage);
 }
 
+struct test_struct
+{
+  int val;
+  char *ifname;
+  struct test_struct *next;
+};
+
+struct test_struct *head;
+struct test_struct *curr;
+
+struct test_struct* create_list(struct iw_ssid_entry *e)
+{
+  printf("\n creating list with headnode as [%s]\n", e->ifname);
+  struct test_struct *ptr = (struct test_struct*)malloc(sizeof(struct test_struct));
+  if(NULL == ptr)
+  {
+    printf("\n Node creation failed \n");
+    return NULL;
+  }
+  ptr->val = e->phy;
+  ptr->ifname = e->ifname;
+  ptr->next = NULL;
+
+  head = curr = ptr;
+  return ptr;
+}
+
+struct test_struct* add_to_list(struct iw_ssid_entry *e)
+{
+  if(NULL == head)
+  {
+    return (create_list(e));
+  }
+
+  struct test_struct *ptr = (struct test_struct*)malloc(sizeof(struct test_struct));
+  if(NULL == ptr)
+  {
+    printf("\n Node creation failed \n");
+    return NULL;
+  }
+  ptr->val = e->phy;
+  ptr->ifname = e->ifname;
+  ptr->next = NULL;
+
+  curr->next = ptr;
+  curr = ptr;
+
+  return ptr;
+}
+
+bool isvalueinarray(int val, int *arr, int size){
+  int i;
+  for (i=0; i < size; i++) {
+    if (arr[i] == val)
+      return true;
+  }
+  return false;
+}
+
 void collect_data()
 {
   debug("collecting the datas!");
@@ -322,14 +381,19 @@ void collect_data()
   {
     debug("Running WiFi Interface Stats");
 
-    int len, x, i, ii, len_a, jj, xx, len_s, xxx;
-    char buf[1024];
+    head = NULL;
+    curr = NULL;
+
+    int scan = 1;
+
+    int len, x, i, ii, len_a, xx;
+    char ssids[1024];
     char buf_a[1024];
-    char buf_s[1024];
+    /* char buf_s[1024]; */
     const struct iw_ops *iw;
     struct iw_ssid_entry *e;
     struct iw_stationlist_entry *st;
-    struct iw_scanlist_entry *sc;
+    /* struct iw_scanlist_entry *sc; */
 
     // Check chipset / drivers required
     iw = &nl80211_exec;
@@ -338,18 +402,16 @@ void collect_data()
     /* int llen; */
     /* iw->info(bufff, &llen); */
 
-    iw->ssids(buf, &len);
+    iw->ssids(ssids, &len);
     json_object *jiface_array = json_object_new_array();
     json_object *jstations_array = json_object_new_array();
     json_object *jscan_array = json_object_new_array();
 
-    int scan_2, scan_5;
-
     for (i = 0, x = 1; i < len; i += sizeof(struct iw_ssid_entry), x++)
     {
-      e = (struct iw_ssid_entry *) &buf[i];
+      e = (struct iw_ssid_entry *) &ssids[i];
 
-      printf("Collecting Data for SSID: %s\n", e->ifname);
+      printf("Collecting Data for SSID and PHY: %s %d\n", e->ifname, e->phy);
 
       json_object *jssids = json_object_new_object();
       format_ssids(iw, e, jssids);
@@ -364,24 +426,18 @@ void collect_data()
         json_object_array_add(jstations_array, jstations);
       }
 
-      int ret = strcmp(e->ifname, "mon0");
-      if (ret != 0 && options.no_scan != 1 && iw->scan(e->ifname, buf_s, &len_s)) {
-        for (jj = 0, xxx = 1; jj < len_s; jj += sizeof(struct iw_scanlist_entry), xxx++)
-        {
-          int channel = e->channel;
-          if ((scan_2 == 0 && channel <= 14) || (scan_5 == 0 && channel > 14)) {
-            sc = (struct iw_scanlist_entry *) &buf_s[jj];
-            json_object *jscan = json_object_new_object();
-            format_scan(sc, jscan);
-            json_object_array_add(jscan_array, jscan);
-            if (channel <= 14)
-              scan_2 = 1;
-            else if (channel>14)
-              scan_5 = 1;
-          }
-        }
-        debug("There are %d SSIDs in the area", xxx-1);
-      }
+      if (scan)
+        add_to_list(e);
+    }
+
+    int arr[len];
+    struct test_struct *ptr = head;
+    while(ptr != NULL)
+    {
+      printf("\n [%d] %s\n", ptr->val, ptr->ifname);
+      if (!isvalueinarray(ptr->val, arr, len))
+        debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+      ptr = ptr->next;
     }
 
     json_object_object_add(jobj, "ssids", jiface_array);

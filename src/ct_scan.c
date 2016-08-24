@@ -1,24 +1,19 @@
 #include <ctype.h>
 #include <net/if.h>
-/* #include <errno.h> */
 #include <string.h>
 #include "dbg.h"
-/* #include <stdbool.h> */
-
 #include <netlink/genl/genl.h>
 #include <netlink/genl/family.h>
 #include <netlink/genl/ctrl.h>
 #include <netlink/msg.h>
 #include <netlink/attr.h>
-
+#include <json-c/json.h>
 #include <fnmatch.h>
 #include <limits.h>
 #include <glob.h>
 #include <stdarg.h>
-
 #include <unistd.h>
 #include <fcntl.h>
-
 #include "nl80211.h"
 #include <errno.h>
 #include "iw.h"
@@ -27,7 +22,6 @@
 #define min(x, y) ((x) < (y)) ? (x) : (y)
 #define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
 
-/* const struct iwinfo_ops nl80211_exec; */
 static struct nl80211_state *nlstate = NULL;
 static int (*registered_handler)(struct nl_msg *, void *);
 static void *registered_handler_data;
@@ -1085,11 +1079,17 @@ static int get_ssids(struct nl_msg *msg, void *arg)
   struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
   struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
   struct nl80211_ssid_list *sl = arg;
+  unsigned int *wiphy = arg;
 
   nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
       genlmsg_attrlen(gnlh, 0), NULL);
 
   memset(sl->e, 0, sizeof(*sl->e));
+
+  if (wiphy && tb_msg[NL80211_ATTR_WIPHY]) {
+    unsigned int thiswiphy = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]);
+    sl->e->phy = thiswiphy;
+  }
 
   if (tb_msg[NL80211_ATTR_IFNAME]) {
     char *ifname = nla_data(tb_msg[NL80211_ATTR_IFNAME]);
@@ -1580,6 +1580,22 @@ int nl80211_get_encryption(const char *ifname, char *buf)
 }
 
 int nl80211_get_ssids(char *buf, int *len)
+{
+  struct nl80211_msg_conveyor *req;
+  struct nl80211_ssid_list sl = { .e = (struct iw_ssid_entry *)buf };
+
+  req = nl80211_msg(NULL, NL80211_CMD_GET_INTERFACE, NLM_F_DUMP);
+  if (req)
+  {
+    nl80211_send(req, get_ssids, &sl);
+    nl80211_free(req);
+  }
+
+  *len = sl.len * sizeof(struct iw_ssid_entry);
+  return *len ? 0 : -1;
+}
+
+int nl80211_get_ssids_basic(char *buf, int *len)
 {
   struct nl80211_msg_conveyor *req;
   struct nl80211_ssid_list sl = { .e = (struct iw_ssid_entry *)buf };

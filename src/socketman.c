@@ -210,9 +210,9 @@ int main( int argc,char **argv)
         strcpy(options.key, optarg);
         break;
 
-      /* case 'q': */
-      /*   qos = atoi(optarg); */
-      /*   break; */
+        /* case 'q': */
+        /*   qos = atoi(optarg); */
+        /*   break; */
 
       case 'C':
         strcpy(options.config, optarg);
@@ -235,9 +235,9 @@ int main( int argc,char **argv)
   }
 
   validate_options();
-  if (OS == "OPENWRT") {
+
+  if (strcmp(OS, "OPENWRT") == 0)
     debug("I am an OpenWRT box, yay!");
-  }
 
   boot();
 
