@@ -974,10 +974,6 @@ static int get_stations(struct nl_msg *msg, void *arg)
   if (sinfo[NL80211_STA_INFO_BEACON_RX])
     sl->s->beacon_rx = (unsigned long long)nla_get_u64(sinfo[NL80211_STA_INFO_BEACON_RX]);
 
-  /* if (sinfo[NL80211_STA_INFO_RX_DROP_MISC]) */
-  /*   printf("\n\trx drop misc:\t%llu", */
-  /*       (unsigned long long)nla_get_u64(sinfo[NL80211_STA_INFO_RX_DROP_MISC])); */
-
   if (sinfo[NL80211_STA_INFO_SIGNAL])
     sl->s->signal = (int8_t)nla_get_u8(sinfo[NL80211_STA_INFO_SIGNAL]);
 
@@ -1010,63 +1006,9 @@ static int get_stations(struct nl_msg *msg, void *arg)
     uint32_t thr;
 
     thr = nla_get_u32(sinfo[NL80211_STA_INFO_EXPECTED_THROUGHPUT]);
-    /* convert in Mbps but scale by 1000 to save kbps units */
     thr = thr * 1000 / 1024;
-
     sl->s->expected_tput = thr;
-    /* printf("\n\texpected throughput:\t%u.%uMbps", */
-    /*     thr / 1000, thr % 1000); */
   }
-
-  /* if (sinfo[NL80211_STA_INFO_LLID]) */
-  /*   printf("\n\tmesh llid:\t%d", */
-  /*       nla_get_u16(sinfo[NL80211_STA_INFO_LLID])); */
-  /* if (sinfo[NL80211_STA_INFO_PLID]) { */
-  /*   printf("\n\tmesh plid:\t%d", */
-  /*       nla_get_u16(sinfo[NL80211_STA_INFO_PLID])); */
-  /* } */
-
-  /* if (sinfo[NL80211_STA_INFO_PLINK_STATE]) { */
-  /*   switch (nla_get_u8(sinfo[NL80211_STA_INFO_PLINK_STATE])) { */
-  /*     case LISTEN: */
-  /*       strcpy(state_name, "LISTEN"); */
-  /*       break; */
-  /*     case OPN_SNT: */
-  /*       strcpy(state_name, "OPN_SNT"); */
-  /*       break; */
-  /*     case OPN_RCVD: */
-  /*       strcpy(state_name, "OPN_RCVD"); */
-  /*       break; */
-  /*     case CNF_RCVD: */
-  /*       strcpy(state_name, "CNF_RCVD"); */
-  /*       break; */
-  /*     case ESTAB: */
-  /*       strcpy(state_name, "ESTAB"); */
-  /*       break; */
-  /*     case HOLDING: */
-  /*       strcpy(state_name, "HOLDING"); */
-  /*       break; */
-  /*     case BLOCKED: */
-  /*       strcpy(state_name, "BLOCKED"); */
-  /*       break; */
-  /*     default: */
-  /*       strcpy(state_name, "UNKNOWN"); */
-  /*       break; */
-  /*   } */
-  /*   printf("\n\tmesh plink:\t%s", state_name); */
-  /* } */
-  /* if (sinfo[NL80211_STA_INFO_LOCAL_PM]) { */
-  /*   printf("\n\tmesh local PS mode:\t"); */
-  /*   print_power_mode(sinfo[NL80211_STA_INFO_LOCAL_PM]); */
-  /* } */
-  /* if (sinfo[NL80211_STA_INFO_PEER_PM]) { */
-  /*   printf("\n\tmesh peer PS mode:\t"); */
-  /*   /1* print_power_mode(sinfo[NL80211_STA_INFO_PEER_PM]); *1/ */
-  /* } */
-  /* if (sinfo[NL80211_STA_INFO_NONPEER_PM]) { */
-  /*   printf("\n\tmesh non-peer PS mode:\t"); */
-  /*   /1* print_power_mode(sinfo[NL80211_STA_INFO_NONPEER_PM]); *1/ */
-  /* } */
 
   if (sinfo[NL80211_STA_INFO_STA_FLAGS]) {
     sta_flags = (struct nl80211_sta_flag_update *)
@@ -1164,66 +1106,10 @@ static int get_ssids(struct nl_msg *msg, void *arg)
 
     int channel = ieee80211_frequency_to_channel(freq);
     sl->e->channel = channel;
-    sl->e->mode="g";
-    if (sl->e->channel > 14) {
-      sl->e->mode="a";
-    }
   }
 
   sl->e++;
   sl->len++;
-
-  /* if (tb_msg[NL80211_ATTR_IFINDEX]) { */
-  /*   sl->e->index =nla_get_u32(tb_msg[NL80211_ATTR_IFINDEX]); */
-  /*   printf("%s\tifindex %d\n", "", nla_get_u32(tb_msg[NL80211_ATTR_IFINDEX])); */
-  /* } */
-  /* else */
-  /*   printf("%sUnnamed/non-netdev interface\n", indent); */
-  /* if (tb_msg[NL80211_ATTR_IFINDEX]) */
-  /*   printf("%s\tifindex %d\n", indent, nla_get_u32(tb_msg[NL80211_ATTR_IFINDEX])); */
-  /* if (tb_msg[NL80211_ATTR_WDEV]) */
-  /*   printf("%s\twdev 0x%llx\n", indent, */
-  /*       (unsigned long long)nla_get_u64(tb_msg[NL80211_ATTR_WDEV])); */
-  /* if (tb_msg[NL80211_ATTR_MAC]) { */
-  /*   char mac_addr[20]; */
-  /*   mac_addr_n2a(mac_addr, nla_data(tb_msg[NL80211_ATTR_MAC])); */
-  /*   printf("%s\taddr %s\n", indent, mac_addr); */
-  /* } */
-  /* if (tb_msg[NL80211_ATTR_IFTYPE]) */
-  /*   printf("%s\ttype %s\n", indent, iftype_name(nla_get_u32(tb_msg[NL80211_ATTR_IFTYPE]))); */
-  /* if (!wiphy && tb_msg[NL80211_ATTR_WIPHY]) */
-  /*   printf("%s\twiphy %d\n", indent, nla_get_u32(tb_msg[NL80211_ATTR_WIPHY])); */
-  /* if (tb_msg[NL80211_ATTR_WIPHY_FREQ]) { */
-  /*   uint32_t freq = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_FREQ]); */
-
-  /*   printf("%s\tchannel %d (%d MHz)", indent, */
-  /*       ieee80211_frequency_to_channel(freq), freq); */
-
-  /*   if (tb_msg[NL80211_ATTR_CHANNEL_WIDTH]) { */
-  /*     printf(", width: %s", */
-  /*         channel_width_name(nla_get_u32(tb_msg[NL80211_ATTR_CHANNEL_WIDTH]))); */
-  /*     if (tb_msg[NL80211_ATTR_CENTER_FREQ1]) */
-  /*       printf(", center1: %d MHz", */
-  /*           nla_get_u32(tb_msg[NL80211_ATTR_CENTER_FREQ1])); */
-  /*     if (tb_msg[NL80211_ATTR_CENTER_FREQ2]) */
-  /*       printf(", center2: %d MHz", */
-  /*           nla_get_u32(tb_msg[NL80211_ATTR_CENTER_FREQ2])); */
-  /*   } else if (tb_msg[NL80211_ATTR_WIPHY_CHANNEL_TYPE]) { */
-  /*     enum nl80211_channel_type channel_type; */
-
-  /*     channel_type = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_CHANNEL_TYPE]); */
-  /*     printf(" %s", channel_type_name(channel_type)); */
-  /*   } */
-
-  /*   printf("\n"); */
-  /* } */
-
-  /* if (tb_msg[NL80211_ATTR_WIPHY_TX_POWER_LEVEL]) { */
-  /*   uint32_t txp = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_TX_POWER_LEVEL]); */
-
-  /*   printf("%s\ttxpower %d.%.2d dBm\n", */
-  /*       indent, txp / 100, txp % 100); */
-  /* } */
 
   return NL_SKIP;
 }
@@ -1305,87 +1191,11 @@ static int get_scan(struct nl_msg *msg, void *arg)
   uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
   sl->s->channel = ieee80211_frequency_to_channel(freq);
 
-  /* struct scan_params *params = arg; */
-
-  /* /1* int show = 2; //params->show_both_ie_sets ? 2 : 1; *1/ */
-  /* bool is_dmg = false; */
-
-  /* nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), */
-  /*     genlmsg_attrlen(gnlh, 0), NULL); */
-
-  /* if (!tb[NL80211_ATTR_BSS]) { */
-  /*   fprintf(stderr, "bss info missing!\n"); */
-  /*   return NL_SKIP; */
-  /* } */
-  /* if (nla_parse_nested(bss, NL80211_BSS_MAX, */
-  /*       tb[NL80211_ATTR_BSS], */
-  /*       bss_policy)) { */
-  /*   fprintf(stderr, "failed to parse nested attributes!\n"); */
-  /*   return NL_SKIP; */
-  /* } */
-
   if (!bss[NL80211_BSS_BSSID])
     return NL_SKIP;
 
-  /* mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID])); */
-  /* printf("BSS %s", mac_addr); */
-  /* if (tb[NL80211_ATTR_IFINDEX]) { */
-  /*   if_indextoname(nla_get_u32(tb[NL80211_ATTR_IFINDEX]), dev); */
-  /*   printf("(on %s)", dev); */
-  /* } */
-
-  /* if (bss[NL80211_BSS_STATUS]) { */
-  /*   switch (nla_get_u32(bss[NL80211_BSS_STATUS])) { */
-  /*     case NL80211_BSS_STATUS_AUTHENTICATED: */
-  /*       printf(" -- authenticated"); */
-  /*       break; */
-  /*     case NL80211_BSS_STATUS_ASSOCIATED: */
-  /*       printf(" -- associated"); */
-  /*       break; */
-  /*     case NL80211_BSS_STATUS_IBSS_JOINED: */
-  /*       printf(" -- joined"); */
-  /*       break; */
-  /*     default: */
-  /*       printf(" -- unknown status: %d", */
-  /*           nla_get_u32(bss[NL80211_BSS_STATUS])); */
-  /*       break; */
-  /*   } */
-  /* } */
-
-  /* if (bss[NL80211_BSS_LAST_SEEN_BOOTTIME]) { */
-  /*   unsigned long long bt; */
-  /*   bt = (unsigned long long)nla_get_u64(bss[NL80211_BSS_LAST_SEEN_BOOTTIME]); */
-  /*   printf("\tlast seen: %llu.%.3llus [boottime]\n", bt/1000000000, (bt%1000000000)/1000000); */
-  /* } */
-
-  /* if (bss[NL80211_BSS_TSF]) { */
-  /*   unsigned long long tsf; */
-  /*   tsf = (unsigned long long)nla_get_u64(bss[NL80211_BSS_TSF]); */
-  /*   printf("\tTSF: %llu usec (%llud, %.2lld:%.2llu:%.2llu)\n", */
-  /*       tsf, tsf/1000/1000/60/60/24, (tsf/1000/1000/60/60) % 24, */
-  /*       (tsf/1000/1000/60) % 60, (tsf/1000/1000) % 60); */
-  /* } */
-  /* if (bss[NL80211_BSS_FREQUENCY]) { */
-  /*   int freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]); */
-  /*   printf("\tfreq: %d\n", freq); */
-  /*   if (freq > 45000) */
-  /*     is_dmg = true; */
-  /* } */
-  /* if (bss[NL80211_BSS_BEACON_INTERVAL]) */
-  /*   printf("\tbeacon interval: %d TUs\n", */
-  /*       nla_get_u16(bss[NL80211_BSS_BEACON_INTERVAL])); */
-  if (bss[NL80211_BSS_CAPABILITY]) {
-
+  if (bss[NL80211_BSS_CAPABILITY])
     caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
-
-    /* __u16 capa = nla_get_u16(bss[NL80211_BSS_CAPABILITY]); */
-    /* printf("\tcapability:"); */
-    /* if (is_dmg) */
-    /*   print_capa_dmg(capa); */
-    /* else */
-    /*   print_capa_non_dmg(capa); */
-    /* printf(" (0x%.4x)\n", capa); */
-  }
 
   if (caps & (1<<4))
     sl->s->crypto.enabled = 1;
@@ -1412,22 +1222,6 @@ static int get_scan(struct nl_msg *msg, void *arg)
 
   if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
     nl80211_info_elements(bss, sl->s);
-
-  /* int show = 1; */
-  /* if (bss[NL80211_BSS_INFORMATION_ELEMENTS] && show) { */
-  /*   if (bss[NL80211_BSS_BEACON_IES]) */
-  /*     printf("\tInformation elements from Probe Response " */
-  /*         "frame:\n"); */
-  /*   print_ies(nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), */
-  /*       nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]), */
-  /*       false, PRINT_SCAN); */
-  /* } */
-  /* if (bss[NL80211_BSS_BEACON_IES]) { */
-  /*   printf("\tInformation elements from Beacon frame:\n"); */
-  /*   print_ies(nla_data(bss[NL80211_BSS_BEACON_IES]), */
-  /*       nla_len(bss[NL80211_BSS_BEACON_IES]), */
-  /*       false, PRINT_SCAN); */
-  /* } */
 
   sl->s++;
   sl->len++;
@@ -1550,7 +1344,7 @@ static int print_info(struct nl_msg *msg, void *arg)
           tb_band[NL80211_BAND_ATTR_VHT_MCS_SET]) {
         /* print_vht_info(nla_get_u32(tb_band[NL80211_BAND_ATTR_VHT_CAPA]), */
         /*     nla_data(tb_band[NL80211_BAND_ATTR_VHT_MCS_SET])); */
-        debug("\n\n\nI AM A AC DEVOCEEEE! \n\n\n");
+        debug("\n\n\nI AM A AC AC! \n\n\n");
       }
 
       if (tb_band[NL80211_BAND_ATTR_FREQS]) {
@@ -1944,38 +1738,18 @@ int nl80211_run_scan(const char *ifname, char *buf, int *len)
 
 const struct iw_ops nl80211_exec = {
   .name             = "nl80211",
-  /* .probe            = nl80211_probe, */
-  /* .channel             = nl80211_get_channel, */
-  /* .frequency        = nl80211_get_frequency, */
-  /* .frequency_offset = nl80211_get_frequency_offset, */
   .txpower             = nl80211_get_txpower,
-  /* .txpower_offset   = nl80211_get_txpower_offset, */
   .bitrate             = nl80211_get_bitrate,
   .signal              = nl80211_get_signal,
   .noise               = nl80211_get_noise,
   .ssids               = nl80211_get_ssids,
   .quality             = nl80211_get_quality,
   .quality_max         = nl80211_get_quality_max,
-  /* .mbssid_support   = nl80211_get_mbssid_support, */
-  /* .hwmodelist       = nl80211_get_hwmodelist, */
-  /* .htmodelist       = nl80211_get_htmodelist, */
-  /* .mode             = nl80211_get_mode, */
   .ssid                = nl80211_get_ssid,
   .bssid               = nl80211_get_bssid,
   .scan                = nl80211_run_scan,
-  /* .country          = nl80211_get_country, */
-  /* .hardware_id      = nl80211_get_hardware_id, */
-  /* .hardware_name    = nl80211_get_hardware_name, */
   .encryption          = nl80211_get_encryption,
   .stations            = nl80211_get_stations,
   .info                = nl80211_get_info,
-  /* .phyname          = nl80211_get_phyname, */
-  /* .assoclist        = nl80211_get_assoclist, */
-  /* .txpwrlist        = nl80211_get_txpwrlist, */
-  /* .scanlist         = nl80211_get_scanlist, */
-  /* .freqlist         = nl80211_get_freqlist, */
-  /* .countrylist      = nl80211_get_countrylist, */
-  /* .lookup_phy       = nl80211_lookup_phyname, */
-  /* .close            = nl80211_close */
 };
 
