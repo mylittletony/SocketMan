@@ -496,9 +496,6 @@ void collect_data()
   machine_type(machine);
 
   struct SystemInfo info = system_info();
-  debug("XXXXXXXXXXXXXX: %f", info.load_1);
-  debug("XXXXXXXXXXXXXX: %f", info.load_5);
-  debug("XXXXXXXXXXXXXX: %f", info.load_15);
 
   if (options.no_survey != 1)
   {
@@ -584,6 +581,13 @@ void collect_data()
   } else {
     // Do something here about the curl issue, init
   }
+
+  if (info.percent_used >= (float)0.55) {
+    int pu = (float)info.percent_used * 100;
+    debug("MEMORY USAGE AT %d% WIPING", pu);
+    clear_caches();
+  }
+
   json_object_put(jobj);
 }
 

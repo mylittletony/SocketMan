@@ -7,6 +7,9 @@
 #include <inttypes.h>
 #include "system.h"
 #include "options.h"
+/* #include <sys/types.h> */
+/* #include <sys/stat.h> */
+#include <fcntl.h>
 
 void reboot() {
   debug("Rebooooottting!");
@@ -52,18 +55,32 @@ void machine_type(char *type)
   }
 }
 
+void clear_caches()
+{
+  int fd;
+  char* data = "3";
+
+  sync();
+  fd = open("/proc/sys/vm/drop_caches", O_WRONLY);
+  write(fd, data, sizeof(char));
+  close(fd);
+}
+
 struct SystemInfo system_info() {
   struct sysinfo info;
   if ( sysinfo (&info) != -1 ){
-    struct SystemInfo s = {
-      info.uptime,
-      info.totalram,
-      info.freeram,
-      info.procs,
-      info.loads[0] / LINUX_SYSINFO_LOADS_SCALE,
-      info.loads[1] / LINUX_SYSINFO_LOADS_SCALE,
-      info.loads[2] / LINUX_SYSINFO_LOADS_SCALE
-    };
+
+    double pf = (double)info.freeram / (double)info.totalram;
+    struct SystemInfo s;
+    s.uptime = info.uptime;
+    s.uptime = info.uptime;
+    s.totalram = info.totalram;
+    s.freeram = info.freeram;
+    s.percent_used = pf;
+    s.procs = info.procs;
+    s.load_1 = info.loads[0] / LINUX_SYSINFO_LOADS_SCALE;
+    s.load_5 = info.loads[1] / LINUX_SYSINFO_LOADS_SCALE;
+    s.load_15 = info.loads[2] / LINUX_SYSINFO_LOADS_SCALE;
     return s;
   }
 }
