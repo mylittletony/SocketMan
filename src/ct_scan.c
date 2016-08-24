@@ -1212,7 +1212,6 @@ static int get_scan(struct nl_msg *msg, void *arg)
 
     sl->s->quality = (rssi + 110);
     sl->s->quality_max = 70;
-
   }
 
   if (bss[NL80211_BSS_SEEN_MS_AGO]) {
@@ -1696,6 +1695,7 @@ int do_scan_trigger()
 
   printf("Waiting for scan to complete...\n");
 
+  // Needs error check
   while (!results.done)
     nl_recvmsgs(nlstate->nl_sock, cb);
 

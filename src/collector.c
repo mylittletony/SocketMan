@@ -368,44 +368,21 @@ void collect_data()
       if (ret != 0 && options.no_scan != 1 && iw->scan(e->ifname, buf_s, &len_s)) {
         for (jj = 0, xxx = 1; jj < len_s; jj += sizeof(struct iw_scanlist_entry), xxx++)
         {
-          /* int g = strcmp(e->mode, "g") */
-            /* if ((g == 0 && !scan_24) || (123 = 123)) { */
-          sc = (struct iw_scanlist_entry *) &buf_s[jj];
-
-          json_object *jscan = json_object_new_object();
-          format_scan(sc, jscan);
-          json_object_array_add(jscan_array, jscan);
-          /* } */
+          int channel = e->channel;
+          if ((scan_2 == 0 && channel <= 14) || (scan_5 == 0 && channel > 14)) {
+            sc = (struct iw_scanlist_entry *) &buf_s[jj];
+            json_object *jscan = json_object_new_object();
+            format_scan(sc, jscan);
+            json_object_array_add(jscan_array, jscan);
+            if (channel <= 14)
+              scan_2 = 1;
+            else if (channel>14)
+              scan_5 = 1;
+          }
         }
         debug("There are %d SSIDs in the area", xxx-1);
       }
     }
-
-    /* if (options.no_scan != 1) { */
-
-    /*   i = 0, x = 0, ii = 0; */
-    /*   int len_s, xx; */
-    /*   char buf_s[1024]; */
-    /*   int radio_2 = 0, radio_5 = 0; */
-    /*   for (i = 0, x = 1; i < len; i += sizeof(struct iw_ssid_entry), x++) */
-    /*   { */
-    /*     int run; */
-    /*     e = (struct iw_ssid_entry *) &buf[i]; */
-    /*     if (e->channel < 14 && radio_2 == 0) { */
-    /*       radio_2 = 1, run = 1; */
-    /*     } */
-    /*     else if (e->channel > 14 && radio_5 == 0) { */
-    /*       radio_5 = 1, run = 1; */
-    /*     } */
-    /*     if (run) { */
-    /*       for (ii = 0, xx = 1; i < len_s; ii += sizeof(struct iw_scanlist_entry), xx++) */
-    /*       sc = (struct iw_scanlist_entry *) &buf_s[jj]; */
-    /*       json_object *jscan = json_object_new_object(); */
-    /*       format_scan(sc, jscan); */
-    /*       json_object_array_add(jscan_array, jscan); */
-    /*     } */
-    /*   } */
-    /* } */
 
     json_object_object_add(jobj, "ssids", jiface_array);
     json_object_object_add(jobj, "survey", jscan_array);
