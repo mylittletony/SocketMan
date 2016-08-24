@@ -1,0 +1,5 @@
+/* Makefile */
+src/*.o
+src/obj
+src/build
+socketman
