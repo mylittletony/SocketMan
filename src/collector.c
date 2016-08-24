@@ -496,6 +496,9 @@ void collect_data()
   machine_type(machine);
 
   struct SystemInfo info = system_info();
+  debug("XXXXXXXXXXXXXX: %f", info.load_1);
+  debug("XXXXXXXXXXXXXX: %f", info.load_5);
+  debug("XXXXXXXXXXXXXX: %f", info.load_15);
 
   if (options.no_survey != 1)
   {
@@ -550,6 +553,15 @@ void collect_data()
 
   json_object *juptime = json_object_new_int(info.uptime);
   json_object_object_add(jattr, "uptime", juptime);
+
+  json_object *jload_1 = json_object_new_double(info.load_1);
+  json_object_object_add(jattr, "load_1", jload_1);
+
+  json_object *jload_5 = json_object_new_double(info.load_5);
+  json_object_object_add(jattr, "load_5", jload_5);
+
+  json_object *jload_15 = json_object_new_double(info.load_15);
+  json_object_object_add(jattr, "load_15", jload_15);
 
   json_object *jtotalram = json_object_new_double(info.totalram);
   json_object_object_add(jattr, "total_ram", jtotalram);

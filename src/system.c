@@ -54,7 +54,16 @@ void machine_type(char *type)
 
 struct SystemInfo system_info() {
   struct sysinfo info;
-  sysinfo (&info);
-  struct SystemInfo s = { info.uptime, info.totalram, info.freeram, info.procs };
-  return s;
+  if ( sysinfo (&info) != -1 ){
+    struct SystemInfo s = {
+      info.uptime,
+      info.totalram,
+      info.freeram,
+      info.procs,
+      info.loads[0] / LINUX_SYSINFO_LOADS_SCALE,
+      info.loads[1] / LINUX_SYSINFO_LOADS_SCALE,
+      info.loads[2] / LINUX_SYSINFO_LOADS_SCALE
+    };
+    return s;
+  }
 }
