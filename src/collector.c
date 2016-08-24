@@ -41,10 +41,12 @@ int should_collect() {
 
 char append_url_token(char *url, char *token, char *buf)
 {
-  strcpy(buf, url);
-  strcat(buf, "/");
-  strcat(buf, "?access_token=");
-  strcat(buf, options.token);
+  if (strcmp(url, "") != 0) {
+    strcpy(buf, url);
+    strcat(buf, "/");
+    strcat(buf, "?access_token=");
+    strcat(buf, options.token);
+  }
 }
 
 CURLcode do_curl(CURL *curl, char *url,
@@ -91,12 +93,11 @@ int post(json_object *json) {
   if (http_code != 200 && res != CURLE_ABORTED_BY_CALLBACK)
   {
     char buff[100];
-    buff[0] = '\0';
     debug("Could not connect to %s.", url);
     if (tried_backup == 0) {
       tried_backup = 1;
-      append_url_token(options.backup_url, options.token, buff);
-      if (buff[0] != '\0') {
+      if (strcmp(options.backup_url, "") != 0) {
+        append_url_token(options.backup_url, options.token, buff);
         debug("Attempting to send to backup URL");
         res = do_curl(curl, buff, headers, json);
       }
