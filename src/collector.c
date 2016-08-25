@@ -296,15 +296,15 @@ void *format_scan(struct iw_scanlist_entry *s, json_object *jscan)
   json_object_object_add(jscan, "last_seen", jage);
 }
 
+struct test_struct *curr;
+struct test_struct *head;
+
 struct test_struct
 {
   int val;
   char *ifname;
   struct test_struct *next;
 };
-
-struct test_struct *head;
-struct test_struct *curr;
 
 struct test_struct* create_list(struct iw_ssid_entry *e)
 {
@@ -344,6 +344,36 @@ struct test_struct* add_to_list(struct iw_ssid_entry *e)
   curr = ptr;
 
   return ptr;
+}
+
+void perform_scan(struct test_struct *head, const struct iw_ops *iw, json_object *jscan_array)
+{
+  // Only if we're scanning
+  int alen = 0;
+  int len_s;
+  char buf_s[1024];
+  static int myArray[2];
+  struct test_struct *ptr = head;
+  struct iw_scanlist_entry *sc;
+  int i, x;
+
+  while(ptr != NULL)
+  {
+    printf("Running scan on [%d] %s\n", ptr->val, ptr->ifname);
+    if (!in_array(ptr->val, myArray, 2))
+      myArray[alen] = ptr->val;
+    alen++;
+    if(iw->scan(ptr->ifname, buf_s, &len_s)) {
+      for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
+      {
+        sc = (struct iw_scanlist_entry *) &buf_s[i];
+        json_object *jscan = json_object_new_object();
+        format_scan(sc, jscan);
+        json_object_array_add(jscan_array, jscan);
+      }
+    }
+    ptr = ptr->next;
+  }
 }
 
 void collect_data()
@@ -400,7 +430,7 @@ void collect_data()
     {
       e = (struct iw_ssid_entry *) &ssids[i];
 
-      printf("Collecting Data for SSID and PHY: %s %d\n", e->ifname, e->phy);
+      printf("Collecting Data for SSID %s and PHY %d\n", e->ifname, e->phy);
 
       json_object *jssids = json_object_new_object();
       format_ssids(iw, e, jssids);
@@ -420,32 +450,8 @@ void collect_data()
         add_to_list(e);
     }
 
-    // Only if we're scanning
-    int alen = 0;
-    int len_s;
-    char buf_s[1024];
-    static int myArray[2];
-    struct test_struct *ptr = head;
-    struct iw_scanlist_entry *sc;
-    i = 0, x = 0;
-
-    while(ptr != NULL)
-    {
-      printf("\nScanning on [%d] %s\n", ptr->val, ptr->ifname);
-      if (!in_array(ptr->val, myArray, 2))
-        myArray[alen] = ptr->val;
-        alen++;
-        if(iw->scan(ptr->ifname, buf_s, &len_s)) {
-          for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
-          {
-            sc = (struct iw_scanlist_entry *) &buf_s[i];
-            json_object *jscan = json_object_new_object();
-            format_scan(sc, jscan);
-            json_object_array_add(jscan_array, jscan);
-          }
-        }
-      ptr = ptr->next;
-    }
+    if (scan)
+      perform_scan(head, iw, jscan_array);
 
     json_object_object_add(jobj, "ssids", jiface_array);
     json_object_object_add(jobj, "survey", jscan_array);
