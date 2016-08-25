@@ -346,10 +346,9 @@ struct test_struct* add_to_list(struct iw_ssid_entry *e)
   return ptr;
 }
 
-bool isvalueinarray(int val, int *arr, int size){
+bool in_array(int val, int *arr, int size){
   int i;
   for (i=0; i < size; i++) {
-    debug("DD %d", arr[i]);
     if (arr[i] == val)
       return true;
   }
@@ -390,11 +389,9 @@ void collect_data()
     int len, x, i, ii, len_a, xx;
     char ssids[1024];
     char buf_a[1024];
-    /* char buf_s[1024]; */
     const struct iw_ops *iw;
     struct iw_ssid_entry *e;
     struct iw_stationlist_entry *st;
-    /* struct iw_scanlist_entry *sc; */
 
     // Check chipset / drivers required
     iw = &nl80211_exec;
@@ -432,16 +429,30 @@ void collect_data()
         add_to_list(e);
     }
 
+    // Only if we're scanning
     int alen = 0;
+    int len_s;
+    char buf_s[1024];
     static int myArray[2];
     struct test_struct *ptr = head;
+    struct iw_scanlist_entry *sc;
+    i = 0, x = 0;
+
     while(ptr != NULL)
     {
-      printf("\n [%d] %s\n", ptr->val, ptr->ifname);
-      if (!isvalueinarray(ptr->val, myArray, 2))
+      printf("\nScanning on [%d] %s\n", ptr->val, ptr->ifname);
+      if (!in_array(ptr->val, myArray, 2))
         myArray[alen] = ptr->val;
         alen++;
-        debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+        if(iw->scan(e->ifname, buf_s, &len_s)) {
+          for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
+          {
+            sc = (struct iw_scanlist_entry *) &buf_s[i];
+            json_object *jscan = json_object_new_object();
+            format_scan(sc, jscan);
+            json_object_array_add(jscan_array, jscan);
+          }
+        }
       ptr = ptr->next;
     }
 
