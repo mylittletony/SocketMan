@@ -89,61 +89,62 @@ int post(json_object *json) {
 
 void *format_ssids(const struct iw_ops *iw,
     struct iw_ssid_entry *e,
-    json_object *jssids)
+    json_object *jssids, int len)
 {
 
-  /* int noise, signal, quality, quality_max, bitrate, txpower, channel; */
-  /* static char bssid[18] = { 0 }; */
-  /* char ssid[ESSID_MAX_SIZE+1] = { 0 }; */
-  /* char *interface = e->ifname; */
+  int noise, signal, quality, quality_max, bitrate, txpower, channel;
+  static char bssid[18] = { 0 };
+  char ssid[ESSID_MAX_SIZE+1] = { 0 };
+  char *interface = e->ifname;
 
-  /* json_object *jiface = json_object_new_string(interface); */
-  /* json_object_object_add(jssids, "interface", jiface); */
+  json_object *jiface = json_object_new_string(interface);
+  json_object_object_add(jssids, "interface", jiface);
 
-  /* json_object *jchannel = json_object_new_int(e->channel); */
-  /* json_object_object_add(jssids, "channel", jchannel); */
+  json_object *jchannel = json_object_new_int(e->channel);
+  json_object_object_add(jssids, "channel", jchannel);
 
-  /* if (iw->noise(interface, &noise)) { */
-  /*   json_object *jnoise = json_object_new_int(noise); */
-  /*   json_object_object_add(jssids, "noise", jnoise); */
-  /* } */
+  if (iw->noise(interface, &noise)) {
+    json_object *jnoise = json_object_new_int(noise);
+    json_object_object_add(jssids, "noise", jnoise);
+  }
 
-  /* // Cant do this when no-one connected, causes memory leak */
-  /* // Cant do this when no-one connected, causes memory leak */
-  /* // Cant do this when no-one connected, causes memory leak */
+  // Cant do this when no-one connected, causes memory leak
+  // Cant do this when no-one connected, causes memory leak
+  // Cant do this when no-one connected, causes memory leak
 
-  /* // This actually just averages all the signals from the clients */
-  /* // I don't think we should do this way */
-  /* if (iw->signal(interface, &signal)) { */
-  /*   json_object *jsignal = json_object_new_int(signal); */
-  /*   json_object_object_add(jssids, "signal", jsignal); */
-  /* } */
+  // This actually just averages all the signals from the clients
+  // I don't think we should do this way
+  if (len > 0) {
+    if (iw->signal(interface, &signal)) {
+      json_object *jsignal = json_object_new_int(signal);
+      json_object_object_add(jssids, "signal", jsignal);
+    }
+    // THE QUALITY CAN BE NULL SOMETIMES - IE. MON INTERFACE //
+    if (signal > 0 && iw->quality(signal, &quality)) {
+      json_object *jquality = json_object_new_int(quality);
+      json_object_object_add(jssids, "quality", jquality);
+    }
+  }
 
-  /* if (iw->bitrate(interface, &bitrate)) { */
-  /*   json_object *jbitrate = json_object_new_int(bitrate); */
-  /*   json_object_object_add(jssids, "bitrate", jbitrate); */
-  /* } */
+  if (iw->bitrate(interface, &bitrate)) {
+    json_object *jbitrate = json_object_new_int(bitrate);
+    json_object_object_add(jssids, "bitrate", jbitrate);
+  }
 
-  /* // THE QUALITY CAN BE NULL SOMETIMES - IE. MON INTERFACE // */
-  /* if (signal != 0 && iw->quality(signal, &quality)) { */
-  /*   json_object *jquality = json_object_new_int(quality); */
-  /*   json_object_object_add(jssids, "quality", jquality); */
-  /* } */
+  if (iw->quality_max(&quality_max)) {
+    json_object *jquality_max = json_object_new_int(quality_max);
+    json_object_object_add(jssids, "quality_max", jquality_max);
+  }
 
-  /* if (iw->quality_max(&quality_max)) { */
-  /*   json_object *jquality_max = json_object_new_int(quality_max); */
-  /*   json_object_object_add(jssids, "quality_max", jquality_max); */
-  /* } */
+  if (iw->bssid(interface, bssid)) {
+    json_object *jbssid = json_object_new_string(bssid);
+    json_object_object_add(jssids, "bssid", jbssid);
+  }
 
-  /* if (iw->bssid(interface, bssid)) { */
-  /*   json_object *jbssid = json_object_new_string(bssid); */
-  /*   json_object_object_add(jssids, "bssid", jbssid); */
-  /* } */
-
-  /* if (iw->ssid(interface, ssid)) { */
-  /*   json_object *jssid = json_object_new_string(ssid); */
-  /*   json_object_object_add(jssids, "ssid", jssid); */
-  /* } */
+  if (iw->ssid(interface, ssid)) {
+    json_object *jssid = json_object_new_string(ssid);
+    json_object_object_add(jssids, "ssid", jssid);
+  }
 
   // Problem!
   /* if (iw->txpower(interface, &txpower)) { */
@@ -394,38 +395,34 @@ void run_interface_scan(json_object *jiface_array,
 
   // Check chipset / drivers required
   iw = &nl80211_exec;
-
-  /* char bufff[1024]; */
-  /* int llen; */
-  /* iw->info(bufff, &llen); */
-
   iw->ssids(ssids, &len);
 
   for (i = 0, x = 1; i < len; i += sizeof(struct iw_ssid_entry), x++)
   {
     e = (struct iw_ssid_entry *) &ssids[i];
 
-    printf("Collecting Data for SSID %s and PHY %d\n", e->ifname, e->phy);
-
-    json_object *jssids = json_object_new_object();
-    format_ssids(iw, e, jssids);
-    json_object_array_add(jiface_array, jssids);
+    printf("Collecting Data for SSID %s (phy %d)\n", e->ifname, e->phy);
 
     iw->stations(e->ifname, buf_a, &len_a);
     for (ii = 0, xx = 1; ii < len_a; ii += sizeof(struct iw_stationlist_entry), xx++)
     {
+      debug("%d Stations Connected", xx-1);
       st = (struct iw_stationlist_entry *) &buf_a[ii];
       json_object *jstations = json_object_new_object();
       format_stations(e->ssid, e->ifname, st, jstations);
       json_object_array_add(jstations_array, jstations);
     }
 
+    json_object *jssids = json_object_new_object();
+    format_ssids(iw, e, jssids, len_a);
+    json_object_array_add(jiface_array, jssids);
+
     int ret = strcmp(e->ifname, "mon0");
     if (ret != 0 && scan)
       add_to_list(e);
   }
 
-  if (scan) {
+  if (0) {
     /* struct radio_list *ptr = head; */
     /* perform_scan(ptr, iw, jscan_array); */
     int alen = 0;
@@ -453,8 +450,23 @@ void run_interface_scan(json_object *jiface_array,
         }
       }
       ptr = ptr->next;
+      free(ptr); // ??
     }
+
+    /* while (ptr != NULL) */
+    /* { */
+    /*   ptr = head; */
+    /*   head = head->next; */
+    /*   free(ptr); */
+    /* } */
   }
+
+  if (1) {
+    char bufff[1024];
+    int llen;
+    iw->info(bufff, &llen);
+  }
+
 }
 
 void collect_data()

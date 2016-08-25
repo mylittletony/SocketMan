@@ -163,7 +163,7 @@ char *channel_width_name(enum nl80211_chan_width width)
     case NL80211_CHAN_WIDTH_10:
       return "10 MHz";
     default:
-      return "unknown";
+      return NULL;
   }
 }
 
@@ -1152,7 +1152,7 @@ static int get_scan(struct nl_msg *msg, void *arg)
   struct nlattr *tb[NL80211_ATTR_MAX + 1];
   struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
   struct nlattr *bss[NL80211_BSS_MAX + 1];
-  char mac_addr[20], dev[20];
+  char mac_addr[20];
   struct nl80211_scanlist *sl = arg;
   uint16_t caps;
 
@@ -1252,6 +1252,7 @@ const char *iftype_name(enum nl80211_iftype iftype)
   return modebuf;
 }
 
+// From IW. Not in use.
 void print_ht_capability(__u16 cap)
 {
 #define PRINT_HT_CAP(_cond, _str) \
@@ -1260,8 +1261,38 @@ void print_ht_capability(__u16 cap)
     printf("\t\t\t" _str "\n"); \
   } while (0)
 
+  printf("\t\tCapabilities: 0x%02x\n", cap);
+
+  PRINT_HT_CAP((cap & BIT(0)), "RX LDPC");
   PRINT_HT_CAP((cap & BIT(1)), "HT20/HT40");
   PRINT_HT_CAP(!(cap & BIT(1)), "HT20");
+
+  PRINT_HT_CAP(((cap >> 2) & 0x3) == 0, "Static SM Power Save");
+  PRINT_HT_CAP(((cap >> 2) & 0x3) == 1, "Dynamic SM Power Save");
+  PRINT_HT_CAP(((cap >> 2) & 0x3) == 3, "SM Power Save disabled");
+
+  PRINT_HT_CAP((cap & BIT(4)), "RX Greenfield");
+  PRINT_HT_CAP((cap & BIT(5)), "RX HT20 SGI");
+  PRINT_HT_CAP((cap & BIT(6)), "RX HT40 SGI");
+  PRINT_HT_CAP((cap & BIT(7)), "TX STBC");
+
+  PRINT_HT_CAP(((cap >> 8) & 0x3) == 0, "No RX STBC");
+  PRINT_HT_CAP(((cap >> 8) & 0x3) == 1, "RX STBC 1-stream");
+  PRINT_HT_CAP(((cap >> 8) & 0x3) == 2, "RX STBC 2-streams");
+  PRINT_HT_CAP(((cap >> 8) & 0x3) == 3, "RX STBC 3-streams");
+
+  PRINT_HT_CAP((cap & BIT(10)), "HT Delayed Block Ack");
+
+  PRINT_HT_CAP(!(cap & BIT(11)), "Max AMSDU length: 3839 bytes");
+  PRINT_HT_CAP((cap & BIT(11)), "Max AMSDU length: 7935 bytes");
+
+  PRINT_HT_CAP((cap & BIT(12)), "DSSS/CCK HT40");
+  PRINT_HT_CAP(!(cap & BIT(12)), "No DSSS/CCK HT40");
+
+
+  PRINT_HT_CAP((cap & BIT(14)), "40 MHz Intolerant");
+
+  PRINT_HT_CAP((cap & BIT(15)), "L-SIG TXOP protection");
 #undef PRINT_HT_CAP
 }
 
@@ -1269,10 +1300,10 @@ static int print_info(struct nl_msg *msg, void *arg)
 {
   struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
   struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
-
   struct nlattr *tb_band[NL80211_BAND_ATTR_MAX + 1];
-
   struct nlattr *tb_freq[NL80211_FREQUENCY_ATTR_MAX + 1];
+  struct nl80211_info_list *sl = arg;
+
   static struct nla_policy freq_policy[NL80211_FREQUENCY_ATTR_MAX + 1] = {
     [NL80211_FREQUENCY_ATTR_FREQ] = { .type = NLA_U32 },
     [NL80211_FREQUENCY_ATTR_DISABLED] = { .type = NLA_FLAG },
@@ -1282,109 +1313,75 @@ static int print_info(struct nl_msg *msg, void *arg)
     [NL80211_FREQUENCY_ATTR_MAX_TX_POWER] = { .type = NLA_U32 },
   };
 
-  struct nlattr *tb_rate[NL80211_BITRATE_ATTR_MAX + 1];
-  static struct nla_policy rate_policy[NL80211_BITRATE_ATTR_MAX + 1] = {
-    [NL80211_BITRATE_ATTR_RATE] = { .type = NLA_U32 },
-    [NL80211_BITRATE_ATTR_2GHZ_SHORTPREAMBLE] = { .type = NLA_FLAG },
-  };
+  /* struct nlattr *tb_rate[NL80211_BITRATE_ATTR_MAX + 1]; */
+  /* static struct nla_policy rate_policy[NL80211_BITRATE_ATTR_MAX + 1] = { */
+  /*   [NL80211_BITRATE_ATTR_RATE] = { .type = NLA_U32 }, */
+  /*   [NL80211_BITRATE_ATTR_2GHZ_SHORTPREAMBLE] = { .type = NLA_FLAG }, */
+  /* }; */
 
   struct nlattr *nl_band;
-  struct nlattr *nl_freq;
-  struct nlattr *nl_rate;
-  struct nlattr *nl_mode;
-  /* struct nlattr *nl_cmd; */
-  struct nlattr *nl_if, *nl_ftype;
-  int rem_band, rem_freq, rem_rate, rem_mode, rem_cmd, rem_ftype, rem_if;
-  int open;
-  /*
-   * static variables only work here, other applications need to use the
-   * callback pointer and store them there so they can be multithreaded
-   * and/or have multiple netlink sockets, etc.
-   */
+  /* struct nlattr *nl_freq; */
+  int rem_band;
+  /* , rem_freq; */
   static int64_t phy_id = -1;
   static int last_band = -1;
-  static bool band_had_freq = false;
-  bool print_name = true;
+  /* static bool band_had_freq = false; */
+  /* bool print_name = true; */
 
   nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
       genlmsg_attrlen(gnlh, 0), NULL);
 
   if (tb_msg[NL80211_ATTR_WIPHY]) {
-    if (nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]) == phy_id)
-      print_name = false;
-    else
+    if (nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]) != phy_id)
       last_band = -1;
-    phy_id = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]);
-  }
-  if (print_name && tb_msg[NL80211_ATTR_WIPHY_NAME])
-    printf("Wiphy %s\n", nla_get_string(tb_msg[NL80211_ATTR_WIPHY_NAME]));
 
-  /* needed for split dump */
+    phy_id = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]);
+    sl->e->phy = phy_id;
+  }
+
   if (tb_msg[NL80211_ATTR_WIPHY_BANDS]) {
     nla_for_each_nested(nl_band, tb_msg[NL80211_ATTR_WIPHY_BANDS], rem_band) {
-      if (last_band != nl_band->nla_type) {
-        printf("\tBand %d:\n", nl_band->nla_type + 1);
-        band_had_freq = false;
-      }
+      /* if (last_band != nl_band->nla_type) { */
+      /*   band_had_freq = false; */
+      /* } */
       last_band = nl_band->nla_type;
       if (last_band == 1) {
-        debug("\n\n\nI AM A 5GHZ NETWORK! %d\n\n\n", last_band);
+        sl->e->five = true;
       }
 
       nla_parse(tb_band, NL80211_BAND_ATTR_MAX, nla_data(nl_band),
           nla_len(nl_band), NULL);
 
       if (tb_band[NL80211_BAND_ATTR_HT_CAPA]) {
-        __u16 cap = nla_get_u16(tb_band[NL80211_BAND_ATTR_HT_CAPA]);
-        print_ht_capability(cap);
+        /* __u16 cap = nla_get_u16(tb_band[NL80211_BAND_ATTR_HT_CAPA]); */
+        /* print_ht_capability(cap); */
       }
 
       if (tb_band[NL80211_BAND_ATTR_VHT_CAPA] &&
           tb_band[NL80211_BAND_ATTR_VHT_MCS_SET]) {
-        /* print_vht_info(nla_get_u32(tb_band[NL80211_BAND_ATTR_VHT_CAPA]), */
-        /*     nla_data(tb_band[NL80211_BAND_ATTR_VHT_MCS_SET])); */
-        debug("\n\n\nI AM A AC AC! \n\n\n");
+        sl->e->ac = true;
       }
 
-      if (tb_band[NL80211_BAND_ATTR_FREQS]) {
-        if (!band_had_freq) {
-          printf("\t\tFrequencies:\n");
-          band_had_freq = true;
-        }
-        nla_for_each_nested(nl_freq, tb_band[NL80211_BAND_ATTR_FREQS], rem_freq) {
-          uint32_t freq;
-          nla_parse(tb_freq, NL80211_FREQUENCY_ATTR_MAX, nla_data(nl_freq),
-              nla_len(nl_freq), freq_policy);
-          if (!tb_freq[NL80211_FREQUENCY_ATTR_FREQ])
-            continue;
-          freq = nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_FREQ]);
-          printf("\t\t\t* %d MHz [%d]", freq, ieee80211_frequency_to_channel(freq));
+      // Maybe use this later
+      /* if (tb_band[NL80211_BAND_ATTR_FREQS]) { */
+      /*   if (!band_had_freq) { */
+      /*     printf("\t\tFrequencies:\n"); */
+      /*     band_had_freq = true; */
+      /*   } */
+      /*   nla_for_each_nested(nl_freq, tb_band[NL80211_BAND_ATTR_FREQS], rem_freq) { */
+      /*     uint32_t freq; */
+      /*     nla_parse(tb_freq, NL80211_FREQUENCY_ATTR_MAX, nla_data(nl_freq), */
+      /*         nla_len(nl_freq), freq_policy); */
+      /*     if (!tb_freq[NL80211_FREQUENCY_ATTR_FREQ]) */
+      /*       continue; */
+      /*     freq = nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_FREQ]); */
+      /*     printf("\t\t\t* %d MHz [%d]", freq, ieee80211_frequency_to_channel(freq)); */
 
-          if (tb_freq[NL80211_FREQUENCY_ATTR_MAX_TX_POWER] &&
-              !tb_freq[NL80211_FREQUENCY_ATTR_DISABLED])
-            printf(" (%.1f dBm)", 0.01 * nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_MAX_TX_POWER]));
-
-          open = 0;
-          /* if (tb_freq[NL80211_FREQUENCY_ATTR_DISABLED]) { */
-          /*   print_flag("disabled", &open); */
-          /*   goto next; */
-          /* } */
-
-          /* If both flags are set assume an new kernel */
-          if (tb_freq[NL80211_FREQUENCY_ATTR_NO_IR] && tb_freq[__NL80211_FREQUENCY_ATTR_NO_IBSS]) {
-            /* print_flag("no IR", &open); */
-          } else if (tb_freq[NL80211_FREQUENCY_ATTR_PASSIVE_SCAN]) {
-            /* print_flag("passive scan", &open); */
-          } else if (tb_freq[__NL80211_FREQUENCY_ATTR_NO_IBSS]){
-            /* print_flag("no ibss", &open); */
-          }
-
-next:
-          if (open)
-            printf(")");
-          printf("\n");
-        }
-      }
+      /*     if (tb_freq[NL80211_FREQUENCY_ATTR_MAX_TX_POWER] && */
+      /*         !tb_freq[NL80211_FREQUENCY_ATTR_DISABLED]) */
+      /*       printf(" (%.1f dBm)", 0.01 * nla_get_u32(tb_freq[NL80211_FREQUENCY_ATTR_MAX_TX_POWER])); */
+      /*   } */
+      /* } */
     }
   }
 
@@ -1411,31 +1408,43 @@ next:
       int err, rem_limit;
       bool comma = false;
 
-      // This should print the channel widths but it's not working!
+      err = nla_parse_nested(tb_comb, MAX_NL80211_IFACE_COMB,
+          nl_combi, iface_combination_policy);
+
+      /* printf("total <= %d, #channels <= %d%s", */
+      /*     nla_get_u32(tb_comb[NL80211_IFACE_COMB_MAXNUM]), */
+      /*     nla_get_u32(tb_comb[NL80211_IFACE_COMB_NUM_CHANNELS]), */
+      /*     tb_comb[NL80211_IFACE_COMB_STA_AP_BI_MATCH] ? */
+      /*     ", STA/AP BI must match" : ""); */
       if (tb_comb[NL80211_IFACE_COMB_RADAR_DETECT_WIDTHS]) {
+        /* int a = ((int32_t)nla_get_u32(tb_comb[NL80211_IFACE_COMB_RADAR_DETECT_WIDTHS])); */
+        /* int a = nla_get_u32(tb_comb[NL80211_IFACE_COMB_RADAR_DETECT_WIDTHS]); */
         unsigned long widths = nla_get_u32(tb_comb[NL80211_IFACE_COMB_RADAR_DETECT_WIDTHS]);
+        debug("xxxxxxxxxxxxxxx %li", widths);
 
-        if (widths) {
-          int width;
-          bool first = true;
+        /* if (widths) { */
+        /*   int width; */
+        /*   bool first = true; */
 
-          printf(", radar detect widths: {");
-          for (width = 0; width < 32; width++)
-            if (widths & (1 << width)) {
-              printf("%s %s",
-                  first ? "":",",
-                  channel_width_name(width));
-              first = false;
-            }
-          printf(" }\n");
-        }
+        /*   printf(", radar detect widths: {"); */
+        /*   for (width = 0; width < 32; width++) */
+        /*     if (widths & (1 << width)) { */
+        /*       printf("%s %s", */
+        /*           first ? "":",", */
+        /*           channel_width_name(width)); */
+        /*       first = false; */
+        /*     } */
+        /*   printf(" }\n"); */
+        /* } */
       }
-      printf("\n");
-broken_combination:
-      ;
     }
+
+    if (!have_combinations)
+      printf("\tinterface combinations are not supported\n");
   }
 
+  sl->e++;
+  sl->len++;
   return NL_SKIP;
 }
 
@@ -1444,7 +1453,6 @@ int nl80211_get_bssid(const char *ifname, char *buff)
   struct nl80211_msg_conveyor *req;
   struct nl80211_interface_stats is;
 
-  /* is.channel = 0; */
   is.ssid = NULL;
 
   req = nl80211_msg(ifname, NL80211_CMD_GET_INTERFACE, 0);
@@ -1575,7 +1583,7 @@ int nl80211_get_quality_max(int *buf)
 
 int nl80211_get_encryption(const char *ifname, char *buf)
 {
-  *buf = 70;
+  // Not implemented
   return 1;
 }
 
@@ -1630,18 +1638,18 @@ int nl80211_get_stations(const char *ifname, char *buf, int *len)
 int nl80211_get_info(char *buf, int *len)
 {
   struct nl80211_msg_conveyor *req;
-  /* struct nl80211_stationlist sl = { .s = (struct iw_stationlist_entry *)buf }; */
+  struct nl80211_info_list sl = { .e = (struct iw_info_entry *)buf };
 
   req = nl80211_msg(NULL, NL80211_CMD_GET_WIPHY, NLM_F_DUMP);
   if (req)
   {
 
-    nl80211_send(req, print_info, NULL);
+    nl80211_send(req, print_info, &sl);
     nl80211_free(req);
   }
 
-  /* *len = sl.len * sizeof(struct iw_stationlist_entry); */
-  /* return *len ? 0 : -1; */
+  *len = sl.len * sizeof(struct iw_info_entry);
+  return *len ? 0 : -1;
   return 1;
 }
 
@@ -1752,50 +1760,20 @@ int nl80211_run_scan(const char *ifname, char *buf, int *len)
   return *len ? 1 : 0;
 }
 
-/* void perform_scan(struct test_struct *head) */
-/* { */
-/*   // Only if we're scanning */
-/*   int alen = 0; */
-/*   int len_s; */
-/*   char buf_s[1024]; */
-/*   static int myArray[2]; */
-/*   struct test_struct *ptr = head; */
-/*   struct iw_scanlist_entry *sc; */
-/*   int i, x; */
-
-/*   while(ptr != NULL) */
-/*   { */
-/*     printf("Running scan on [%d] %s\n", ptr->val, ptr->ifname); */
-/*     if (!in_array(ptr->val, myArray, 2)) */
-/*       myArray[alen] = ptr->val; */
-/*     alen++; */
-/*     if(iw->scan(ptr->ifname, buf_s, &len_s)) { */
-/*       for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++) */
-/*       { */
-/*         sc = (struct iw_scanlist_entry *) &buf_s[i]; */
-/*         json_object *jscan = json_object_new_object(); */
-/*         format_scan(sc, jscan); */
-/*         json_object_array_add(jscan_array, jscan); */
-/*       } */
-/*     } */
-/*     ptr = ptr->next; */
-/*   } */
-/* } */
-
 const struct iw_ops nl80211_exec = {
-  .name             = "nl80211",
-  .txpower             = nl80211_get_txpower,
-  .bitrate             = nl80211_get_bitrate,
-  .signal              = nl80211_get_signal,
-  .noise               = nl80211_get_noise,
-  .ssids               = nl80211_get_ssids,
-  .quality             = nl80211_get_quality,
-  .quality_max         = nl80211_get_quality_max,
-  .ssid                = nl80211_get_ssid,
-  .bssid               = nl80211_get_bssid,
-  .scan                = nl80211_run_scan,
-  .encryption          = nl80211_get_encryption,
-  .stations            = nl80211_get_stations,
-  .info                = nl80211_get_info,
+  .name           = "nl80211",
+  .txpower        = nl80211_get_txpower,
+  .bitrate        = nl80211_get_bitrate,
+  .signal         = nl80211_get_signal,
+  .noise          = nl80211_get_noise,
+  .ssids          = nl80211_get_ssids,
+  .quality        = nl80211_get_quality,
+  .quality_max    = nl80211_get_quality_max,
+  .ssid           = nl80211_get_ssid,
+  .bssid          = nl80211_get_bssid,
+  .scan           = nl80211_run_scan,
+  .encryption     = nl80211_get_encryption,
+  .stations       = nl80211_get_stations,
+  .info           = nl80211_get_info,
 };
 
