@@ -346,15 +346,6 @@ struct test_struct* add_to_list(struct iw_ssid_entry *e)
   return ptr;
 }
 
-bool in_array(int val, int *arr, int size){
-  int i;
-  for (i=0; i < size; i++) {
-    if (arr[i] == val)
-      return true;
-  }
-  return false;
-}
-
 void collect_data()
 {
   debug("collecting the datas!");
@@ -444,7 +435,7 @@ void collect_data()
       if (!in_array(ptr->val, myArray, 2))
         myArray[alen] = ptr->val;
         alen++;
-        if(iw->scan(e->ifname, buf_s, &len_s)) {
+        if(iw->scan(ptr->ifname, buf_s, &len_s)) {
           for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
           {
             sc = (struct iw_scanlist_entry *) &buf_s[i];
