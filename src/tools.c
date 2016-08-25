@@ -84,7 +84,7 @@ int connection_check()
 
   addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
 
-  printf("Using IP for internet check: %s\n", inet_ntoa(addr));
+  printf("\nUsing %s for internet check\n", inet_ntoa(addr));
 
   freeaddrinfo(result);
 

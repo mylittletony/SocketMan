@@ -308,7 +308,6 @@ struct test_struct
 
 struct test_struct* create_list(struct iw_ssid_entry *e)
 {
-  printf("\n creating list with headnode as [%s]\n", e->ifname);
   struct test_struct *ptr = (struct test_struct*)malloc(sizeof(struct test_struct));
   if(NULL == ptr)
   {
@@ -346,27 +345,25 @@ struct test_struct* add_to_list(struct iw_ssid_entry *e)
   return ptr;
 }
 
-void perform_scan(struct test_struct *head, const struct iw_ops *iw, json_object *jscan_array)
+void perform_scan(struct test_struct *ptr, const struct iw_ops *iw, json_object *jscan_array)
 {
-  // Only if we're scanning
   int alen = 0;
-  int len_s;
-  char buf_s[1024];
+  int len;
+  char buf[1024];
   static int myArray[2];
-  struct test_struct *ptr = head;
   struct iw_scanlist_entry *sc;
   int i, x;
 
   while(ptr != NULL)
   {
-    printf("Running scan on [%d] %s\n", ptr->val, ptr->ifname);
+    printf("Running scan on %s\n", ptr->ifname);
     if (!in_array(ptr->val, myArray, 2)) {
       myArray[alen] = ptr->val;
       alen++;
-      if(iw->scan(ptr->ifname, buf_s, &len_s)) {
-        for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
+      if(iw->scan(ptr->ifname, buf, &len)) {
+        for (i = 0, x = 1; i < len; i += sizeof(struct iw_scanlist_entry), x++)
         {
-          sc = (struct iw_scanlist_entry *) &buf_s[i];
+          sc = (struct iw_scanlist_entry *) &buf[i];
           json_object *jscan = json_object_new_object();
           format_scan(sc, jscan);
           json_object_array_add(jscan_array, jscan);
@@ -451,8 +448,36 @@ void collect_data()
         add_to_list(e);
     }
 
-    if (scan)
-      perform_scan(head, iw, jscan_array);
+    if (scan) {
+      struct test_struct *ptr = head;
+      perform_scan(ptr, iw, jscan_array);
+    }
+    // Only if we're scanning
+    /* int alen = 0; */
+    /* int len_s; */
+    /* char buf_s[1024]; */
+    /* static int myArray[2]; */
+    /* struct test_struct *ptr = head; */
+    /* struct iw_scanlist_entry *sc; */
+    /* i = 0, x = 0; */
+
+    /* while(ptr != NULL) */
+    /* { */
+    /*   printf("Scanning on [%d] %s\n", ptr->val, ptr->ifname); */
+    /*   if (!in_array(ptr->val, myArray, 2)) */
+    /*     myArray[alen] = ptr->val; */
+    /*     alen++; */
+    /*     if(iw->scan(ptr->ifname, buf_s, &len_s)) { */
+    /*       for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++) */
+    /*       { */
+    /*         sc = (struct iw_scanlist_entry *) &buf_s[i]; */
+    /*         json_object *jscan = json_object_new_object(); */
+    /*         format_scan(sc, jscan); */
+    /*         json_object_array_add(jscan_array, jscan); */
+    /*       } */
+    /*     } */
+    /*   ptr = ptr->next; */
+    /* } */
 
     json_object_object_add(jobj, "ssids", jiface_array);
     json_object_object_add(jobj, "survey", jscan_array);
