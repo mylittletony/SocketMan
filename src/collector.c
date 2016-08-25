@@ -450,23 +450,29 @@ void run_interface_scan(json_object *jiface_array,
         }
       }
       ptr = ptr->next;
-      free(ptr); // ??
+      /* free(ptr); // ?? */
     }
 
-    /* while (ptr != NULL) */
-    /* { */
-    /*   ptr = head; */
-    /*   head = head->next; */
-    /*   free(ptr); */
-    /* } */
+    while (ptr != NULL)
+    {
+      ptr = head;
+      head = head->next;
+      free(ptr);
+    }
   }
 
-  if (1) {
+  if (0) { // Not implemented
+    struct iw_info_entry *il;
     char bufff[1024];
-    int llen;
-    iw->info(bufff, &llen);
+    int len, i, x;
+    if (iw->info(bufff, &len)) {
+      for (i = 0, x = 1; i < len; i += sizeof(struct iw_info_entry), x++)
+      {
+        il = (struct iw_info_entry *) &bufff[i];
+        debug("s: %d", il->phy);
+      }
+    }
   }
-
 }
 
 void collect_data()
