@@ -17,6 +17,16 @@ time_t last_collect;
 int hb_interval = 60;
 int collected;
 
+struct radio_list *curr;
+struct radio_list *head;
+
+struct radio_list
+{
+  int val;
+  char *ifname;
+  struct radio_list *next;
+};
+
 int should_collect() {
   time_t now = time(NULL);
   int diff = now - last_collect;
@@ -296,19 +306,9 @@ void *format_scan(struct iw_scanlist_entry *s, json_object *jscan)
   json_object_object_add(jscan, "last_seen", jage);
 }
 
-struct test_struct *curr;
-struct test_struct *head;
-
-struct test_struct
+struct radio_list* create_list(struct iw_ssid_entry *e)
 {
-  int val;
-  char *ifname;
-  struct test_struct *next;
-};
-
-struct test_struct* create_list(struct iw_ssid_entry *e)
-{
-  struct test_struct *ptr = (struct test_struct*)malloc(sizeof(struct test_struct));
+  struct radio_list *ptr = (struct radio_list*)malloc(sizeof(struct radio_list));
   if(NULL == ptr)
   {
     printf("\n Node creation failed \n");
@@ -322,14 +322,14 @@ struct test_struct* create_list(struct iw_ssid_entry *e)
   return ptr;
 }
 
-struct test_struct* add_to_list(struct iw_ssid_entry *e)
+struct radio_list* add_to_list(struct iw_ssid_entry *e)
 {
   if(NULL == head)
   {
     return (create_list(e));
   }
 
-  struct test_struct *ptr = (struct test_struct*)malloc(sizeof(struct test_struct));
+  struct radio_list *ptr = (struct radio_list*)malloc(sizeof(struct radio_list));
   if(NULL == ptr)
   {
     printf("\n Node creation failed \n");
@@ -345,34 +345,35 @@ struct test_struct* add_to_list(struct iw_ssid_entry *e)
   return ptr;
 }
 
-void perform_scan(struct test_struct *ptr, const struct iw_ops *iw, json_object *jscan_array)
-{
-  int alen = 0;
-  int len;
-  char buf[1024];
-  static int myArray[2];
-  struct iw_scanlist_entry *sc;
-  int i, x;
+// Causes mem. leak. Figure out how to pass linked list better.
+/* void perform_scan(struct radio_list *ptr, const struct iw_ops *iw, json_object *jscan_array) */
+/* { */
+/*   int alen = 0; */
+/*   int len; */
+/*   char buf[1024]; */
+/*   static int myArray[2]; */
+/*   struct iw_scanlist_entry *sc; */
+/*   int i, x; */
 
-  while(ptr != NULL)
-  {
-    printf("Running scan on %s\n", ptr->ifname);
-    if (!in_array(ptr->val, myArray, 2)) {
-      myArray[alen] = ptr->val;
-      alen++;
-      if(iw->scan(ptr->ifname, buf, &len)) {
-        for (i = 0, x = 1; i < len; i += sizeof(struct iw_scanlist_entry), x++)
-        {
-          sc = (struct iw_scanlist_entry *) &buf[i];
-          json_object *jscan = json_object_new_object();
-          format_scan(sc, jscan);
-          json_object_array_add(jscan_array, jscan);
-        }
-      }
-    }
-    ptr = ptr->next;
-  }
-}
+/*   while(ptr != NULL) */
+/*   { */
+/*     printf("Running scan on %s\n", ptr->ifname); */
+/*     if (!in_array(ptr->val, myArray, 2)) { */
+/*       myArray[alen] = ptr->val; */
+/*       alen++; */
+/*       if(iw->scan(ptr->ifname, buf, &len)) { */
+/*         for (i = 0, x = 1; i < len; i += sizeof(struct iw_scanlist_entry), x++) */
+/*         { */
+/*           sc = (struct iw_scanlist_entry *) &buf[i]; */
+/*           json_object *jscan = json_object_new_object(); */
+/*           format_scan(sc, jscan); */
+/*           json_object_array_add(jscan_array, jscan); */
+/*         } */
+/*       } */
+/*     } */
+/*     ptr = ptr->next; */
+/*   } */
+/* } */
 
 void run_interface_scan(json_object *jiface_array,
     json_object *jstations_array, json_object *jscan_array
@@ -425,13 +426,13 @@ void run_interface_scan(json_object *jiface_array,
   }
 
   if (scan) {
-    /* struct test_struct *ptr = head; */
+    /* struct radio_list *ptr = head; */
     /* perform_scan(ptr, iw, jscan_array); */
     int alen = 0;
     int len_s;
     char buf_s[1024];
     static int myArray[2];
-    struct test_struct *ptr = head;
+    struct radio_list *ptr = head;
     struct iw_scanlist_entry *sc;
     i = 0, x = 0;
 
