@@ -427,7 +427,8 @@ void collect_data()
         json_object_array_add(jstations_array, jstations);
       }
 
-      if (scan)
+      int ret = strcmp(e->ifname, "mon0");
+      if (ret != 0 && scan)
         add_to_list(e);
     }
 
