@@ -349,8 +349,9 @@ struct test_struct* add_to_list(struct iw_ssid_entry *e)
 bool isvalueinarray(int val, int *arr, int size){
   int i;
   for (i=0; i < size; i++) {
-    if (arr[i] == val)
-      return true;
+    debug("DD %d", arr[i]);
+    /* if (arr[i] == val) */
+    /*   return true; */
   }
   return false;
 }
@@ -436,6 +437,7 @@ void collect_data()
     {
       printf("\n [%d] %s\n", ptr->val, ptr->ifname);
       if (!isvalueinarray(ptr->val, arr, len))
+        /* arr[i] = val; */
         debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
       ptr = ptr->next;
     }
