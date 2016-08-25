@@ -3,4 +3,4 @@ char *readline();
 char *read_config();
 void readlineToBuffer();
 int file_present(char *file);
-bool in_array(int val, int *arr, int size);
+int in_array(int val, int *arr, int size);
