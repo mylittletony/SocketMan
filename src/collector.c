@@ -350,8 +350,8 @@ bool isvalueinarray(int val, int *arr, int size){
   int i;
   for (i=0; i < size; i++) {
     debug("DD %d", arr[i]);
-    /* if (arr[i] == val) */
-    /*   return true; */
+    if (arr[i] == val)
+      return true;
   }
   return false;
 }
@@ -431,13 +431,15 @@ void collect_data()
         add_to_list(e);
     }
 
-    int arr[len];
+    int alen = 0;
+    static int myArray[2];
     struct test_struct *ptr = head;
     while(ptr != NULL)
     {
       printf("\n [%d] %s\n", ptr->val, ptr->ifname);
-      if (!isvalueinarray(ptr->val, arr, len))
-        /* arr[i] = val; */
+      if (!isvalueinarray(ptr->val, myArray, 2))
+        myArray[alen] = ptr->val;
+        alen++;
         debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
       ptr = ptr->next;
     }
