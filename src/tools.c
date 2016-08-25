@@ -84,7 +84,7 @@ int connection_check()
 
   addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
 
-  printf("ip address : %s, what an egg! \n", inet_ntoa(addr));
+  printf("Using IP for internet check: %s\n", inet_ntoa(addr));
 
   freeaddrinfo(result);
 
@@ -151,8 +151,6 @@ out_error:
 
 void recover_network() {
   // Not implemented yet
-  if (OS == "OPENWRT") {
-    /* system("/rom/etc/uci-defaults/02_network"); */
-  } else if (OS == "LINUX") {
-  }
+  /* if (strcmp(OS, "OPENWRT") == 0); */
+  /* if (strcmp(OS, "LINUX") == 0); */
 }

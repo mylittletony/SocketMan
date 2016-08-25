@@ -34,8 +34,6 @@ void go_offline();
 void monitor();
 void recover_connection();
 
-/* char *addr = "8.8.8.8"; */
-
 void run_monitor()
 {
   debug("Running the network monitor");
@@ -53,14 +51,14 @@ void run_monitor()
       return;
     }
   } else {
-    debug("NOOOoooooooooo ROUTE");
+    debug("NO ROUTE");
   }
   go_offline();
 }
 
 void go_offline() {
   online = 0;
-  debug("DEVICE SIGNIFICANTLY OFFLINE......................");
+  debug("DEVICE OFFLINE");
   if (went_offline == 0) {
     went_offline = time(NULL);
     /* debug("Setting offline to %lld", went_offline); */
@@ -79,14 +77,14 @@ void restore_original()
   if (copy_file(NETWORK_BAK, NETWORK_FILE) != 1) {
     if (access(NETWORK_FILE, F_OK ) == -1)
       recover_network();
-      debug("OMG, I HAVE NO NETWORK FILE!");
+      debug("I HAVE NO NETWORK FILE!");
   }
 }
 
 int should_recover()
 {
   if (file_present(NETWORK_ORIGINAL)) {
-    debug("I AM GOING TO RESTORE THE ORIGINAL FILE NOW!!!!!");
+    debug("I AM GOING TO RESTORE THE ORIGINAL FILE!");
     restore_original();
   } else if (!tried_backup && file_present(NETWORK_BAK)) {
     tried_backup = 1;
@@ -166,28 +164,11 @@ void heartbeat()
 void monitor()
 {
   online = 1;
-  /* debug("SHOWING WIFIIIIIIFI INTERFACES"); */
-  /* list_interfaces(); */
-
-  /* debug("SHOWING INTERFACE INFO"); */
-  /* show_interfaces(); */
-
-  /* debug("SCANNING ALL NETWORKS IN THE AREA"); */
-  /* scan("wlan0"); */
-  /* scan("wlan0-1"); */
-
-  // Show stations connected!
-  /* handle_station("wlan1-1"); */
-  /* handle_station("wlan0"); */
-  /* handle_station("wlan1"); */
-
-  /* debug("DISPLAY INTERFACE STATS"); */
-  /* handle_interface(); */
   collect_and_send_data();
-  /* exit(1); */
   /* monitor_interface("eth0"); */
   /* reset_vars(); */
-  /* do */
+  // Not running atm put all back inc reset //
+  do
   {
     if (last_collect == 0)
       last_collect = time(NULL);
