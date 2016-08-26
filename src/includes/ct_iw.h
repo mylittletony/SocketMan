@@ -159,11 +159,6 @@ const struct iw_ops nl80211_exec;
 int nl80211_handler(struct nl80211_state *state, char *cmd, void *dev);
 void format_encryption(struct crypto_entry *c, char *buf);
 
-/* int scan(const struct iw_ops *iw, json_object *jscan_array, const struct iw_ssid_entry *e, int len, char *ssids); */
 void perform_scan();
-
-/* struct test_struct *curr; */
-/* struct test_struct *head; */
-/* void perform_scan(struct test_struct **head); */
 
 #endif

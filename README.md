@@ -8,7 +8,7 @@ This project is NOT complete - it functions, only in the basic form. It should b
 
 Full build instructions will follow. It currently runs on Debian, Ubuntu and OpenWRT. And LEDE probably. Debian requires sudo to perform a full scan.
 
-**TODO:**
+**TODO**
 
 - Collect DHCP entries
 - Collect captive portal connections
@@ -19,3 +19,7 @@ Full build instructions will follow. It currently runs on Debian, Ubuntu and Ope
 - Cache and send json
 - Implement protocol buffers
 - Implement certificate refresh
+
+**Notes**
+
+To obtain the IP and device name for a station, we currently read the DNSMASQ lease file. If it's not present, we can't get the IP, yet. We're working on something to bypass this.

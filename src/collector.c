@@ -12,14 +12,15 @@
 #include "ct_iw.h"
 #include "dbg.h"
 #include "cleaner.h"
+#include "dns.h"
+#include "utils.h"
 
 time_t last_collect;
 /* int wait = 30; */
 int hb_interval = 60;
 int collected;
 
-struct radio_list *curr;
-struct radio_list *head;
+struct radio_list *curr, *head;
 
 struct radio_list
 {
@@ -607,9 +608,25 @@ void collect_data(int online)
   json_object *jcreated_at = json_object_new_int(now);
   json_object_object_add(jattr, "created_at", jcreated_at);
 
+
   // MISSING!!!!!!!
   // INTERFACES
   // CAPS
+
+  int len_c = 0;
+  int i = 0;
+  int x = 0;
+  char clients[1024];
+  const struct dhcp_ops *dhcp;
+  struct dhcp_entry *ee;
+
+  dhcp = &dhcp_exec;
+  dhcp->clients(clients, &len_c);
+  /* for (i = 0, x = 1; i < len_c; i += sizeof(struct dhcp_entry), x++) */
+  /* { */
+  /*   ee = (struct dhcp_entry *) &clients[i]; */
+  /*   debug("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiDHCP: %s\n\n", ee->mac); */
+  /* } */
 
   json_object_object_add(jobj, "device", jattr);
 

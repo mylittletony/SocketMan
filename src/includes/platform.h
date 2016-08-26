@@ -18,12 +18,14 @@
   #define NETWORK_ORIGINAL "/etc/config/network.orig"
   #define NETWORK_FILE "/etc/config/network"
   #define NETWORK_BAK "/etc/config/network.backup"
+  #define DHCP_LEASES "/tmp/dhcp.leases"
 
 #elif __linux
   #define OS "LINUX"
   #define NETWORK_ORIGINAL "/tmp/network.orig"
   #define NETWORK_FILE "/tmp/network"
   #define NETWORK_BAK "/tmp/network.backup"
+  #define DHCP_LEASES "/tmp/dhcp.leases"
 
 #elif __unix // all unices not caught above
     // Unix

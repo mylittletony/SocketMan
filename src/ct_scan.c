@@ -1785,4 +1785,3 @@ const struct iw_ops nl80211_exec = {
   .stations       = nl80211_get_stations,
   .info           = nl80211_get_info,
 };
-
