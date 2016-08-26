@@ -7,8 +7,7 @@
 #include <inttypes.h>
 #include "system.h"
 #include "options.h"
-/* #include <sys/types.h> */
-/* #include <sys/stat.h> */
+#include "math.h"
 #include <fcntl.h>
 
 void reboot() {
@@ -55,27 +54,22 @@ void machine_type(char *type)
   }
 }
 
-void clear_caches()
-{
-  int fd;
-  char* data = "3";
-
-  sync(); // Not sure we should include, this increases the # of files
-  fd = open("/proc/sys/vm/drop_caches", O_WRONLY);
-  write(fd, data, sizeof(char));
-  close(fd);
-}
-
 struct SystemInfo system_info() {
   struct sysinfo info;
   if ( sysinfo (&info) != -1 ){
 
-    double pf = (double)info.freeram / (double)info.totalram;
     struct SystemInfo s;
+    double pf = (double)info.freeram / (double)info.totalram;
+
+    // Not functioning
+    float t_ram = floorf(info.totalram * 100) / 100;
+    float f_ram = floorf(info.freeram * 100) / 100;
+    // Not functioning
+
     s.uptime = info.uptime;
     s.uptime = info.uptime;
-    s.totalram = info.totalram;
-    s.freeram = info.freeram;
+    s.totalram = t_ram;
+    s.freeram = f_ram;
     s.percent_used = pf;
     s.procs = info.procs;
     s.load_1 = info.loads[0] / LINUX_SYSINFO_LOADS_SCALE;

@@ -1,12 +1,13 @@
 #ifndef SYSTEM_STATS
 #define SYSTEM_STATS
 #define LINUX_SYSINFO_LOADS_SCALE 65536.0
+#include <inttypes.h>
 
 struct SystemInfo
 {
   uint64_t uptime;
-  double totalram;
-  double freeram;
+  float totalram;
+  float freeram;
   double percent_used;
   int procs;
   double load_1;

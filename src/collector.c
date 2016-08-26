@@ -11,6 +11,7 @@
 #include "helper.h"
 #include "ct_iw.h"
 #include "dbg.h"
+#include "cleaner.h"
 
 time_t last_collect;
 /* int wait = 30; */
@@ -39,22 +40,31 @@ int should_collect() {
   return 0;
 }
 
+size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+{
+  return size * nmemb;
+}
+
 char append_url_token(char *url, char *token, char *buf)
 {
   if (strcmp(url, "") != 0) {
     strcpy(buf, url);
-    strcat(buf, "/");
-    strcat(buf, "?access_token=");
-    strcat(buf, options.token);
+    /* strcat(buf, "/"); */
+    /* strcat(buf, "?access_token="); */
+    /* strcat(buf, token); */
   }
 }
 
-CURLcode do_curl(CURL *curl, char *url,
+int do_curl(CURL *curl, char *url,
     struct curl_slist *headers, json_object *json
     )
 {
+  long http_code = 0;
+  CURLcode res;
+
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
   curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
@@ -63,19 +73,23 @@ CURLcode do_curl(CURL *curl, char *url,
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-  return curl_easy_perform(curl);
+  res = curl_easy_perform(curl);
+  if(res == CURLE_OK) {
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+    if (http_code == 200 && res != CURLE_ABORTED_BY_CALLBACK)
+      return 1;
+  }
+  debug("Initial CURL failed, will try backup.");
+  return 0;
 }
 
 int post(json_object *json) {
 
   char url[100];
-  int tried_backup = 0;
-  long http_code = 0;
+  struct curl_slist *headers = NULL;
+  append_url_token(options.url, options.token, url);
 
   CURL *curl;
-  CURLcode res;
-
-  struct curl_slist *headers = NULL;
 
   curl_global_init( CURL_GLOBAL_ALL );
 
@@ -83,24 +97,18 @@ int post(json_object *json) {
   headers = curl_slist_append(headers, "Content-Type: application/json");
 
   curl = curl_easy_init();
+  if (!curl)
+    return 0;
 
-  if(curl)
-    append_url_token(options.url, options.token, url);
-    res = do_curl(curl, url, headers, json);
-
-  if(res == CURLE_OK)
-  curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
-  if (http_code != 200 && res != CURLE_ABORTED_BY_CALLBACK)
-  {
-    char buff[100];
-    debug("Could not connect to %s.", url);
-    if (tried_backup == 0) {
-      tried_backup = 1;
-      if (strcmp(options.backup_url, "") != 0) {
-        append_url_token(options.backup_url, options.token, buff);
-        debug("Attempting to send to backup URL");
-        res = do_curl(curl, buff, headers, json);
-      }
+  if(do_curl(curl, url, headers, json) == 0) {
+    debug("Could not connect to %s", url);
+    if (strcmp(options.backup_url, "") != 0) {
+      char buff[100]; // should clear URL buff and use instead
+      debug("Attempting to send to backup URL");
+      append_url_token(options.backup_url, options.token, buff);
+      do_curl(curl, buff, headers, json);
+    } else {
+      debug("No backup URL, moving on.");
     }
   }
 
@@ -445,9 +453,8 @@ void run_interface_scan(json_object *jiface_array,
       add_to_list(e);
   }
 
+  // Needs scan logic built in
   if (0) {
-    /* struct radio_list *ptr = head; */
-    /* perform_scan(ptr, iw, jscan_array); */
     int alen = 0;
     int len_s;
     char buf_s[1024];
@@ -498,7 +505,7 @@ void run_interface_scan(json_object *jiface_array,
   }
 }
 
-void collect_data()
+void collect_data(int online)
 {
   debug("collecting the datas!");
 
@@ -592,24 +599,27 @@ void collect_data()
   json_object *jprocs = json_object_new_int(info.procs);
   json_object_object_add(jattr, "procs", jprocs);
 
+  bool bonline = online ? true : false;
+  json_object *jonline = json_object_new_boolean(bonline);
+  json_object_object_add(jattr, "online", jonline);
+
+  time_t now = time(NULL);
+  json_object *jcreated_at = json_object_new_int(now);
+  json_object_object_add(jattr, "created_at", jcreated_at);
+
   // MISSING!!!!!!!
   // INTERFACES
   // CAPS
 
   json_object_object_add(jobj, "device", jattr);
 
-  if (post(jobj)) {
-
+  if (online && post(jobj)) {
+    // Lookin' good
   } else {
-    // Do something here about the curl issue, init
+    // Cache
   }
 
-  if (info.percent_used >= (float)0.95) {
-    int pu = (float)info.percent_used * 100;
-    debug("MEMORY USAGE AT %d% WIPING", pu);
-    clear_caches();
-  }
-
+  run_cleanup(info);
   json_object_put(jobj);
 }
 
@@ -621,15 +631,8 @@ void post_data() {
   debug("sending the datas!");
 }
 
-void collect_and_send_data()
+void collect_and_send_data(int online)
 {
-  if (should_collect()) {
-    collect_data();
-    if (online) {
-      post_data();
-    } else {
-      cache_data();
-    }
-    /* post_data(); */
-  }
+  if (should_collect())
+    collect_data(online);
 }

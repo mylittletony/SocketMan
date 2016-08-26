@@ -64,7 +64,7 @@ void go_offline() {
     /* debug("Setting offline to %lld", went_offline); */
   }
   attempt_recovery();
-  collect_and_send_data();
+  collect_and_send_data(online);
   restart_or_reboot();
 }
 
@@ -154,7 +154,7 @@ void reset_vars() {
 void heartbeat()
 {
   backup_config();
-  collect_and_send_data();
+  collect_and_send_data(online);
 
   debug("Sleeping for %d seconds.", MONITOR_INTERVAL);
   sleep(MONITOR_INTERVAL);
@@ -164,7 +164,7 @@ void heartbeat()
 void monitor()
 {
   online = 1;
-  collect_and_send_data();
+  collect_and_send_data(online);
   /* monitor_interface("eth0"); */
   /* reset_vars(); */
   // Not running atm put all back inc reset //

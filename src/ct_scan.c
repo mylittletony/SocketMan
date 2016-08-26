@@ -1314,20 +1314,11 @@ static int print_info(struct nl_msg *msg, void *arg)
     [NL80211_FREQUENCY_ATTR_MAX_TX_POWER] = { .type = NLA_U32 },
   };
 
-  /* struct nlattr *tb_rate[NL80211_BITRATE_ATTR_MAX + 1]; */
-  /* static struct nla_policy rate_policy[NL80211_BITRATE_ATTR_MAX + 1] = { */
-  /*   [NL80211_BITRATE_ATTR_RATE] = { .type = NLA_U32 }, */
-  /*   [NL80211_BITRATE_ATTR_2GHZ_SHORTPREAMBLE] = { .type = NLA_FLAG }, */
-  /* }; */
 
   struct nlattr *nl_band;
-  /* struct nlattr *nl_freq; */
   int rem_band;
-  /* , rem_freq; */
   static int64_t phy_id = -1;
   static int last_band = -1;
-  /* static bool band_had_freq = false; */
-  /* bool print_name = true; */
 
   nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
       genlmsg_attrlen(gnlh, 0), NULL);
@@ -1342,9 +1333,6 @@ static int print_info(struct nl_msg *msg, void *arg)
 
   if (tb_msg[NL80211_ATTR_WIPHY_BANDS]) {
     nla_for_each_nested(nl_band, tb_msg[NL80211_ATTR_WIPHY_BANDS], rem_band) {
-      /* if (last_band != nl_band->nla_type) { */
-      /*   band_had_freq = false; */
-      /* } */
       last_band = nl_band->nla_type;
       if (last_band == 1) {
         sl->e->five = true;

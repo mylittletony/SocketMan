@@ -1,2 +1,2 @@
 void monitor();
-int online;
+/* int online; */
