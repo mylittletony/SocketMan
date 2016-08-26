@@ -140,12 +140,6 @@ void *format_ssids(const struct iw_ops *iw,
     json_object_object_add(jssids, "noise", jnoise);
   }
 
-  // Cant do this when no-one connected, causes memory leak
-  // Cant do this when no-one connected, causes memory leak
-  // Cant do this when no-one connected, causes memory leak
-
-  // This actually just averages all the signals from the clients
-  // I don't think we should do this way
   if (len > 0) {
     if (iw->signal(interface, &signal)) {
       json_object *jsignal = json_object_new_int(signal);
