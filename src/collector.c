@@ -524,6 +524,7 @@ void collect_data(int online)
   sprintf(rx, "%" PRIu64, istats.rx);
 
   char machine[100];
+  machine[0] = '\0';
   machine_type(machine);
 
   struct SystemInfo info = system_info();
@@ -566,7 +567,7 @@ void collect_data(int online)
     json_object_object_add(jattr, "wan_ip", jwanip);
   }
 
-  if (strlen(machine) > 0) {
+  if (machine[0] !='\0') {
     // Save to the options to prevent future lookups
     strcpy(options.machine, machine);
     json_object *jmachine = json_object_new_string(machine);
@@ -618,7 +619,7 @@ void collect_data(int online)
   int x = 0;
   char clients[1024];
   const struct dhcp_ops *dhcp;
-  /* struct dhcp_list *ee; */
+  struct dhcp_list *ee;
 
   dhcp = &dhcp_exec;
   dhcp->clients(clients, &len_c);
