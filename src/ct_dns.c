@@ -39,26 +39,13 @@ int get_clients_cb(void *buf) {
     ptr = ptr->next;
     ptr->next = NULL;
 
-    /* if(test == NULL){ */
-    /*   conductor = test = ptr; */
-    /* } else { */
-    /*   conductor = conductor->next = ptr; */
-    /* } */
-
   }
   fclose(fp);
-  //test print
-
-  /* while(temp!=NULL) */
-  /* { */
-  /*   printf("MAC ADDRESS: %s\n", temp->mac); */
-  /*   temp = temp->next; */
-  /* } */
 
   struct dhcp_list *current = conductor;
-  for(current = conductor; current; current=current->next){
-    if (current->next != NULL)
-      printf("MAC ADDRESS: %s\n", current->mac);
+  while (current->next != NULL) {
+    printf("MAC ADDRESS: %s\n", current->mac);
+    current = current->next;
   }
 
   //need free for each node
