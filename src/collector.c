@@ -14,6 +14,7 @@
 #include "cleaner.h"
 #include "dns.h"
 #include "utils.h"
+#include <ctype.h>
 
 time_t last_collect;
 /* int wait = 30; */
@@ -172,7 +173,7 @@ void *format_ssids(const struct iw_ops *iw,
     json_object_object_add(jssids, "ssid", jssid);
   }
 
-  // Problem!
+  // Problem on Debian!
   /* if (iw->txpower(interface, &txpower)) { */
   /*   json_object *jtxpower = json_object_new_int(txpower); */
   /*   json_object_object_add(jssids, "txpower", jtxpower); */
@@ -183,12 +184,6 @@ void *format_ssids(const struct iw_ops *iw,
   /*   json_object *jencryption = json_object_new_string(encryption); */
   /*   json_object_object_add(*jssids, "encryption", jencryption); */
   /* } */
-}
-
-void format_bssid(uint8_t *mac, char *buf)
-{
-  sprintf(buf, "%02X:%02X:%02X:%02X:%02X:%02X",
-      mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 }
 
 void *format_stations(const char *ssid,
@@ -371,36 +366,6 @@ struct radio_list* add_to_list(struct iw_ssid_entry *e)
 
   return ptr;
 }
-
-// Causes mem. leak. Figure out how to pass linked list better.
-/* void perform_scan(struct radio_list *ptr, const struct iw_ops *iw, json_object *jscan_array) */
-/* { */
-/*   int alen = 0; */
-/*   int len; */
-/*   char buf[1024]; */
-/*   static int myArray[2]; */
-/*   struct iw_scanlist_entry *sc; */
-/*   int i, x; */
-
-/*   while(ptr != NULL) */
-/*   { */
-/*     printf("Running scan on %s\n", ptr->ifname); */
-/*     if (!in_array(ptr->val, myArray, 2)) { */
-/*       myArray[alen] = ptr->val; */
-/*       alen++; */
-/*       if(iw->scan(ptr->ifname, buf, &len)) { */
-/*         for (i = 0, x = 1; i < len; i += sizeof(struct iw_scanlist_entry), x++) */
-/*         { */
-/*           sc = (struct iw_scanlist_entry *) &buf[i]; */
-/*           json_object *jscan = json_object_new_object(); */
-/*           format_scan(sc, jscan); */
-/*           json_object_array_add(jscan_array, jscan); */
-/*         } */
-/*       } */
-/*     } */
-/*     ptr = ptr->next; */
-/*   } */
-/* } */
 
 void run_interface_scan(json_object *jiface_array,
     json_object *jstations_array, json_object *jscan_array
@@ -618,16 +583,29 @@ void collect_data(int online)
   dhcp = &dhcp_exec;
   dhcp->clients(clients, &len_c);
 
-  /* struct dhcp_list *current = conductor; */
-  /* for(current = conductor; current; current=current->next){ */
-  /*   printf("MAC ADDRESS: %s\n", current->mac); */
-  /* } */
+  struct dhcp_list *current = (struct dhcp_list*)clients;
+  json_object *jdhcp_array = json_object_new_array();
 
-  /* for (i = 0, x = 1; i < len_c; i += sizeof(struct dhcp_list), x++) */
-  /* { */
-  /*   ee = (struct dhcp_list *) &clients[i]; */
-  /*   debug("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiDHCP: %s\n\n", ee->mac); */
-  /* } */
+  while (current->next != NULL) {
+    printf("MAC ADDRESS: %s\n", current->mac);
+
+    json_object *jdhcp = json_object_new_object();
+
+    json_object *jmac = json_object_new_string(current->mac);
+    json_object_object_add(jdhcp, "mac", jmac);
+
+    json_object *jip = json_object_new_string(current->ip);
+    json_object_object_add(jdhcp, "ip", jip);
+
+    json_object *jname = json_object_new_string(current->name);
+    json_object_object_add(jdhcp, "name", jname);
+
+    json_object_array_add(jdhcp_array, jdhcp);
+    current = current->next;
+  }
+
+
+  json_object_object_add(jobj, "dhcp", jdhcp_array);
 
   json_object_object_add(jobj, "device", jattr);
 

@@ -9,8 +9,8 @@ int get_clients_cb(void *buf) {
   char line[128];
   /* struct dhcp_list *current, *head; */
 
-  struct dhcp_list *ptr;
-  ptr = (struct dhcp_list*)malloc(sizeof(struct dhcp_list));
+  struct dhcp_list *ptr = buf;
+  /* ptr = (struct dhcp_list*)malloc(sizeof(struct dhcp_list)); */
   ptr->next = NULL;
   conductor = ptr;
 
@@ -19,10 +19,7 @@ int get_clients_cb(void *buf) {
   char created[10];
   char ip_address[24];
   char device_name[255];
-  char mask[500];
-
-  /* char buffer[1024]; */
-  /* memset(line, 0, 1024); */
+  char mask[5];
 
   while(fgets(line, sizeof(line), fp) != NULL){
     ptr->next = malloc(sizeof(struct dhcp_list));
@@ -31,22 +28,15 @@ int get_clients_cb(void *buf) {
     sscanf(line, "%s %s %s %s %s\n",
         created,
         ptr->mac,
-        ip_address,
-        device_name,
+        ptr->ip,
+        ptr->name,
         mask);
 
-    debug("xxxxxxxxxxxx: %s", ptr->mac);
     ptr = ptr->next;
     ptr->next = NULL;
 
   }
   fclose(fp);
-
-  struct dhcp_list *current = conductor;
-  while (current->next != NULL) {
-    printf("MAC ADDRESS: %s\n", current->mac);
-    current = current->next;
-  }
 
   //need free for each node
   //need free for each node
@@ -66,12 +56,8 @@ typedef struct dhcp_list LIST;
 
 int get_clients(char *buf, int *len)
 {
-  /* struct dhcp_list cl = { .next = (struct dhcp_list*)buf }; */
-  /* struct dhcp_list cl = { .c = (struct dhcp_entry *)buf }; */
   get_clients_cb(buf);
   return 1;
-  /* *len = cl.len * sizeof(struct dhcp_entry); */
-  /* return *len ? 1 : 0; */
 }
 
 const struct dhcp_ops dhcp_exec = {
