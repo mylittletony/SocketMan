@@ -18,3 +18,4 @@ TODO:
 - Set periodic scan
 - Cache and send json
 - Implement protocol buffers
+- Implement certificate refresh
