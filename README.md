@@ -6,6 +6,15 @@ It will create a connection to an MQTT broker and await instruction. It monitors
 
 This project is NOT complete - it functions, only in the basic form. It should be in Beta at the end of September 2016.
 
-Build instructions will follow.
+Full build instructions will follow. It currently runs on Debian, Ubuntu and OpenWRT. And LEDE probably. Debian requires sudo to perform a full scan.
 
-A separate license is included.
+TODO:
+
+- Collect DHCP entries
+- Collect captive portal connections
+- Process inbound commands
+- Run program on boot
+- Run cURL on boot
+- Set periodic scan
+- Cache and send json
+- Implement protocol buffers
