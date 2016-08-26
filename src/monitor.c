@@ -1,6 +1,4 @@
-/* #include <stdio.h> */
 #include <stdlib.h>
-
 #include <time.h>
 #include <unistd.h>
 #include <resolv.h>
@@ -12,7 +10,6 @@
 #include "collector.h"
 #include "platform.h"
 #include "helper.h"
-/* #include "scan.h" */
 
 #define MONITOR_INTERVAL 30
 #define OFFLINE_INTERVAL 10
@@ -20,7 +17,7 @@
 
 // Config File //
 int delay = 5;
-int reboot_period = 60; // should be 600 and in a vonfig
+int reboot_period = 60; // should be 600 and in the config
 // Config File //
 
 time_t last_collect, went_offline;
@@ -163,8 +160,11 @@ void heartbeat()
 
 void monitor()
 {
+  // remove this when not testing collector
   online = 1;
   collect_and_send_data(online);
+  // remove this when not testing collector
+
   /* monitor_interface("eth0"); */
   /* reset_vars(); */
   // Not running atm put all back inc reset //
