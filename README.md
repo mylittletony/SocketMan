@@ -8,7 +8,7 @@ This project is NOT complete - it functions, only in the basic form. It should b
 
 Full build instructions will follow. It currently runs on Debian, Ubuntu and OpenWRT. And LEDE probably. Debian requires sudo to perform a full scan.
 
-TODO:
+**TODO:**
 
 - Collect DHCP entries
 - Collect captive portal connections
