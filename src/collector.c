@@ -618,13 +618,19 @@ void collect_data(int online)
   int x = 0;
   char clients[1024];
   const struct dhcp_ops *dhcp;
-  struct dhcp_entry *ee;
+  /* struct dhcp_list *ee; */
 
   dhcp = &dhcp_exec;
   dhcp->clients(clients, &len_c);
-  /* for (i = 0, x = 1; i < len_c; i += sizeof(struct dhcp_entry), x++) */
+
+  /* struct dhcp_list *current = conductor; */
+  /* for(current = conductor; current; current=current->next){ */
+  /*   printf("MAC ADDRESS: %s\n", current->mac); */
+  /* } */
+
+  /* for (i = 0, x = 1; i < len_c; i += sizeof(struct dhcp_list), x++) */
   /* { */
-  /*   ee = (struct dhcp_entry *) &clients[i]; */
+  /*   ee = (struct dhcp_list *) &clients[i]; */
   /*   debug("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiDHCP: %s\n\n", ee->mac); */
   /* } */
 
