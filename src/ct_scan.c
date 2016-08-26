@@ -727,8 +727,6 @@ static int get_bssid(struct nl_msg *msg, void *arg)
   struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
   struct nl80211_interface_stats *is = arg;
 
-  /* const char *indent = ""; */
-
   nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
       genlmsg_attrlen(gnlh, 0), NULL);
 
@@ -737,17 +735,6 @@ static int get_bssid(struct nl_msg *msg, void *arg)
     is->ssid[nla_len(tb_msg[NL80211_ATTR_SSID])] = '\0';
     return NL_SKIP;
   }
-
-  /* // We set to channel 1 to make sure it runs, not great */
-  /* if (is->channel > 0 && tb_msg[NL80211_ATTR_WIPHY_FREQ]) { */
-  /*   uint32_t freq = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_FREQ]); */
-  /*   is->channel = ieee80211_frequency_to_channel(freq); */
-  /*   /1* is->mode="g"; *1/ */
-  /*   /1* if (is->channel >= 14) { *1/ */
-  /*   /1*   is->mode="a"; *1/ */
-  /*   /1* } *1/ */
-  /*   return NL_SKIP; */
-  /* } */
 
   if (tb_msg[NL80211_ATTR_WIPHY_TX_POWER_LEVEL]) {
     uint32_t txp = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_TX_POWER_LEVEL]);
@@ -816,16 +803,6 @@ static int nl80211_signal_cb(struct nl_msg *msg, void *arg)
     return NL_SKIP;
   }
 
-  // THIS COULD GET THE BEACON INTERVAL IF WE NEED TO
-  //
-  /* if (sinfo[NL80211_STA_INFO_RX_BYTES] && sinfo[NL80211_STA_INFO_RX_PACKETS]) */
-  /*   printf("\tRX: %u bytes (%u packets)\n", */
-  /*       nla_get_u32(sinfo[NL80211_STA_INFO_RX_BYTES]), */
-  /*       nla_get_u32(sinfo[NL80211_STA_INFO_RX_PACKETS])); */
-  /* if (sinfo[NL80211_STA_INFO_TX_BYTES] && sinfo[NL80211_STA_INFO_TX_PACKETS]) */
-  /*   printf("\tTX: %u bytes (%u packets)\n", */
-  /*       nla_get_u32(sinfo[NL80211_STA_INFO_TX_BYTES]), */
-  /*       nla_get_u32(sinfo[NL80211_STA_INFO_TX_PACKETS])); */
   if (sinfo[NL80211_STA_INFO_SIGNAL]) {
     dbm = nla_get_u8(sinfo[NL80211_STA_INFO_SIGNAL]);
     rr->rssi = rr->rssi ? (int8_t)((rr->rssi + dbm) / 2) : dbm;

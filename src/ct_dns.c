@@ -4,17 +4,19 @@
 #include "dbg.h"
 #include "platform.h"
 
-int get_clients_cb(void *buf) {
+void get_clients_cb(void *buf) {
   FILE *fp;
   char line[128];
-  /* struct dhcp_list *current, *head; */
 
   struct dhcp_list *ptr = buf;
+  /* struct dhcp_list *ptr; */
   /* ptr = (struct dhcp_list*)malloc(sizeof(struct dhcp_list)); */
+
   ptr->next = NULL;
   conductor = ptr;
 
   fp = fopen(DHCP_LEASES, "r");
+  // error check
 
   char created[10];
   char ip_address[24];
@@ -34,17 +36,27 @@ int get_clients_cb(void *buf) {
 
     ptr = ptr->next;
     ptr->next = NULL;
+    /* free(ptr->next); // ? */
 
   }
   fclose(fp);
 
-  //need free for each node
-  //need free for each node
-  //need free for each node
-  //need free for each node
-  //need free for each node
+  /* free(conductor); */
 
-  return 0;
+  /* struct dhcp_list *freeMe = conductor; */
+  /* struct dhcp_list *holdMe = NULL; */
+  /* while(freeMe->next != NULL) { */
+  /*   holdMe = freeMe->next; */
+  /*   free(freeMe); */
+  /*   freeMe = holdMe; */
+  /* } */
+  /* free(ptr); */
+
+  //need free for each node
+  //need free for each node
+  //need free for each node
+  //need free for each node
+  //need free for each node
 }
 
 struct list {
