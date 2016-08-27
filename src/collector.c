@@ -330,7 +330,7 @@ void *format_scan(struct iw_scanlist_entry *s, json_object *jscan)
 
 struct radio_list* create_list(struct iw_ssid_entry *e)
 {
-  struct radio_list *ptr = (struct radio_list*)malloc(sizeof(struct radio_list));
+  struct radio_list *ptr = malloc(sizeof(struct radio_list));
   if(NULL == ptr)
   {
     printf("\n Node creation failed \n");
@@ -377,7 +377,8 @@ void run_interface_scan(json_object *jiface_array,
 
   int scan = 1;
 
-  int len, x, i, ii, len_a, xx;
+  int len = 0;
+  int x, i, ii, len_a, xx;
   char ssids[1024];
   char buf_a[1024];
   const struct iw_ops *iw;
@@ -386,6 +387,8 @@ void run_interface_scan(json_object *jiface_array,
 
   // Check chipset / drivers required
   iw = &nl80211_exec;
+
+  // Can cause mem. leak if no SSIDS
   iw->ssids(ssids, &len);
 
   for (i = 0, x = 1; i < len; i += sizeof(struct iw_ssid_entry), x++)
@@ -414,7 +417,7 @@ void run_interface_scan(json_object *jiface_array,
   }
 
   // Needs scan logic built in
-  if (0) {
+  if (1) {
     int alen = 0;
     int len_s;
     char buf_s[1024];
@@ -422,6 +425,9 @@ void run_interface_scan(json_object *jiface_array,
     struct radio_list *ptr = head;
     struct iw_scanlist_entry *sc;
     i = 0, x = 0;
+
+    struct radio_list *holdMe = NULL;
+    struct radio_list *freeMe = ptr;
 
     while(ptr != NULL)
     {
@@ -440,15 +446,15 @@ void run_interface_scan(json_object *jiface_array,
         }
       }
       ptr = ptr->next;
-      /* free(ptr); // ?? */
     }
 
-    while (ptr != NULL)
-    {
-      ptr = head;
-      head = head->next;
-      free(ptr);
+    while(freeMe != NULL) {
+      debug("Should be freed");
+      holdMe = freeMe->next;
+      free(freeMe);
+      freeMe = holdMe;
     }
+    free(ptr);
   }
 
   if (0) { // Not implemented
@@ -478,8 +484,6 @@ void format_dhcp(json_object *jdhcp_array)
   struct dhcp_list *freeMe = clients;
 
   while (clients->next != NULL) {
-    printf("MAC ADDRESS: %s\n", clients->mac);
-
     json_object *jdhcp = json_object_new_object();
 
     json_object *jmac = json_object_new_string(clients->mac);
@@ -497,7 +501,6 @@ void format_dhcp(json_object *jdhcp_array)
   }
 
   while(freeMe != NULL) {
-    debug("Should be freed");
     holdMe = freeMe->next;
     free(freeMe);
     freeMe = holdMe;
@@ -535,7 +538,7 @@ void collect_data(int online)
     json_object *jstations_array = json_object_new_array();
     json_object *jscan_array = json_object_new_array();
 
-    /* run_interface_scan(jiface_array, jstations_array, jscan_array); */
+    run_interface_scan(jiface_array, jstations_array, jscan_array);
 
     json_object_object_add(jobj, "ssids", jiface_array);
     json_object_object_add(jobj, "survey", jscan_array);
@@ -607,15 +610,9 @@ void collect_data(int online)
   json_object *jcreated_at = json_object_new_int(now);
   json_object_object_add(jattr, "created_at", jcreated_at);
 
-  /* char *clients = malloc(1024 * sizeof(char)); */
-  /* char clients[1024]; */
-  /* char *clients = malloc(1024 * sizeof(char)); */
-  /* struct dhcp_list *clients = (struct dhcp_list*)malloc(sizeof(struct dhcp_list)); */
-
   json_object *jdhcp_array = json_object_new_array();
   format_dhcp(jdhcp_array);
   json_object_object_add(jobj, "dhcp", jdhcp_array);
-  /* free(clients); */
 
   // MISSING!!!!!!!
   // INTERFACES

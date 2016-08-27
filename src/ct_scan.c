@@ -969,10 +969,6 @@ static int get_stations(struct nl_msg *msg, void *arg)
     sl->s->rx_bitrate = buf;
   }
 
-  /* if (sinfo[NL80211_STA_INFO_RX_DURATION]) */
-  /*   printf("\n\trx duration:\t%lld us", */
-  /*       (unsigned long long)nla_get_u64(sinfo[NL80211_STA_INFO_RX_DURATION])); */
-
   if (sinfo[NL80211_STA_INFO_EXPECTED_THROUGHPUT]) {
     uint32_t thr;
 
@@ -1036,12 +1032,6 @@ static int get_stations(struct nl_msg *msg, void *arg)
         sl->s->tdls = false;
     }
   }
-
-  /* if (sinfo[NL80211_STA_INFO_TID_STATS] && arg != NULL && */
-  /*     !strcmp((char *)arg, "-v")) */
-  /*   /1* parse_tid_stats(sinfo[NL80211_STA_INFO_TID_STATS]); *1/ */
-  /* if (sinfo[NL80211_STA_INFO_BSS_PARAM]) */
-  /*   /1* parse_bss_param(sinfo[NL80211_STA_INFO_BSS_PARAM]); *1/ */
 
   if (sinfo[NL80211_STA_INFO_CONNECTED_TIME])
     sl->s->conn_time = nla_get_u32(sinfo[NL80211_STA_INFO_CONNECTED_TIME]);
@@ -1501,29 +1491,6 @@ int nl80211_get_txpower(const char *ifname, int *buff)
   return 0;
 }
 
-/* int nl80211_get_channel(const char *ifname, int *buff) */
-/* { */
-/*   struct nl80211_msg_conveyor *req; */
-/*   struct nl80211_interface_stats is; */
-
-/*   is.channel = 1; */
-/*   is.ssid = NULL; */
-/*   is.bssid[0] = 0; */
-/*   *buff = 0; */
-
-/*   req = nl80211_msg(ifname, NL80211_CMD_GET_INTERFACE, 0); */
-/*   if (req) */
-/*   { */
-/*     nl80211_send(req, get_bssid, &is); */
-/*     nl80211_free(req); */
-/*     if (is.channel > 0) */
-/*       *buff = is.channel; */
-/*     return 1; */
-/*   } */
-
-/*   return 0; */
-/* } */
-
 int nl80211_get_bitrate(const char *ifname, int *buf)
 {
   struct nl80211_rssi r;
@@ -1587,7 +1554,7 @@ int nl80211_get_ssids(char *buf, int *len)
   }
 
   *len = sl.len * sizeof(struct iw_ssid_entry);
-  return *len ? 0 : -1;
+  return *len ? 1 : 0;
 }
 
 int nl80211_get_ssids_basic(char *buf, int *len)
