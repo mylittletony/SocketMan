@@ -24,7 +24,7 @@ OBJECTS=$(patsubst %.c,$(ODIR)/%.o,$(SOURCES))
 
 $(ODIR)/%.o: %.c $(DEPS)
 	@mkdir -p obj
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -g -c -o $@ $< $(CFLAGS)
 
 $(SO_TARGET): $(OBJECTS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)

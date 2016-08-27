@@ -465,55 +465,43 @@ void run_interface_scan(json_object *jiface_array,
   }
 }
 
-void format_dhcp(json_object *jdhcp_array, char *clients)
+void format_dhcp(json_object *jdhcp_array)
 {
-  int len_c = 0;
-  int i = 0;
-  int x = 0;
-  /* char clients[1024]; */
-
-  /* char *clients = malloc(1024 * sizeof(char)); */
 
   const struct dhcp_ops *dhcp;
-  struct dhcp_list *ee;
+  struct dhcp_list *clients = NULL;
 
   dhcp = &dhcp_exec;
-  dhcp->clients(clients, &len_c);
+  dhcp->clients(&clients);
 
-  struct dhcp_list *current = (struct dhcp_list*)clients;
+  struct dhcp_list *holdMe = NULL;
+  struct dhcp_list *freeMe = clients;
 
-  while (current->next != NULL) {
-    printf("MAC ADDRESS: %s\n", current->mac);
-
-    struct dhcp_list *tmp = current;
+  while (clients->next != NULL) {
+    printf("MAC ADDRESS: %s\n", clients->mac);
 
     json_object *jdhcp = json_object_new_object();
 
-    json_object *jmac = json_object_new_string(tmp->mac);
+    json_object *jmac = json_object_new_string(clients->mac);
     json_object_object_add(jdhcp, "mac", jmac);
 
-    json_object *jip = json_object_new_string(tmp->ip);
+    json_object *jip = json_object_new_string(clients->ip);
     json_object_object_add(jdhcp, "ip", jip);
 
-    json_object *jname = json_object_new_string(tmp->name);
+    json_object *jname = json_object_new_string(clients->name);
     json_object_object_add(jdhcp, "name", jname);
 
     json_object_array_add(jdhcp_array, jdhcp);
-    debug("SSSSSSSSSSSS: %s", tmp->mac);
 
-    current = current->next;
-    /* free(tmp); */
+    clients = clients->next;
   }
 
-  /* struct dhcp_list *temp; */
-  /* struct dhcp_list *node = current; */
-  /* while (node != NULL) { */
-  /*   temp = node; */
-  /*   node = node->next; */
-  /*   debug("SSSSSSSSSSSS: %s", node->mac); */
-  /*   free(temp); */
-  /*   head = NULL; */
-  /* } */
+  while(freeMe != NULL) {
+    debug("Should be freed");
+    holdMe = freeMe->next;
+    free(freeMe);
+    freeMe = holdMe;
+  }
 }
 
 void collect_data(int online)
@@ -547,7 +535,7 @@ void collect_data(int online)
     json_object *jstations_array = json_object_new_array();
     json_object *jscan_array = json_object_new_array();
 
-    run_interface_scan(jiface_array, jstations_array, jscan_array);
+    /* run_interface_scan(jiface_array, jstations_array, jscan_array); */
 
     json_object_object_add(jobj, "ssids", jiface_array);
     json_object_object_add(jobj, "survey", jscan_array);
@@ -619,10 +607,15 @@ void collect_data(int online)
   json_object *jcreated_at = json_object_new_int(now);
   json_object_object_add(jattr, "created_at", jcreated_at);
 
-  char *clients = malloc(1024 * sizeof(char));
+  /* char *clients = malloc(1024 * sizeof(char)); */
+  /* char clients[1024]; */
+  /* char *clients = malloc(1024 * sizeof(char)); */
+  /* struct dhcp_list *clients = (struct dhcp_list*)malloc(sizeof(struct dhcp_list)); */
+
   json_object *jdhcp_array = json_object_new_array();
-  format_dhcp(jdhcp_array, clients);
+  format_dhcp(jdhcp_array);
   json_object_object_add(jobj, "dhcp", jdhcp_array);
+  /* free(clients); */
 
   // MISSING!!!!!!!
   // INTERFACES
