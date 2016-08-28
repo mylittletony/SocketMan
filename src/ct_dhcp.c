@@ -16,6 +16,7 @@ void get_clients(struct dhcp_list **buf)
   ptr->next = NULL;
   conductor = ptr;
 
+  debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD %s", DHCP_LEASES);
   fp = fopen(DHCP_LEASES, "r");
   if(NULL == fp)
     return;
