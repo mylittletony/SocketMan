@@ -375,7 +375,7 @@ void run_interface_scan(json_object *jiface_array,
   head = NULL;
   curr = NULL;
 
-  int scan = 1;
+  int scan = 0;
 
   int len = 0;
   int x, i, ii, len_a, xx;
@@ -417,7 +417,7 @@ void run_interface_scan(json_object *jiface_array,
   }
 
   // Needs scan logic built in
-  if (1) {
+  if (scan) {
     int alen = 0;
     int len_s;
     char buf_s[1024];
