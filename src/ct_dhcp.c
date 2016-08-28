@@ -4,7 +4,8 @@
 #include "dbg.h"
 #include "platform.h"
 
-void get_clients(struct dhcp_list **buf) {
+void get_clients(struct dhcp_list **buf)
+{
   FILE *fp;
   char *line = NULL;
   size_t len = 0;
@@ -44,13 +45,6 @@ void get_clients(struct dhcp_list **buf) {
 
   *buf = conductor;
 }
-
-struct list {
-  char *string;
-  struct list *next;
-};
-
-typedef struct dhcp_list LIST;
 
 const struct dhcp_ops dhcp_exec = {
   .clients       = get_clients,

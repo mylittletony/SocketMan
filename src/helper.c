@@ -2,9 +2,10 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <json-c/json.h>
 #include "dbg.h"
 #include "options.h"
+#include <ctype.h>
+#include <stdlib.h>
 
 #define NCHAR 64
 
@@ -35,10 +36,18 @@ char *read_config(char *file) {
     rewind( fp );
 
     buffer = calloc( 1, lSize+1 );
-    if( !buffer ) fclose(fp),fputs("memory alloc fails",stderr),exit(1);
+    if( !buffer ) {
+      fclose(fp);
+      fputs("memory alloc fails",stderr);
+      return buffer;
+    }
 
-    if( 1!=fread( buffer , lSize, 1 , fp) )
-      fclose(fp),free(buffer),fputs("entire read fails",stderr),exit(1);
+    if( 1!=fread( buffer , lSize, 1 , fp) ) {
+      fclose(fp);
+      free(buffer);
+      fputs("entire read fails",stderr);
+      return buffer;
+    }
 
     fclose(fp);
   } else {

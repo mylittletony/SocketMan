@@ -12,7 +12,7 @@
 #include "ct_iw.h"
 #include "dbg.h"
 #include "cleaner.h"
-#include "dns.h"
+#include "dhcp.h"
 #include "utils.h"
 #include <ctype.h>
 
@@ -471,6 +471,46 @@ void run_interface_scan(json_object *jiface_array,
   }
 }
 
+void format_splash(json_object *jsplash_array)
+{
+
+  const struct splash_ops *splash;
+  struct splash_list *clients = NULL;
+
+  splash = &splash_exec;
+  splash->clients(&clients);
+
+  struct splash_list *holdMe = NULL;
+  struct splash_list *freeMe = clients;
+
+ while (clients->next != NULL) {
+   debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: %s", clients->auth_state);
+    json_object *jsplash = json_object_new_object();
+
+    json_object *jmac = json_object_new_string(clients->mac);
+    json_object_object_add(jsplash, "mac", jmac);
+
+    json_object *jip = json_object_new_string(clients->ip);
+    json_object_object_add(jsplash, "ip", jip);
+
+    json_object *jcstate = json_object_new_string(clients->client_state);
+    json_object_object_add(jsplash, "client_state", jcstate);
+
+    json_object *jastate = json_object_new_string(clients->auth_state);
+    json_object_object_add(jsplash, "auth_state", jastate);
+
+    json_object_array_add(jsplash_array, jsplash);
+
+    clients = clients->next;
+  }
+
+  while(freeMe != NULL) {
+    holdMe = freeMe->next;
+    free(freeMe);
+    freeMe = holdMe;
+  }
+}
+
 void format_dhcp(json_object *jdhcp_array)
 {
 
@@ -613,6 +653,11 @@ void collect_data(int online)
   json_object *jdhcp_array = json_object_new_array();
   format_dhcp(jdhcp_array);
   json_object_object_add(jobj, "dhcp", jdhcp_array);
+
+
+  json_object *jsplash_array = json_object_new_array();
+  format_splash(jsplash_array);
+  json_object_object_add(jobj, "splash", jsplash_array);
 
   // MISSING!!!!!!!
   // INTERFACES

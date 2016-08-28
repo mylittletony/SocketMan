@@ -7,6 +7,7 @@
 void format_bssid(uint8_t *mac, char *buf);
 
 const struct dhcp_ops dhcp_exec;
+const struct splash_ops splash_exec;
 
 struct dhcp_list {
   char mac[18];
@@ -16,12 +17,19 @@ struct dhcp_list {
 }*conductor;
 
 struct dhcp_ops {
-  /* void (*clients)(json_object *); */
   void (*clients)(struct dhcp_list **);
 };
 
-/* struct dhcp_ops { */
-/*   int (*clients)(char **); */
-/* }; */
+struct splash_list {
+  char mac[18];
+  char ip[20];
+  char client_state[5];
+  char auth_state[5];
+  struct splash_list *next;
+}*splash_conductor;
+
+struct splash_ops {
+  void (*clients)(struct splash_list **);
+};
 
 #endif
