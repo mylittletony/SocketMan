@@ -6,17 +6,14 @@
 
 void save_and_notify(char *id, char *cmd)
 {
-  int response = 0;
-
   FILE *fp;
+  int response = -1;
   char buffer[BUFF_SIZE];
   buffer[0] = '\0';
 
   fp = popen(cmd, "r");
-  if (fp == NULL) {
-    printf("Failed to run command\n" );
-    return;
-  } else {
+  if (fp != NULL) {
+    response = 0;
     memset(buffer, '\0', sizeof(buffer));
     fread(buffer, sizeof(char), BUFF_SIZE, fp);
     pclose(fp);
