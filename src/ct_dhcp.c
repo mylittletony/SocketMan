@@ -16,7 +16,6 @@ void get_clients(struct dhcp_list **buf)
   /* ptr->next = NULL; */
   /* conductor = ptr; */
 
-  debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD %s", DHCP_LEASES);
   fp = fopen(DHCP_LEASES, "r");
   if(NULL == fp)
     return;
@@ -40,6 +39,8 @@ void get_clients(struct dhcp_list **buf)
         ip,
         name,
         mask);
+
+    printf("MAC: %s %s %s\n", mac, ip, name);
 
     /* sscanf(line, "%s %s %s %s %s\n", */
     /*     created, */
