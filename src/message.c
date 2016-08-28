@@ -4,6 +4,28 @@
 
 #define BUFF_SIZE 100000 // ? too much ?
 
+void save_and_notify(char *id, char *cmd)
+{
+
+  int response = 0;
+
+  FILE *fp;
+  char buffer[BUFF_SIZE];
+  buffer[0] = '\0';
+
+  fp = popen(cmd, "r");
+  if (fp == NULL) {
+    printf("Failed to run command\n" );
+    return;
+  } else {
+    memset(buffer, '\0', sizeof(buffer));
+    fread(buffer, sizeof(char), BUFF_SIZE, fp);
+    pclose(fp);
+  }
+  cmd_notify(response, id, buffer);
+
+}
+
 void parse_message(const char *msg) {
 
   int save = 0;
@@ -20,9 +42,9 @@ void parse_message(const char *msg) {
       type = json_object_get_type(val);
       switch (type) {
         case json_type_boolean:
-          if (strcmp(key, "save") == 0) {
-            if (json_object_get_boolean(val))
-              save = 1;
+          if ((strcmp(key, "save") == 0) &&
+              json_object_get_boolean(val)) {
+            save = 1;
           }
         case json_type_string:
           if (strcmp(key, "cmd") == 0)
@@ -36,23 +58,7 @@ void parse_message(const char *msg) {
     json_object_put(jobj);
   }
   if (save == 1) {
-    response = 0;
-
-    FILE *fp;
-    char buffer[BUFF_SIZE];
-    buffer[0] = '\0';
-
-    fp = popen(cmd, "r");
-    if (fp == NULL) {
-      printf("Failed to run command\n" );
-      return;
-    }
-
-    memset(buffer, '\0', sizeof(buffer));
-    fread(buffer, sizeof(char), BUFF_SIZE, fp);
-    pclose(fp);
-    cmd_notify(response, id, buffer);
-
+    save_and_notify(id, cmd);
   } else {
     response = system(cmd);
     cmd_notify(response, id, NULL);
