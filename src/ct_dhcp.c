@@ -10,11 +10,11 @@ void get_clients(struct dhcp_list **buf)
   char *line = NULL;
   size_t len = 0;
 
-  struct dhcp_list *ptr;
-  ptr = malloc(sizeof(struct dhcp_list));
+  /* struct dhcp_list *ptr; */
+  /* ptr = malloc(sizeof(struct dhcp_list)); */
 
-  ptr->next = NULL;
-  conductor = ptr;
+  /* ptr->next = NULL; */
+  /* conductor = ptr; */
 
   debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD %s", DHCP_LEASES);
   fp = fopen(DHCP_LEASES, "r");
@@ -25,26 +25,38 @@ void get_clients(struct dhcp_list **buf)
   char mask[5];
   ssize_t read;
 
+
+  char mac[100];
+  char ip[100];
+  char name[100];
+
   while ((read = getline(&line, &len, fp)) != -1) {
-    ptr->next = malloc(sizeof(struct dhcp_list));
-    if (ptr->next == NULL) break;
+    /* ptr->next = malloc(sizeof(struct dhcp_list)); */
+    /* if (ptr->next == NULL) break; */
 
     sscanf(line, "%s %s %s %s %s\n",
         created,
-        ptr->mac,
-        ptr->ip,
-        ptr->name,
+        mac,
+        ip,
+        name,
         mask);
 
-    ptr = ptr->next;
-    ptr->next = NULL;
+    /* sscanf(line, "%s %s %s %s %s\n", */
+    /*     created, */
+    /*     ptr->mac, */
+    /*     ptr->ip, */
+    /*     ptr->name, */
+    /*     mask); */
+
+    /* ptr = ptr->next; */
+    /* ptr->next = NULL; */
   }
   fclose(fp);
 
   if (line != NULL)
     free(line);
 
-  *buf = conductor;
+  /* *buf = conductor; */
 }
 
 const struct dhcp_ops dhcp_exec = {

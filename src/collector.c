@@ -520,35 +520,34 @@ void format_dhcp(json_object *jdhcp_array)
   dhcp = &dhcp_exec;
   dhcp->clients(&clients);
 
+  /* if (clients != NULL) { */
 
-  if (clients != NULL) {
+  /*   struct dhcp_list *holdMe = NULL; */
+  /*   struct dhcp_list *freeMe = clients; */
 
-    struct dhcp_list *holdMe = NULL;
-    struct dhcp_list *freeMe = clients;
+  /*   while (clients->next != NULL) { */
+  /*     json_object *jdhcp = json_object_new_object(); */
 
-    while (clients->next != NULL) {
-      json_object *jdhcp = json_object_new_object();
+  /*     json_object *jmac = json_object_new_string(clients->mac); */
+  /*     json_object_object_add(jdhcp, "mac", jmac); */
 
-      json_object *jmac = json_object_new_string(clients->mac);
-      json_object_object_add(jdhcp, "mac", jmac);
+  /*     json_object *jip = json_object_new_string(clients->ip); */
+  /*     json_object_object_add(jdhcp, "ip", jip); */
 
-      json_object *jip = json_object_new_string(clients->ip);
-      json_object_object_add(jdhcp, "ip", jip);
+  /*     json_object *jname = json_object_new_string(clients->name); */
+  /*     json_object_object_add(jdhcp, "name", jname); */
 
-      json_object *jname = json_object_new_string(clients->name);
-      json_object_object_add(jdhcp, "name", jname);
+  /*     json_object_array_add(jdhcp_array, jdhcp); */
 
-      json_object_array_add(jdhcp_array, jdhcp);
+  /*     clients = clients->next; */
+  /*   } */
 
-      clients = clients->next;
-    }
-
-    while(freeMe != NULL) {
-      holdMe = freeMe->next;
-      free(freeMe);
-      freeMe = holdMe;
-    }
-  }
+  /*   while(freeMe != NULL) { */
+  /*     holdMe = freeMe->next; */
+  /*     free(freeMe); */
+  /*     freeMe = holdMe; */
+  /*   } */
+  /* } */
 }
 
 void collect_data(int online)
