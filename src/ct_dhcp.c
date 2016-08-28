@@ -20,8 +20,8 @@ void get_clients(struct dhcp_list **buf)
   if(NULL == fp)
     return;
 
-  char created[10];
-  char mask[5];
+  char created[100];
+  char mask[100];
   ssize_t read;
 
 
