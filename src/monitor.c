@@ -161,8 +161,8 @@ void heartbeat()
 void monitor()
 {
   // remove this when not testing collector
-  online = 1;
-  collect_and_send_data(online);
+  /* online = 1; */
+  /* collect_and_send_data(online); */
   // remove this when not testing collector
 
   /* monitor_interface("eth0"); */
