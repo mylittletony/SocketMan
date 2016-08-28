@@ -650,9 +650,9 @@ void collect_data(int online)
   json_object *jcreated_at = json_object_new_int(now);
   json_object_object_add(jattr, "created_at", jcreated_at);
 
-  /* json_object *jdhcp_array = json_object_new_array(); */
-  /* format_dhcp(jdhcp_array); */
-  /* json_object_object_add(jobj, "dhcp", jdhcp_array); */
+  json_object *jdhcp_array = json_object_new_array();
+  format_dhcp(jdhcp_array);
+  json_object_object_add(jobj, "dhcp", jdhcp_array);
 
   json_object *jsplash_array = json_object_new_array();
   format_splash(jsplash_array);
