@@ -484,7 +484,6 @@ void format_splash(json_object *jsplash_array)
   struct splash_list *freeMe = clients;
 
   while (clients->next != NULL) {
-    debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: %s", clients->auth_state);
     json_object *jsplash = json_object_new_object();
 
     json_object *jmac = json_object_new_string(clients->mac);
