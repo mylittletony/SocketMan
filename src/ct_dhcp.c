@@ -24,23 +24,9 @@ void get_clients(struct dhcp_list **buf)
   char mask[100];
   ssize_t read;
 
-
-  /* char mac[100]; */
-  /* char ip[100]; */
-  /* char name[100]; */
-
   while ((read = getline(&line, &len, fp)) != -1) {
     ptr->next = malloc(sizeof(struct dhcp_list));
     if (ptr->next == NULL) break;
-
-    /* sscanf(line, "%d %s %s %s %s\n", */
-    /*     &created, */
-    /*     mac, */
-    /*     ip, */
-    /*     name, */
-    /*     mask); */
-
-    /* printf("MAC: %s %s %s\n", mac, ip, name); */
 
     sscanf(line, "%d %s %s %s %s\n",
         &created,
