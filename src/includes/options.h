@@ -1,9 +1,10 @@
 #ifndef OPTIONS_STRUCT
 #define OPTIONS_STRUCT
 struct _options {
-  char username[128];
-  char password[128];
+  char username[20];
+  char password[20];
   char topic[128];
+  char status_topic[128];
   char key[128];
   char config[128];
   char host[128];

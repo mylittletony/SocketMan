@@ -27,7 +27,6 @@ void parse_message(const char *msg)
   char id[100];
   char cmd[100];
 
-  int response;
   json_object *jobj = json_tokener_parse(msg);
 
   if (!is_error(jobj)) {
@@ -57,8 +56,7 @@ void parse_message(const char *msg)
     return;
   }
 
-  response = system(cmd);
-  cmd_notify(response, id, NULL);
+  cmd_notify(system(cmd), id, NULL);
 }
 
 void process_message(const char *msg) {

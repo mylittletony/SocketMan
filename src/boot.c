@@ -66,6 +66,8 @@ void *parse_config(char *buffer)
             strcpy(options.password, json_object_get_string(val));
           if (strcmp(key, "topic") == 0)
             strcpy(options.topic, json_object_get_string(val));
+          if (strcmp(key, "status_topic") == 0)
+            strcpy(options.status_topic, json_object_get_string(val));
           if (strcmp(key, "key") == 0)
             strcpy(options.key, json_object_get_string(val));
           if (strcmp(key, "host") == 0)

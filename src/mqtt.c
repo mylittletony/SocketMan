@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,18 +14,9 @@
 bool connected = false;
 time_t m0=0;
 
-/* char mac[17]; */
-
 int dial_mqtt();
 
-void status_topic(char *status, const char *topic) {
-  strcpy(status, topic);
-  strcat(status,"/");
-  /* strcat(status, wan_mac()); */
-}
-
 void main_topic(char * topic, const char *name, const char *key) {
-  debug("MAC: %s", options.mac);
   strcpy(topic, name);
   strcat(topic, "/");
   strcat(topic, key);
@@ -32,27 +24,10 @@ void main_topic(char * topic, const char *name, const char *key) {
   strcat(topic, options.mac);
 }
 
-// Why?
-/* void create_mqfifo(int a) */
-/* { */
-/*   FILE *fd; */
-/*   fd = fopen("/tmp/.mqfifo","w+"); */
-/*   if(a==10) */
-/*   { */
-/*     fprintf(fd,"%s","true"); */
-/*   } */
-/*   else */
-/*   { */
-/*     fprintf(fd,"%s","false"); */
-/*   } */
-/*   fclose(fd); */
-/* } */
-
 void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
 {
   if(!result) {
     connected = true;
-    /* create_mqfifo(10); */
 
     int k,n;
     k = strlen(options.key);
@@ -60,24 +35,13 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
     char topic[k+n+19];
     main_topic(topic, options.topic, options.key);
 
-    /* int x=strlen(credentials.topic_status); */
-    /* char status[x+19]; */
-    /* status_topic(status, credentials.topic_status); */
-
     options.qos = 0;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-    char *status = "not-implemented";
-    debug("Main topic is %s and status topic is %s", topic, status);
+    debug("Main topic is %s and status topic is %s", topic, options.status_topic);
 
-    /* mosquitto_publish(mosq, 0, status, 1, "1", 0, false); */
-    /* sleep(10); */
-    /* mosquitto_publish(mosq, 0, topic, 1, "zzsimon simon simon simon isims simon sim on simsimon sim ", 0, false); */
-  } else {
-    /* create_mqfifo(0); */
-    /* if (1) { */
-    /*   fprintf(stderr, "Connect failed\n"); */
-    /* } */
+    if (options.status_topic)
+      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 0, false);
   }
 }
 
@@ -94,11 +58,6 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
   if(message->payloadlen)
     process_message((const char*)message->payload);
 }
-
-/* mosq * */
-/* void publish(json_object *array) { */
-/*   /1* debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: %s", credentials); *1/ */
-/* } */
 
 void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos)
 {
@@ -153,10 +112,6 @@ int dial_mqtt() {
     exit(1);
   }
 
-  /* int x = strlen(options.topic_status); */
-  /* char status[x+19]; */
-  /* status_topic(status, credentials.topic_status); */
-
   if (options.tls) {
     debug("Connecting via encrypted channel");
     mosquitto_tls_opts_set(mosq,1,NULL,NULL);
@@ -174,7 +129,7 @@ int dial_mqtt() {
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
-  /* mosquitto_will_set(mosq, status, 1, "0", 0, false); */
+  mosquitto_will_set(mosq, "123123", 1, "0", 0, false);
 
   /* debug("HOST: %s User: %s, Pass: %s", options.host, options.username, options.password); */
   if(mosquitto_connect(mosq, options.host, options.port, keepalive)) {
