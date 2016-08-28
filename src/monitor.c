@@ -129,7 +129,7 @@ void restart_or_reboot()
 }
 
 void recover_connection() {
-  debug("CONNECTION RECOVERED!!!!!!!!!!!!!");
+  debug("CONNECTION RECOVERED!");
   delay = 5;
   went_offline = 0;
 }

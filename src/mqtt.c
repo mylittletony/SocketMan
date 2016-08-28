@@ -1,36 +1,19 @@
 #include <stdlib.h>
-#include <mosquitto.h>
-#include <syslog.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <json-c/json.h>
-#include <json-c/json.h>
 #include <stdio.h>
-#include <unistd.h>
-#include "collector.h"
-#include "mqtt.h"
-#include "helper.h"
-#include "json.h"
-/* #include "connections.h" */
-#include <stdlib.h>
-#include "options.h"
 #include <string.h>
 #include <stdio.h>
+#include <mosquitto.h>
+/* #include "mqtt.h" */
+#include "helper.h"
+#include "options.h"
 #include "dbg.h"
-#include "socketman.h"
-#include <wait.h>
-#include <sys/stat.h>
-#include <assert.h>
-#include <sys/mman.h>
-#include <fcntl.h>
 #include <time.h>
-#include <sys/time.h>
+#include <message.h>
 
 bool connected = false;
 time_t m0=0;
 
-/* char id[26]; */
-char mac[17];
+/* char mac[17]; */
 
 int dial_mqtt();
 
@@ -50,26 +33,26 @@ void main_topic(char * topic, const char *name, const char *key) {
 }
 
 // Why?
-void create_mqfifo(int a)
-{
-  FILE *fd;
-  fd = fopen("/tmp/.mqfifo","w+");
-  if(a==10)
-  {
-    fprintf(fd,"%s","true");
-  }
-  else
-  {
-    fprintf(fd,"%s","false");
-  }
-  fclose(fd);
-}
+/* void create_mqfifo(int a) */
+/* { */
+/*   FILE *fd; */
+/*   fd = fopen("/tmp/.mqfifo","w+"); */
+/*   if(a==10) */
+/*   { */
+/*     fprintf(fd,"%s","true"); */
+/*   } */
+/*   else */
+/*   { */
+/*     fprintf(fd,"%s","false"); */
+/*   } */
+/*   fclose(fd); */
+/* } */
 
 void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
 {
   if(!result) {
     connected = true;
-    create_mqfifo(10);
+    /* create_mqfifo(10); */
 
     int k,n;
     k = strlen(options.key);
@@ -84,37 +67,32 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
     options.qos = 0;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-    /* char *status = "not-implemented"; */
-    /* debug("Main topic is %s and status topic is %s", topic, status); */
+    char *status = "not-implemented";
+    debug("Main topic is %s and status topic is %s", topic, status);
 
     /* mosquitto_publish(mosq, 0, status, 1, "1", 0, false); */
     /* sleep(10); */
     /* mosquitto_publish(mosq, 0, topic, 1, "zzsimon simon simon simon isims simon sim on simsimon sim ", 0, false); */
   } else {
-    create_mqfifo(0);
-    if (1) {
-      fprintf(stderr, "Connect failed\n");
-    }
+    /* create_mqfifo(0); */
+    /* if (1) { */
+    /*   fprintf(stderr, "Connect failed\n"); */
+    /* } */
   }
 }
 
 void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
 {
 
-  if(message->payloadlen){
+  if (message->payloadlen) {
     /* printf("%s %s\n", message->topic, message->payload); */
-  }else{
+  } else {
     printf("%s (null)\n", message->topic);
   }
   fflush(stdout);
 
-  if(message->payloadlen) {
-    /* debug("received message %s\n", (const char*)message->payload); */
+  if(message->payloadlen)
     process_message((const char*)message->payload);
-    /* debug("Running CMD: %s", msg); */
-    /* free(msg); */
-    fflush(stdout);
-  }
 }
 
 /* mosq * */
@@ -140,7 +118,7 @@ void my_disconnect_callback()
 {
   connected = false;
   // Why?
-  create_mqfifo(0);
+  /* create_mqfifo(0); */
   debug("Disconnected from %s server", options.host);
 }
 
