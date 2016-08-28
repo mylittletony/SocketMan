@@ -33,7 +33,7 @@ void get_clients(struct dhcp_list **buf)
     /* ptr->next = malloc(sizeof(struct dhcp_list)); */
     /* if (ptr->next == NULL) break; */
 
-    sscanf(line, "%s %s %s %s %s\n",
+    sscanf(line, "%c %s %s %s %s\n",
         created,
         mac,
         ip,
