@@ -6,7 +6,6 @@
 
 void save_and_notify(char *id, char *cmd)
 {
-
   int response = 0;
 
   FILE *fp;
@@ -23,11 +22,10 @@ void save_and_notify(char *id, char *cmd)
     pclose(fp);
   }
   cmd_notify(response, id, buffer);
-
 }
 
-void parse_message(const char *msg) {
-
+void parse_message(const char *msg)
+{
   int save = 0;
   char id[100];
   char cmd[100];
@@ -59,10 +57,11 @@ void parse_message(const char *msg) {
   }
   if (save == 1) {
     save_and_notify(id, cmd);
-  } else {
-    response = system(cmd);
-    cmd_notify(response, id, NULL);
+    return;
   }
+
+  response = system(cmd);
+  cmd_notify(response, id, NULL);
 }
 
 void process_message(const char *msg) {
