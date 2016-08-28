@@ -20,7 +20,7 @@ void get_clients(struct dhcp_list **buf)
   if(NULL == fp)
     return;
 
-  char *created;
+  int created;
   char mask[100];
   ssize_t read;
 
@@ -33,8 +33,8 @@ void get_clients(struct dhcp_list **buf)
     /* ptr->next = malloc(sizeof(struct dhcp_list)); */
     /* if (ptr->next == NULL) break; */
 
-    sscanf(line, "%c %s %s %s %s\n",
-        created,
+    sscanf(line, "%d %s %s %s %s\n",
+        &created,
         mac,
         ip,
         name,
