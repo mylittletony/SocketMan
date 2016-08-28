@@ -16,8 +16,7 @@
 #include "utils.h"
 #include <ctype.h>
 
-time_t last_collect;
-/* int wait = 30; */
+time_t last_collect = 0;
 int hb_interval = 60;
 int collected;
 
@@ -33,8 +32,8 @@ struct radio_list
 int should_collect() {
   time_t now = time(NULL);
   int diff = now - last_collect;
-  if (diff >= hb_interval) {
-    last_collect = 0;
+  if (last_collect == 0 || diff >= hb_interval) {
+    last_collect = time(NULL);
     return 1;
   } else {
     debug("Running now for %d seconds", diff);
@@ -87,11 +86,10 @@ int do_curl(CURL *curl, char *url,
 
 int post(json_object *json) {
 
+  CURL *curl;
   char url[100];
   struct curl_slist *headers = NULL;
   append_url_token(options.url, options.token, url);
-
-  CURL *curl;
 
   curl_global_init( CURL_GLOBAL_ALL );
 
@@ -400,12 +398,12 @@ void run_interface_scan(json_object *jiface_array,
     iw->stations(e->ifname, buf_a, &len_a);
     for (ii = 0, xx = 1; ii < len_a; ii += sizeof(struct iw_stationlist_entry), xx++)
     {
-      debug("%d Stations Connected", xx-1);
       st = (struct iw_stationlist_entry *) &buf_a[ii];
       json_object *jstations = json_object_new_object();
       format_stations(e->ssid, e->ifname, st, jstations);
       json_object_array_add(jstations_array, jstations);
     }
+    debug("%d Stations Connected", xx-1);
 
     json_object *jssids = json_object_new_object();
     format_ssids(iw, e, jssids, len_a);
@@ -480,33 +478,35 @@ void format_splash(json_object *jsplash_array)
   splash = &splash_exec;
   splash->clients(&clients);
 
-  struct splash_list *holdMe = NULL;
-  struct splash_list *freeMe = clients;
+  if (clients != NULL) {
+    struct splash_list *holdMe = NULL;
+    struct splash_list *freeMe = clients;
 
-  while (clients->next != NULL) {
-    json_object *jsplash = json_object_new_object();
+    while (clients->next != NULL) {
+      json_object *jsplash = json_object_new_object();
 
-    json_object *jmac = json_object_new_string(clients->mac);
-    json_object_object_add(jsplash, "mac", jmac);
+      json_object *jmac = json_object_new_string(clients->mac);
+      json_object_object_add(jsplash, "mac", jmac);
 
-    json_object *jip = json_object_new_string(clients->ip);
-    json_object_object_add(jsplash, "ip", jip);
+      json_object *jip = json_object_new_string(clients->ip);
+      json_object_object_add(jsplash, "ip", jip);
 
-    json_object *jcstate = json_object_new_string(clients->client_state);
-    json_object_object_add(jsplash, "client_state", jcstate);
+      json_object *jcstate = json_object_new_string(clients->client_state);
+      json_object_object_add(jsplash, "client_state", jcstate);
 
-    json_object *jastate = json_object_new_string(clients->auth_state);
-    json_object_object_add(jsplash, "auth_state", jastate);
+      json_object *jastate = json_object_new_string(clients->auth_state);
+      json_object_object_add(jsplash, "auth_state", jastate);
 
-    json_object_array_add(jsplash_array, jsplash);
+      json_object_array_add(jsplash_array, jsplash);
 
-    clients = clients->next;
-  }
+      clients = clients->next;
+    }
 
-  while(freeMe != NULL) {
-    holdMe = freeMe->next;
-    free(freeMe);
-    freeMe = holdMe;
+    while(freeMe != NULL) {
+      holdMe = freeMe->next;
+      free(freeMe);
+      freeMe = holdMe;
+    }
   }
 }
 
@@ -663,6 +663,7 @@ void collect_data(int online)
   // MISSING!!!!!!!
   // INTERFACES
   // CAPS
+  // MQTT STATUS
 
   json_object_object_add(jobj, "device", jattr);
 

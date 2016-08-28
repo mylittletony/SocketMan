@@ -20,7 +20,7 @@ int delay = 5;
 int reboot_period = 60; // should be 600 and in the config
 // Config File //
 
-time_t last_collect, went_offline;
+time_t went_offline;
 int online, tried_backup;
 
 void restart_or_reboot();
@@ -169,8 +169,8 @@ void monitor()
   reset_vars();
   do
   {
-    if (last_collect == 0)
-      last_collect = time(NULL);
+    /* if (last_collect == 0) */
+    /*   last_collect = time(NULL); */
 
     route();
     online = 1;
@@ -178,4 +178,3 @@ void monitor()
   }
   while(1);
 }
-

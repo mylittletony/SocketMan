@@ -1,2 +1,1 @@
 void monitor();
-/* int online; */
