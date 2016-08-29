@@ -1,9 +1,6 @@
 #ifndef __CTIW_H_
 #define __CTIW_H_
 #include <stdbool.h>
-/* #include <ctype.h> */
-/* #include <stdio.h> */
-/* #include <stdlib.h> */
 
 #define ESSID_MAX_SIZE 32
 
