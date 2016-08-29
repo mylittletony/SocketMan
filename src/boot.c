@@ -139,7 +139,11 @@ void run_collector()
 
   int pid = fork();
   if (pid == 0) {
-    mqtt_connect();
+    do {
+      sleep(100);
+    }
+    while(1);
+    /* mqtt_connect(); */
   } else {
     parent = pid;
     monitor();
