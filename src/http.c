@@ -74,7 +74,7 @@ int do_curl(CURL *curl, char *url)
 void post_backup(CURL *curl)
 {
   if (strcmp(options.backup_url, "") != 0) {
-    char buff[100]; // should clear URL buff and use instead
+    char buff[255]; // should clear URL buff and use instead
     debug("Attempting to send to backup URL");
     append_url_token(options.backup_url, buff);
     do_curl(curl, buff);
