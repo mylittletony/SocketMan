@@ -83,6 +83,8 @@ void *parse_config(char *buffer)
             strcpy(options.backup_url, json_object_get_string(val));
           if (strcmp(key, "boot_url") == 0)
             strcpy(options.boot_url, json_object_get_string(val));
+          if (strcmp(key, "boot_cmd") == 0)
+            strcpy(options.boot_cmd, json_object_get_string(val));
           if (strcmp(key, "mac") == 0)
             strcpy(options.mac, json_object_get_string(val));
           if (strcmp(key, "mac_file") == 0)
@@ -99,10 +101,23 @@ void *parse_config(char *buffer)
   }
 }
 
+void boot_cmd()
+{
+  if (strcmp(options.boot_cmd, "0") != 0) {
+    FILE * fp = popen(options.boot_cmd, "r");
+    if ( fp == 0 ) {
+      fprintf(stderr, "Could not execute cmd\n");
+      return;
+    }
+    debug("Running boot CMD");
+    pclose(fp);
+  }
+}
+
 void pre_boot_cb()
 {
   send_boot_message();
-  // run sh
+  boot_cmd();
 }
 
 void initialised()
@@ -124,7 +139,7 @@ void run_collector()
 
   int pid = fork();
   if (pid == 0) {
-    /* mqtt_connect(); */
+    mqtt_connect();
   } else {
     parent = pid;
     monitor();
@@ -159,9 +174,6 @@ void sleepy() {
 
 void boot()
 {
-  /* Should send a post to a URL */
-  /* recover(); */
-  /* Should send a post to a URL */
   check_config();
   if (options.initialized)
     run_collector();
