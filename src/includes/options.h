@@ -10,6 +10,7 @@ struct _options {
   char mqtt_host[128];
   char url[128];
   char backup_url[128];
+  char boot_url[128];
   char mac[18];
   char cacrt[18];
   char mac_file[128];

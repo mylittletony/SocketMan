@@ -20,6 +20,7 @@
 #include "mqtt.h"
 #include "monitor.h"
 #include <json-c/json.h>
+#include "http.h"
 
 int parent;
 
@@ -80,6 +81,8 @@ void *parse_config(char *buffer)
             strcpy(options.url, json_object_get_string(val));
           if (strcmp(key, "backup_url") == 0)
             strcpy(options.backup_url, json_object_get_string(val));
+          if (strcmp(key, "boot_url") == 0)
+            strcpy(options.boot_url, json_object_get_string(val));
           if (strcmp(key, "mac") == 0)
             strcpy(options.mac, json_object_get_string(val));
           if (strcmp(key, "mac_file") == 0)
@@ -94,6 +97,12 @@ void *parse_config(char *buffer)
   else {
     debug("Invalid json in file");
   }
+}
+
+void pre_boot_cb()
+{
+  send_boot_message();
+  // run sh
 }
 
 void initialised()
@@ -111,11 +120,11 @@ void run_collector()
   /* int exit_status; */
 
   debug("Actually starting Socketman.");
+  pre_boot_cb();
 
   int pid = fork();
-
   if (pid == 0) {
-    mqtt_connect();
+    /* mqtt_connect(); */
   } else {
     parent = pid;
     monitor();

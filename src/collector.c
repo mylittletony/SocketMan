@@ -474,7 +474,7 @@ void format_dhcp(json_object *jdhcp_array)
 
 void collect_data(int online)
 {
-  debug("collecting the datas!");
+  debug("Collecting the device stats");
 
   char rx[21], tx[21], wan_ip[21];
   json_object *jobj = json_object_new_object();
