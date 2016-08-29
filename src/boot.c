@@ -135,15 +135,11 @@ void run_collector()
   /* int exit_status; */
 
   debug("Actually starting Socketman.");
-  /* pre_boot_cb(); */
+  pre_boot_cb();
 
   int pid = fork();
   if (pid == 0) {
-    do {
-      sleep(100);
-    }
-    while(1);
-    /* mqtt_connect(); */
+    mqtt_connect();
   } else {
     parent = pid;
     monitor();
