@@ -17,7 +17,7 @@
 #include "http.h"
 
 time_t last_collect = 0;
-int hb_interval = 60;
+/* int hb_interval = 60; */
 int collected;
 
 struct radio_list *curr, *head;
@@ -32,7 +32,7 @@ struct radio_list
 int should_collect() {
   time_t now = time(NULL);
   int diff = now - last_collect;
-  if (last_collect == 0 || diff >= hb_interval) {
+  if (last_collect == 0 || diff >= options.heartbeat) {
     last_collect = time(NULL);
     return 1;
   } else {

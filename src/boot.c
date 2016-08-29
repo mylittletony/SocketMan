@@ -49,6 +49,12 @@ void *parse_config(char *buffer)
             options.port = json_object_get_int(val);
           if (strcmp(key, "timeout") == 0)
             options.timeout = json_object_get_int(val);
+          if (strcmp(key, "monitor") == 0)
+            options.monitor = json_object_get_int(val);
+          if (strcmp(key, "heartbeat") == 0)
+            options.heartbeat = json_object_get_int(val);
+          if (strcmp(key, "reboot") == 0)
+            options.reboot = json_object_get_int(val);
           break;
         case json_type_null:
           break;
@@ -99,6 +105,20 @@ void *parse_config(char *buffer)
   else {
     debug("Invalid json in file");
   }
+
+  // Check and set some defaults vals
+
+  // How often to check the network connection
+  if (options.monitor < 5)
+    options.monitor = 30;
+
+  // How often to collect and send data
+  if (options.heartbeat < options.monitor)
+    options.heartbeat = options.monitor * 2;
+
+  // Reboot after N seconds offline
+  if (options.reboot < 600)
+    options.reboot = 600;
 }
 
 void boot_cmd()
@@ -131,10 +151,7 @@ void initialised()
 
 void run_collector()
 {
-  /* int status; */
-  /* int exit_status; */
-
-  debug("Actually starting Socketman.");
+  debug("Starting Socketman.");
   pre_boot_cb();
 
   int pid = fork();

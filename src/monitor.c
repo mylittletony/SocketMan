@@ -11,14 +11,14 @@
 #include "platform.h"
 #include "helper.h"
 
-#define MONITOR_INTERVAL 30
+// When offline, the interval for re-check
 #define OFFLINE_INTERVAL 10
+
+// Max time to wait before restarting the network
 #define MAX_INTERVAL 300
 
-// Config File //
+// The delay between connection checks when offline
 int delay = 5;
-int reboot_period = 60; // should be 600 and in the config
-// Config File //
 
 time_t went_offline;
 int online, tried_backup;
@@ -116,7 +116,7 @@ int network_restart() {
 
 void restart_or_reboot()
 {
-  if (reboot_period > 60 && (delay >= reboot_period)) {
+  if (options.reboot > 60 && (delay >= options.reboot)) {
     reboot();
     return;
   } else {
@@ -153,8 +153,8 @@ void heartbeat()
   backup_config();
   collect_and_send_data(online);
 
-  debug("Sleeping for %d seconds.", MONITOR_INTERVAL);
-  sleep(MONITOR_INTERVAL);
+  debug("Sleeping for %d seconds.", options.monitor);
+  sleep(options.monitor);
   monitor();
 }
 
@@ -165,13 +165,9 @@ void monitor()
   /* collect_and_send_data(online); */
   // remove this when not testing collector
 
-  /* monitor_interface("eth0"); */
   reset_vars();
   do
   {
-    /* if (last_collect == 0) */
-    /*   last_collect = time(NULL); */
-
     route();
     online = 1;
     run_monitor();

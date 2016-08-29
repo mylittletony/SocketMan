@@ -19,6 +19,9 @@ struct _options {
   int timeout;
   int port;
   int qos;
+  int heartbeat;
+  int reboot;
+  int monitor;
   int sleep;
   int no_scan;
   int no_survey;
