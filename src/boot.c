@@ -135,7 +135,7 @@ void run_collector()
   /* int exit_status; */
 
   debug("Actually starting Socketman.");
-  pre_boot_cb();
+  /* pre_boot_cb(); */
 
   int pid = fork();
   if (pid == 0) {
