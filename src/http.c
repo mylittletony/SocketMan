@@ -97,11 +97,11 @@ int post(json_object *json) {
   struct curl_slist *headers = NULL;
   headers = curl_slist_append(headers, "Accept: application/json");
   headers = curl_slist_append(headers, "Content-Type: application/json");
-  struct CurlResponse c;
-  init_chunk(&c);
+  /* struct CurlResponse c; */
+  /* init_chunk(&c); */
 
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  /* curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); */
+  /* curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c); */
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
@@ -115,10 +115,10 @@ int post(json_object *json) {
     post_backup(curl);
   }
 
-  if (c.memory) {
-    /* process_response(c.memory); */
-    free(c.memory);
-  }
+  /* if (c.memory) { */
+  /*   process_response(c.memory); */
+  /*   free(c.memory); */
+  /* } */
 
   curl_easy_cleanup(curl);
   curl_global_cleanup();
