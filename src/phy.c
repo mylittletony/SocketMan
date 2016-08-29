@@ -17,7 +17,7 @@
 #include "nl80211.h"
 #include <errno.h>
 #include "iw.h"
-#include "ct_iw.h"
+#include "phy.h"
 
 #define min(x, y) ((x) < (y)) ? (x) : (y)
 #define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
