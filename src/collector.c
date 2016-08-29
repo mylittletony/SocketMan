@@ -30,14 +30,14 @@ struct radio_list
 };
 
 int should_collect() {
-  time_t now = time(NULL);
-  int diff = now - last_collect;
-  if (last_collect == 0 || diff >= hb_interval) {
-    last_collect = time(NULL);
-    return 1;
-  } else {
-    debug("Running now for %d seconds", diff);
-  }
+  /* time_t now = time(NULL); */
+  /* int diff = now - last_collect; */
+  /* if (last_collect == 0 || diff >= hb_interval) { */
+  /*   last_collect = time(NULL); */
+  /*   return 1; */
+  /* } else { */
+  /*   debug("Running now for %d seconds", diff); */
+  /* } */
   return 0;
 }
 
