@@ -62,7 +62,7 @@ void validate_options()
       exit(EXIT_FAILURE);
     }
 
-    if (strlen(options.host) == 0) {
+    if (strlen(options.mqtt_host) == 0) {
       debug("MQTT host is required");
       exit(EXIT_FAILURE);
     }
@@ -101,7 +101,7 @@ int main( int argc,char **argv)
   debug("Starting Socketman");
 
   if (signal(SIGHUP, sig_handler) == SIG_ERR)
-    debug("n't catch SIGHUUUUUUUUUUUUUUP\n");
+    debug("n't catch SIGHUP\n");
   if (signal(SIGSEGV, sig_handler) == SIG_ERR)
     printf("n't catch SIGSEGV\n");
   if (signal(SIGINT, sig_handler) == SIG_ERR)
@@ -115,6 +115,7 @@ int main( int argc,char **argv)
   if (signal(SIGABRT,sig_handler) == SIG_ERR)
     printf("n't catch SIGABRT\n");
 
+  // Implement better args
   while(1)
   {
     static struct option long_options[]=
@@ -183,7 +184,7 @@ int main( int argc,char **argv)
         break;
 
       case 'H':
-        strcpy(options.host, optarg);
+        strcpy(options.mqtt_host, optarg);
         break;
 
       case 'l':

@@ -7,10 +7,11 @@ struct _options {
   char status_topic[128];
   char key[128];
   char config[128];
-  char host[128];
+  char mqtt_host[128];
   char url[128];
   char backup_url[128];
   char mac[18];
+  char cacrt[18];
   char mac_file[128];
   char *id;
   int timeout;

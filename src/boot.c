@@ -54,6 +54,8 @@ void *parse_config(char *buffer)
         case json_type_array:
           break;
         case json_type_boolean:
+          if (strcmp(key, "tls") == 0)
+            options.tls = 1;
           break;
         case json_type_object:
           break;
@@ -70,8 +72,10 @@ void *parse_config(char *buffer)
             strcpy(options.status_topic, json_object_get_string(val));
           if (strcmp(key, "key") == 0)
             strcpy(options.key, json_object_get_string(val));
-          if (strcmp(key, "host") == 0)
-            strcpy(options.host, json_object_get_string(val));
+          if (strcmp(key, "cacrt") == 0)
+            strcpy(options.cacrt, json_object_get_string(val));
+          if (strcmp(key, "mqtt_host") == 0)
+            strcpy(options.mqtt_host, json_object_get_string(val));
           if (strcmp(key, "url") == 0)
             strcpy(options.url, json_object_get_string(val));
           if (strcmp(key, "backup_url") == 0)

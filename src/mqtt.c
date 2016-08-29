@@ -78,7 +78,7 @@ void my_disconnect_callback()
   connected = false;
   // Why?
   /* create_mqfifo(0); */
-  debug("Disconnected from %s server", options.host);
+  debug("Disconnected from %s server", options.mqtt_host);
 }
 
 void mqtt_connect() {
@@ -103,23 +103,23 @@ int dial_mqtt() {
 
   mosquitto_lib_init();
   mosq = mosquitto_new(id, clean_session, NULL);
-  /* free(id); */
-
-  /* debug("xxx: %s", id); */
 
   if(!mosq){
     fprintf(stderr, "M Error: Out of memory.\n");
-    exit(1);
+    exit(1); // Or not, re-run
   }
 
   if (options.tls) {
     debug("Connecting via encrypted channel");
-    mosquitto_tls_opts_set(mosq,1,NULL,NULL);
+    if (strcmp(options.cacrt, "") == 0) {
+      debug("[ERROR] Missing ca file");
+    }
+    mosquitto_tls_opts_set(mosq, 1, NULL, NULL);
     if (options.psk) {
-      mosquitto_tls_set(mosq, "/etc/certs/cacrt.pem", "/etc/certs/", "/etc/certs/crt.pem", "/etc/certs/key.pem", NULL);
+      // Not in use
+      /* mosquitto_tls_set(mosq, "/tmp/cacrt.pem", "/tmp/", "/etc/certs/crt.pem", "/etc/certs/key.pem", NULL); */
     } else {
-      // Replace with the right directories //
-      mosquitto_tls_set(mosq, "/etc/certs/cacrt.pem", "/etc/certs/", "", "", NULL);
+      mosquitto_tls_set(mosq, options.cacrt, NULL, NULL, NULL, NULL);
     }
   }
 
@@ -129,11 +129,10 @@ int dial_mqtt() {
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
-  mosquitto_will_set(mosq, "123123", 1, "0", 0, false);
+  mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
 
-  /* debug("HOST: %s User: %s, Pass: %s", options.host, options.username, options.password); */
-  if(mosquitto_connect(mosq, options.host, options.port, keepalive)) {
-    debug("Unable to connect to %s server. Sleeping 5.", options.host);
+  if(mosquitto_connect(mosq, options.mqtt_host, options.port, keepalive)) {
+    debug("Unable to connect to %s server. Sleeping 5.", options.mqtt_host);
     mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
     return(0);
