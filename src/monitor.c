@@ -150,8 +150,8 @@ void reset_vars() {
 
 void heartbeat()
 {
-  /* backup_config(); */
-  /* collect_and_send_data(online); */
+  backup_config();
+  collect_and_send_data(online);
 
   debug("Sleeping for %d seconds.", MONITOR_INTERVAL);
   sleep(MONITOR_INTERVAL);
