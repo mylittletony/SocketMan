@@ -85,7 +85,7 @@ void post_backup(CURL *curl)
 int post(json_object *json) {
 
   CURL *curl;
-  char url[100];
+  char url[255];
   append_url_token(options.url, url);
 
   curl_global_init( CURL_GLOBAL_ALL );

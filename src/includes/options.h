@@ -26,7 +26,7 @@ struct _options {
   int psk; // Not the right name;
   int random;
   int initialized;
-  char token[255];
+  char token[128];
   char machine[100];
 } options;
 #endif
