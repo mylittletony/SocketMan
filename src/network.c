@@ -126,6 +126,7 @@ void parseRoutes(struct nlmsghdr *nlHdr,
 
   if (rtInfo->dstAddr.s_addr == 0) {
     sprintf(dr->if_name, (char *) rtInfo->ifName);
+    debug("sssssssssssssssssssssssssssssssss %s", (char *)inet_ntoa(rtInfo->gateWay));
     sprintf(dr->ip, (char *)inet_ntoa(rtInfo->gateWay));
   }
 
