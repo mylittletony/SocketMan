@@ -6,7 +6,7 @@ struct InterfaceStats
 };
 
 struct defaultRoute {
-  char ip[255];
+  char ip[24];
   char if_name[24];
 };
 
