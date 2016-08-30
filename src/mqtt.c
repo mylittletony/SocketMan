@@ -117,7 +117,12 @@ int dial_mqtt() {
     mosquitto_tls_opts_set(mosq, 1, NULL, NULL);
     if (options.psk) {
       // Not in use
-      /* mosquitto_tls_set(mosq, "/tmp/cacrt.pem", "/tmp/", "/etc/certs/crt.pem", "/etc/certs/key.pem", NULL); */
+      /* mosquitto_tls_set(
+       * mosq, "/tmp/cacrt.pem",
+       * "/tmp/",
+       * "/etc/certs/crt.pem",
+       * "/etc/certs/key.pem",
+       * NULL); */
     } else {
       mosquitto_tls_set(mosq, options.cacrt, NULL, NULL, NULL, NULL);
     }
