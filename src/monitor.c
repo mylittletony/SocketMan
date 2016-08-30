@@ -33,8 +33,7 @@ void recover_connection();
 
 void run_monitor()
 {
-  defaultRoute dr;
-  route(&dr);
+  struct defaultRoute dr = route();
 
   debug("Running the network monitor");
   if (strlen(dr.ip) != 0)

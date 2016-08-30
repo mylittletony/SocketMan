@@ -90,7 +90,7 @@ int readNlSock(int sockFd, char *bufPtr, int seqNum, int pId)
 
 void parseRoutes(struct nlmsghdr *nlHdr,
     struct route_info *rtInfo,
-    defaultRoute *dr
+    struct defaultRoute *dr
     )
 {
   struct rtmsg *rtMsg;
@@ -133,8 +133,10 @@ void parseRoutes(struct nlmsghdr *nlHdr,
   return;
 }
 
-int route(defaultRoute dr)
+struct defaultRoute route()
 {
+  struct defaultRoute dr;
+
   struct nlmsghdr *nlMsg;
   struct route_info *rtInfo;
   char msgBuf[BUFSIZE];
@@ -143,7 +145,7 @@ int route(defaultRoute dr)
 
   if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0) {
     debug("Socket creation failed, exiting.");
-    return 0;
+    return dr;
   }
 
   memset(msgBuf, 0, BUFSIZE);
@@ -159,15 +161,13 @@ int route(defaultRoute dr)
 
   if (send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0) {
     debug("Write To Socket Failed...\n");
-    return 0;
+    return dr;
   }
 
   if ((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0) {
     debug("Read From Socket Failed...\n");
-    return 0;
+    return dr;
   }
-
-  /* defaultRoute dr; */
 
   rtInfo = (struct route_info *) malloc(sizeof(struct route_info));
   for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
@@ -179,7 +179,7 @@ int route(defaultRoute dr)
 
   debug("XXXXXXXXXXXXX Default route: %s", dr.ip);
 
-  return 1;
+  return dr;
 }
 
 void restart_network() {
