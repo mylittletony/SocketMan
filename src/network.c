@@ -177,6 +177,8 @@ int route(defaultRoute dr)
   free(rtInfo);
   close(sock);
 
+  debug("XXXXXXXXXXXXX Default route: %s", dr.ip);
+
   return 1;
 }
 
