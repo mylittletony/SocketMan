@@ -5,7 +5,7 @@
 #include "platform.h"
 #include <json-c/json.h>
 
-void test(json_object *json_sessions, struct splash_list *ptr)
+void parse_splash_clients(json_object *json_sessions, struct splash_list *ptr)
 {
   int i;
   json_object *jobj, *array_obj, *state, *ip, *mac, *auth;
@@ -75,9 +75,10 @@ void get_splash_clients(struct splash_list **buf)
   pclose(fp);
 
   if (path[0] == '\0') {
+    free(ptr);
     return;
   } else {
-    test(json_sessions, ptr);
+    parse_splash_clients(json_sessions, ptr);
   }
 
   *buf = splash_conductor;
