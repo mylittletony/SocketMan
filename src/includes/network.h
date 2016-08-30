@@ -12,7 +12,7 @@ typedef struct {
 
 #endif
 
-int route();
+int route(defaultRoute dr);
 int monitor_interface();
 void interface_ip(char *interface, char *wan_ip);
 void interface_stats(char *interface, uint64_t *a, uint64_t *b);
