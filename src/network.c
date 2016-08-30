@@ -126,7 +126,6 @@ void parseRoutes(struct nlmsghdr *nlHdr,
 
   if (rtInfo->dstAddr.s_addr == 0) {
     sprintf(dr->if_name, (char *) rtInfo->ifName);
-    debug("sssssssssssssssssssssssssssssssss %s", (char *)inet_ntoa(rtInfo->gateWay));
     sprintf(dr->ip, (char *)inet_ntoa(rtInfo->gateWay));
   }
 
@@ -136,11 +135,9 @@ void parseRoutes(struct nlmsghdr *nlHdr,
 struct defaultRoute route()
 {
   struct defaultRoute dr;
-
   struct nlmsghdr *nlMsg;
   struct route_info *rtInfo;
   char msgBuf[BUFSIZE];
-
   int sock, len, msgSeq = 0;
 
   if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0) {
@@ -176,8 +173,6 @@ struct defaultRoute route()
   }
   free(rtInfo);
   close(sock);
-
-  debug("XXXXXXXXXXXXX Default route: %s", dr.ip);
 
   return dr;
 }
