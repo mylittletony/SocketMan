@@ -20,6 +20,12 @@ time_t last_collect = 0;
 /* int hb_interval = 60; */
 int collected;
 
+
+/* char gateway[255]; */
+
+
+
+
 struct radio_list *curr, *head;
 
 struct radio_list
@@ -480,14 +486,19 @@ void collect_data(int online)
   json_object *jobj = json_object_new_object();
   json_object *jattr = json_object_new_object();
 
-  if (strlen(gateway) == 0)
-    route();
+  /* if (strlen(gateway) == 0) */
+  /*   route(); */
 
-  interface_ip(wan_name, wan_ip);
+  defaultRoute dr;
+  route(&dr);
 
-  struct InterfaceStats istats = stats(wan_name);
-  sprintf(tx, "%" PRIu64, istats.tx);
-  sprintf(rx, "%" PRIu64, istats.rx);
+  if (strcmp(dr.if_name, "") != 0) {
+    interface_ip(dr.if_name, wan_ip);
+
+    struct InterfaceStats istats = stats(dr.if_name);
+    sprintf(tx, "%" PRIu64, istats.tx);
+    sprintf(rx, "%" PRIu64, istats.rx);
+  }
 
   char machine[100];
   machine[0] = '\0';
@@ -522,11 +533,15 @@ void collect_data(int online)
   json_object *jserial = json_object_new_string("simon says");
   json_object_object_add(jattr, "serial", jserial);
 
-  json_object *jwan_name = json_object_new_string(wan_name);
-  json_object_object_add(jattr, "wan_name", jwan_name);
+  if (strcmp(dr.if_name, "") != 0) {
+    json_object *jwan_name = json_object_new_string(dr.if_name);
+    json_object_object_add(jattr, "wan_name", jwan_name);
+  }
 
-  json_object *jgateway = json_object_new_string(gateway);
-  json_object_object_add(jattr, "wan_gateway", jgateway);
+  if (strcmp(dr.ip, "") != 0) {
+    json_object *jgateway = json_object_new_string(dr.ip);
+    json_object_object_add(jattr, "wan_gateway", jgateway);
+  }
 
   if (strlen(wan_ip) > 0) {
     json_object *jwanip = json_object_new_string(wan_ip);
@@ -610,6 +625,6 @@ void post_data() {
 
 void collect_and_send_data(int online)
 {
-  if (should_collect())
-    collect_data(online);
+  /* if (should_collect()) */
+  /*   collect_data(online); */
 }

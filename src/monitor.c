@@ -33,10 +33,13 @@ void recover_connection();
 
 void run_monitor()
 {
+  defaultRoute dr;
+  route(&dr);
+
   debug("Running the network monitor");
-  if (strlen(gateway) != 0)
+  if (strlen(dr.ip) != 0)
   {
-    debug("Default route: %s", gateway);
+    debug("Default route: %s", dr.ip);
     if ( connection_check() )
     {
       if (online) {
@@ -143,11 +146,6 @@ void backup_config()
   debug("Could not backup the network config!");
 }
 
-void reset_vars() {
-  if (strlen(gateway) > 0)
-    gateway[0] = '\0';
-}
-
 void heartbeat()
 {
   backup_config();
@@ -165,10 +163,8 @@ void monitor()
   /* collect_and_send_data(online); */
   // remove this when not testing collector
 
-  reset_vars();
   do
   {
-    route();
     online = 1;
     run_monitor();
   }

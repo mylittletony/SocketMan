@@ -82,12 +82,17 @@ void my_disconnect_callback()
 }
 
 void mqtt_connect() {
-  do
+  if (strcmp(options.mqtt_host, "") != 0)
   {
-    dial_mqtt();
-    sleep(5);
+    do
+    {
+      dial_mqtt();
+      sleep(5);
+    }
+    while(!connected);
   }
-  while(!connected);
+  debug("No MQTT host, skipping connect.");
+  return;
 }
 
 int dial_mqtt() {

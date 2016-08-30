@@ -1,4 +1,4 @@
-#define _GNU_SOURCE     /* To get defns of NI_MAXSERV and NI_MAXHOST */
+#define _GNU_SOURCE
 #define BUFSIZE 8192
 #define MYPROTO NETLINK_ROUTE
 #define MYMGRP RTMGRP_IPV4_ROUTE
@@ -28,20 +28,24 @@
 #include <ifaddrs.h>
 #include <netdb.h>
 #include <inttypes.h>
-/* #include <assert.h> */
 #include <netlink/cache.h>
 #include <netlink/route/link.h>
 #include "platform.h"
 #include "network.h"
-
-char gateway[255];
-char wan_name[5];
 
 struct route_info {
   struct in_addr dstAddr;
   struct in_addr srcAddr;
   struct in_addr gateWay;
   char ifName[IF_NAMESIZE];
+};
+
+struct interface {
+  int     index;
+  int     flags;      /* IFF_UP etc. */
+  long    speed;      /* Mbps; -1 is unknown */
+  int     duplex;     /* DUPLEX_FULL, DUPLEX_HALF, or unknown */
+  char    name[IF_NAMESIZE + 1];
 };
 
 // Much of this logic was taken from StackO and other linux forums
@@ -84,7 +88,10 @@ int readNlSock(int sockFd, char *bufPtr, int seqNum, int pId)
   return msgLen;
 }
 
-void parseRoutes(struct nlmsghdr *nlHdr, struct route_info *rtInfo)
+void parseRoutes(struct nlmsghdr *nlHdr,
+    struct route_info *rtInfo,
+    defaultRoute *dr
+    )
 {
   struct rtmsg *rtMsg;
   struct rtattr *rtAttr;
@@ -118,59 +125,58 @@ void parseRoutes(struct nlmsghdr *nlHdr, struct route_info *rtInfo)
   }
 
   if (rtInfo->dstAddr.s_addr == 0) {
-    sprintf(wan_name, (char *) rtInfo->ifName);
-    sprintf(gateway, (char *) inet_ntoa(rtInfo->gateWay));
+    sprintf(dr->if_name, (char *) rtInfo->ifName);
+    sprintf(dr->ip, (char *)inet_ntoa(rtInfo->gateWay));
   }
 
   return;
 }
 
-int route()
+int route(defaultRoute dr)
 {
   struct nlmsghdr *nlMsg;
-  /* struct rtmsg *rtMsg; */
   struct route_info *rtInfo;
   char msgBuf[BUFSIZE];
 
   int sock, len, msgSeq = 0;
 
-  /* Create Socket */
-  if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0)
-    debug("Socket Creation: ");
+  if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0) {
+    debug("Socket creation failed, exiting.");
+    return 0;
+  }
 
   memset(msgBuf, 0, BUFSIZE);
 
-  /* point the header and the msg structure pointers into the buffer */
   nlMsg = (struct nlmsghdr *) msgBuf;
-  /* rtMsg = (struct rtmsg *) NLMSG_DATA(nlMsg); */
 
-  /* Fill in the nlmsg header*/
-  nlMsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));  // Length of message.
-  nlMsg->nlmsg_type = RTM_GETROUTE;   // Get the routes from kernel routing table .
+  nlMsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
+  nlMsg->nlmsg_type = RTM_GETROUTE;
 
-  nlMsg->nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;    // The message is a request for dump.
-  nlMsg->nlmsg_seq = msgSeq++;    // Sequence of the message packet.
-  nlMsg->nlmsg_pid = getpid();    // PID of process sending the request.
+  nlMsg->nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;
+  nlMsg->nlmsg_seq = msgSeq++;
+  nlMsg->nlmsg_pid = getpid();
 
   if (send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0) {
     debug("Write To Socket Failed...\n");
-    return -1;
+    return 0;
   }
 
-  /* Read the response */
   if ((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0) {
     debug("Read From Socket Failed...\n");
-    return -1;
+    return 0;
   }
+
+  /* defaultRoute dr; */
+
   rtInfo = (struct route_info *) malloc(sizeof(struct route_info));
   for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
     memset(rtInfo, 0, sizeof(struct route_info));
-    parseRoutes(nlMsg, rtInfo);
+    parseRoutes(nlMsg, rtInfo, &dr);
   }
   free(rtInfo);
   close(sock);
 
-  return 0;
+  return 1;
 }
 
 void restart_network() {
@@ -179,6 +185,7 @@ void restart_network() {
   if (rc == 0) {
     system("/etc/init.d/network restart");
   } else {
+    /* Not implemented */
     int rc = strcmp(OS, "LINUX");
     if (rc == 0) {
       system("/etc/init.d/network restart");
@@ -186,20 +193,11 @@ void restart_network() {
   }
 }
 
-struct interface {
-  int     index;
-  int     flags;      /* IFF_UP etc. */
-  long    speed;      /* Mbps; -1 is unknown */
-  int     duplex;     /* DUPLEX_FULL, DUPLEX_HALF, or unknown */
-  char    name[IF_NAMESIZE + 1];
-};
-
 static int get_interface_common(const int fd, struct ifreq *const ifr, struct interface *const info)
 {
   struct ethtool_cmd  cmd;
   int                 result;
 
-  /* Interface flags. */
   if (ioctl(fd, SIOCGIFFLAGS, ifr) == -1)
     info->flags = 0;
   else
@@ -208,13 +206,11 @@ static int get_interface_common(const int fd, struct ifreq *const ifr, struct in
   ifr->ifr_data = (void *)&cmd;
   cmd.cmd = ETHTOOL_GSET; /* "Get settings" */
   if (ioctl(fd, SIOCETHTOOL, ifr) == -1) {
-    /* Unknown */
     info->speed = -1L;
     info->duplex = DUPLEX_UNKNOWN;
   } else {
     info->speed = ethtool_cmd_speed(&cmd);
     info->duplex = cmd.duplex;
-    debug("sssssssss: %s", cmd);
   }
 
   do {
@@ -412,7 +408,7 @@ static int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 void interface_ip(char *interface, char *wan_ip)
 {
   struct ifaddrs *ifaddr, *ifa;
-  int family, s, n;
+  int family, n;
   struct sockaddr_in *sa;
   char *addr;
 
@@ -445,7 +441,7 @@ struct InterfaceStats stats(char *interface)
 {
   struct rtnl_link *link;
   struct nl_sock *socket;
-  uint64_t kbytes_in, kbytes_out, packets_in, packets_out, rxerrors, txerrors;
+  uint64_t kbytes_in, kbytes_out, rxerrors, txerrors;
 
   socket = nl_socket_alloc();
   nl_connect(socket, NETLINK_ROUTE);
