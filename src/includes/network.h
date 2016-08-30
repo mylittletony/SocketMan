@@ -6,7 +6,7 @@ struct InterfaceStats
 };
 
 typedef struct {
-  char ip[128];
+  char ip[255];
   char if_name[24];
 } defaultRoute;
 
