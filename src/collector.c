@@ -295,8 +295,6 @@ void run_interface_scan(json_object *jiface_array,
   head = NULL;
   curr = NULL;
 
-  int scan = 0;
-
   int len = 0;
   int x, i, ii, len_a, xx;
   char ssids[1024];
@@ -315,7 +313,7 @@ void run_interface_scan(json_object *jiface_array,
   {
     e = (struct iw_ssid_entry *) &ssids[i];
 
-    printf("Collecting Data for SSID %s (phy %d)\n", e->ifname, e->phy);
+    /* printf("Collecting Data for SSID %s (phy %d)\n", e->ifname, e->phy); */
 
     iw->stations(e->ifname, buf_a, &len_a);
     for (ii = 0, xx = 1; ii < len_a; ii += sizeof(struct iw_stationlist_entry), xx++)
@@ -325,19 +323,19 @@ void run_interface_scan(json_object *jiface_array,
       format_stations(e->ssid, e->ifname, st, jstations);
       json_object_array_add(jstations_array, jstations);
     }
-    debug("%d Stations Connected", xx-1);
+    debug("%d Stations Connected to %d", xx-1, e->ifname);
 
     json_object *jssids = json_object_new_object();
     format_ssids(iw, e, jssids, len_a);
     json_object_array_add(jiface_array, jssids);
 
     int ret = strcmp(e->ifname, "mon0");
-    if (ret != 0 && scan)
+    if (ret != 0 && !options.no_survey)
       add_to_list(e);
   }
 
   // Needs scan logic built in
-  if (scan) {
+  if (!options.no_survey) {
     int alen = 0;
     int len_s;
     char buf_s[1024];
