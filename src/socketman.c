@@ -34,12 +34,12 @@
 int verbose_flag;
 
 void sig_handler(int signo) {
-  /* kill(parent, SIGTERM); */
-  /* kill(0, SIGTERM); */
-  /* debug("received  EXIT or KILL signal going to exit \n"); */
-  /* openlog("Socketman", LOG_PID|LOG_CONS, LOG_USER); */
-  /* syslog(LOG_INFO, "Received signal for pause or kill now "); */
-  /* closelog(); */
+  kill(parent, SIGTERM);
+  kill(0, SIGTERM);
+  debug("received  EXIT or KILL signal going to exit \n");
+  openlog("Socketman", LOG_PID|LOG_CONS, LOG_USER);
+  syslog(LOG_INFO, "Received signal for pause or kill now ");
+  closelog();
   exit(0);
 }
 
