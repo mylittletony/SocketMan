@@ -21,6 +21,7 @@
 #include "monitor.h"
 #include <json-c/json.h>
 #include "http.h"
+#include <pthread.h>
 
 int parent;
 
@@ -155,18 +156,52 @@ void initialised()
   }
 }
 
+void *inc_x(void *x_void_ptr)
+{
+  /* sleep(10); */
+  /* debug("EXITS"); */
+  /* exit(1); */
+  monitor();
+  return NULL;
+}
+
 void run_collector()
 {
   debug("Starting Socketman.");
   pre_boot_cb();
 
-  int pid = fork();
-  if (pid == 0) {
-    mqtt_connect();
-  } else {
-    parent = pid;
-    monitor();
-  };
+  int x = 0, y = 0;
+
+  pthread_t inc_x_thread;
+
+  if(pthread_create(&inc_x_thread, NULL, inc_x, NULL)) {
+    fprintf(stderr, "Error creating thread\n");
+    return;
+  }
+
+  /* if(pthread_join(inc_x_thread, NULL)) { */
+
+  /* } */
+
+  /* x = 1; */
+  /* pthread_cancel(inc_x_thread); */
+  mqtt_connect();
+  /* while(1) { */
+  /*   mqtt_connect(); */
+  /*   monitor(); */
+    /* printf("Ci %d running...\n", getpid()); */
+    /* sleep(2); */
+  /* } */
+
+  return;
+
+  /* int pid = fork(); */
+  /* if (pid == 0) { */
+  /*   mqtt_connect(); */
+  /* } else { */
+  /*   parent = pid; */
+  /*   monitor(); */
+  /* }; */
 }
 
 void check_config()
