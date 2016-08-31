@@ -336,16 +336,16 @@ void run_interface_scan(json_object *jiface_array,
 
   // Needs scan logic built in
   if (!options.no_survey) {
-    /* int alen = 0; */
-    /* int len_s; */
-    /* char buf_s[1024]; */
-    /* static int myArray[2]; */
-    /* struct radio_list *ptr = head; */
-    /* struct iw_scanlist_entry *sc; */
-    /* i = 0, x = 0; */
+    int alen = 0;
+    int len_s;
+    char buf_s[1024];
+    static int myArray[2];
+    struct radio_list *ptr = head;
+    struct iw_scanlist_entry *sc;
+    i = 0, x = 0;
 
-    /* struct radio_list *holdMe = NULL; */
-    /* struct radio_list *freeMe = ptr; */
+    struct radio_list *holdMe = NULL;
+    struct radio_list *freeMe = ptr;
 
     /* while(ptr != NULL) */
     /* { */
