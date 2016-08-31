@@ -78,21 +78,17 @@ void process_response(char *msg)
     return;
 
   int i = json_object_get_string_len(jcmd);
-  if (i>0) {
-
-    char cmd[i+1];
-    cmd[0] = '\0';
-    strcpy(cmd, json_object_get_string(jcmd));
-
-    if (cmd[0] != '\0') {
-      FILE * fp = popen(cmd, "r");
-      if ( fp == 0 ) {
-        fprintf(stderr, "Could not execute cmd\n");
-        return;
-      }
-      debug("Running response CMD");
-      pclose(fp);
-    }
-  }
+  char cmd[i+1];
+  cmd[0] = '\0';
+  strcpy(cmd, json_object_get_string(jcmd));
   json_object_put(jobj);
+  if (cmd[0] != '\0') {
+    FILE * fp = popen(cmd, "r");
+    if ( fp == 0 ) {
+      fprintf(stderr, "Could not execute cmd\n");
+      return;
+    }
+    debug("Running response CMD");
+    pclose(fp);
+  }
 }
