@@ -142,7 +142,7 @@ int dial_mqtt() {
   mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
 
   if(mosquitto_connect(mosq, options.mqtt_host, options.port, keepalive)) {
-    debug("Unable to connect to %s server. Sleeping 5.", options.mqtt_host);
+    debug("Unable to connect to %s. Sleeping 5.", options.mqtt_host);
     mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
     return(0);

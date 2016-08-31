@@ -10,11 +10,6 @@ Full build instructions will follow. It currently runs on Debian, Ubuntu and Ope
 
 **TODO**
 
-- Collect DHCP entries
-- Collect captive portal connections
-- Process inbound commands
-- Run program on boot
-- Run cURL on boot
 - Set periodic scan
 - Cache and send json
 - Implement protocol buffers
