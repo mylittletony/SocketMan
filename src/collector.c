@@ -364,6 +364,7 @@ void run_interface_scan(json_object *jiface_array,
           }
         }
       }
+      debug("HAY:  sssssssssssssssssssssss");
       ptr = ptr->next;
     }
 
