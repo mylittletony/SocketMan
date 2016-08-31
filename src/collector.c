@@ -350,10 +350,10 @@ void run_interface_scan(json_object *jiface_array,
     while(ptr != NULL)
     {
       printf("Scanning on %s\n", ptr->ifname);
-    /*   if (!in_array(ptr->val, myArray, 2)) { */
-    /*     myArray[alen] = ptr->val; */
-    /*     alen++; */
-    /*     if(iw->scan(ptr->ifname, buf_s, &len_s)) { */
+      if (!in_array(ptr->val, myArray, 2)) {
+        myArray[alen] = ptr->val;
+        alen++;
+        if(iw->scan(ptr->ifname, buf_s, &len_s)) {
     /*       for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++) */
     /*       { */
     /*         sc = (struct iw_scanlist_entry *) &buf_s[i]; */
@@ -361,8 +361,8 @@ void run_interface_scan(json_object *jiface_array,
     /*         format_scan(sc, jscan); */
     /*         json_object_array_add(jscan_array, jscan); */
     /*       } */
-    /*     } */
-    /*   } */
+        }
+      }
       ptr = ptr->next;
     }
 
