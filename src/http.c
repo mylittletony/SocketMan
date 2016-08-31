@@ -112,11 +112,11 @@ int post(json_object *json) {
   if(do_curl(curl, url) == 0) {
     debug("Could not connect to %s, trying backup.", url);
     post_backup(curl);
-  }
-
-  if (c.memory) {
-    process_response(c.memory);
-    free(c.memory);
+  } else {
+    if (c.memory) {
+      process_response(c.memory);
+      free(c.memory);
+    }
   }
 
   curl_easy_cleanup(curl);

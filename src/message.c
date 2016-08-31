@@ -65,41 +65,34 @@ void process_message(const char *msg) {
 
 void process_response(char *msg)
 {
-  char cmd[1000];
-  cmd[0] = '\0';
   json_object *jobj;
 
   jobj = json_tokener_parse(msg);
   if (is_error(jobj))
     return;
 
-  enum json_type type;
-  json_object_object_foreach(jobj, key, val) {
-    type = json_object_get_type(val);
-    switch(type) {
-      case json_type_string:
-        if (strcmp(key, "cmd") == 0) {
-          strcpy(cmd, json_object_get_string(val));
-          break;
-        }
-      case json_type_null:
-      case json_type_int:
-      case json_type_object:
-      case json_type_double:
-      case json_type_boolean:
-      case json_type_array:
-        break;
+  json_object *jcmd;
+  json_object_object_get_ex(jobj, "cmd", &jcmd);
+
+  if (jcmd == NULL)
+    return;
+
+  int i = json_object_get_string_len(jcmd);
+  if (i>0) {
+
+    char cmd[i+1];
+    cmd[0] = '\0';
+    strcpy(cmd, json_object_get_string(jcmd));
+
+    if (cmd[0] != '\0') {
+      FILE * fp = popen(cmd, "r");
+      if ( fp == 0 ) {
+        fprintf(stderr, "Could not execute cmd\n");
+        return;
+      }
+      debug("Running response CMD");
+      pclose(fp);
     }
   }
   json_object_put(jobj);
-
-  if (cmd[0] != '\0') {
-    FILE * fp = popen(cmd, "r");
-    if ( fp == 0 ) {
-      fprintf(stderr, "Could not execute cmd\n");
-      return;
-    }
-    debug("Running response CMD");
-    pclose(fp);
-  }
 }
