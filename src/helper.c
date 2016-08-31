@@ -104,4 +104,3 @@ int in_array(int val, int *arr, int size){
   }
   return 0;
 }
-
