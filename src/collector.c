@@ -350,9 +350,9 @@ void run_interface_scan(json_object *jiface_array,
     while(ptr != NULL)
     {
       printf("Scanning on %s\n", ptr->ifname);
-      if (!in_array(ptr->val, myArray, 2)) {
-        myArray[alen] = ptr->val;
-        alen++;
+      /* if (!in_array(ptr->val, myArray, 2)) { */
+      /*   myArray[alen] = ptr->val; */
+      /*   alen++; */
         if(iw->scan("wlan0", buf_s, &len_s)) {
     /*       for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++) */
     /*       { */
@@ -362,8 +362,8 @@ void run_interface_scan(json_object *jiface_array,
     /*         json_object_array_add(jscan_array, jscan); */
     /*       } */
         }
-      }
-      ptr = ptr->next;
+      /* } */
+      /* ptr = ptr->next; */
     }
 
     /* while(freeMe != NULL) { */
