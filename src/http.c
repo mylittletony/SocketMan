@@ -46,12 +46,10 @@ size_t write_data(void *contents, size_t size, size_t nmemb, void *userp)
 
 char append_url_token(char *url, char *buf)
 {
-  if (strcmp(url, "") != 0) {
-    strcpy(buf, url);
-    if (strcmp(options.token, "") != 0) {
-      strcat(buf, "?access_token=");
-      strcat(buf, options.token);
-    }
+  strcpy(buf, url);
+  if (strcmp(options.token, "") != 0) {
+    strcat(buf, "?access_token=");
+    strcat(buf, options.token);
   }
 }
 
@@ -84,6 +82,7 @@ void post_backup(CURL *curl)
 
 int post(json_object *json) {
 
+  if (strcmp(options.url, "") != 0) {
   CURL *curl;
   char url[255];
   append_url_token(options.url, url);
@@ -125,6 +124,10 @@ int post(json_object *json) {
   curl_slist_free_all(headers);
 
   return 1;
+  } else {
+    debug("Not sending data, invalid URL");
+    return 0;
+  }
 }
 
 void send_boot_message()
