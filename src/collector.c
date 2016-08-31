@@ -336,43 +336,43 @@ void run_interface_scan(json_object *jiface_array,
 
   // Needs scan logic built in
   if (!options.no_survey) {
-    int alen = 0;
-    int len_s;
-    char buf_s[1024];
-    static int myArray[2];
-    struct radio_list *ptr = head;
-    struct iw_scanlist_entry *sc;
-    i = 0, x = 0;
+    /* int alen = 0; */
+    /* int len_s; */
+    /* char buf_s[1024]; */
+    /* static int myArray[2]; */
+    /* struct radio_list *ptr = head; */
+    /* struct iw_scanlist_entry *sc; */
+    /* i = 0, x = 0; */
 
-    struct radio_list *holdMe = NULL;
-    struct radio_list *freeMe = ptr;
+    /* struct radio_list *holdMe = NULL; */
+    /* struct radio_list *freeMe = ptr; */
 
-    while(ptr != NULL)
-    {
-      printf("Scanning on %s\n", ptr->ifname);
-      if (!in_array(ptr->val, myArray, 2)) {
-        myArray[alen] = ptr->val;
-        alen++;
-        if(iw->scan(ptr->ifname, buf_s, &len_s)) {
-          for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
-          {
-            sc = (struct iw_scanlist_entry *) &buf_s[i];
-            json_object *jscan = json_object_new_object();
-            format_scan(sc, jscan);
-            json_object_array_add(jscan_array, jscan);
-          }
-        }
-      }
-      ptr = ptr->next;
-    }
+    /* while(ptr != NULL) */
+    /* { */
+    /*   printf("Scanning on %s\n", ptr->ifname); */
+    /*   if (!in_array(ptr->val, myArray, 2)) { */
+    /*     myArray[alen] = ptr->val; */
+    /*     alen++; */
+    /*     if(iw->scan(ptr->ifname, buf_s, &len_s)) { */
+    /*       for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++) */
+    /*       { */
+    /*         sc = (struct iw_scanlist_entry *) &buf_s[i]; */
+    /*         json_object *jscan = json_object_new_object(); */
+    /*         format_scan(sc, jscan); */
+    /*         json_object_array_add(jscan_array, jscan); */
+    /*       } */
+    /*     } */
+    /*   } */
+    /*   ptr = ptr->next; */
+    /* } */
 
-    while(freeMe != NULL) {
-      debug("Should be freed");
-      holdMe = freeMe->next;
-      free(freeMe);
-      freeMe = holdMe;
-    }
-    free(ptr);
+    /* while(freeMe != NULL) { */
+    /*   debug("Should be freed"); */
+    /*   holdMe = freeMe->next; */
+    /*   free(freeMe); */
+    /*   freeMe = holdMe; */
+    /* } */
+    /* free(ptr); */
   }
 
   if (0) { // Not implemented
