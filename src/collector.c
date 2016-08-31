@@ -323,7 +323,7 @@ void run_interface_scan(json_object *jiface_array,
       format_stations(e->ssid, e->ifname, st, jstations);
       json_object_array_add(jstations_array, jstations);
     }
-    debug("%d Stations Connected to %d", xx-1, e->ifname);
+    debug("%d Stations Connected to %s", xx-1, e->ifname);
 
     json_object *jssids = json_object_new_object();
     format_ssids(iw, e, jssids, len_a);
@@ -347,9 +347,9 @@ void run_interface_scan(json_object *jiface_array,
     struct radio_list *holdMe = NULL;
     struct radio_list *freeMe = ptr;
 
-    /* while(ptr != NULL) */
-    /* { */
-    /*   printf("Scanning on %s\n", ptr->ifname); */
+    while(ptr != NULL)
+    {
+      printf("Scanning on %s\n", ptr->ifname);
     /*   if (!in_array(ptr->val, myArray, 2)) { */
     /*     myArray[alen] = ptr->val; */
     /*     alen++; */
@@ -363,8 +363,8 @@ void run_interface_scan(json_object *jiface_array,
     /*       } */
     /*     } */
     /*   } */
-    /*   ptr = ptr->next; */
-    /* } */
+      ptr = ptr->next;
+    }
 
     /* while(freeMe != NULL) { */
     /*   debug("Should be freed"); */
