@@ -347,9 +347,9 @@ void run_interface_scan(json_object *jiface_array,
     struct radio_list *holdMe = NULL;
     struct radio_list *freeMe = ptr;
 
-    while(ptr != NULL)
-    {
-      printf("Scanning on %s\n", ptr->ifname);
+    /* while(ptr != NULL) */
+    /* { */
+      /* printf("Scanning on %s\n", ptr->ifname); */
       /* if (!in_array(ptr->val, myArray, 2)) { */
       /*   myArray[alen] = ptr->val; */
       /*   alen++; */
@@ -364,7 +364,7 @@ void run_interface_scan(json_object *jiface_array,
         }
       /* } */
       /* ptr = ptr->next; */
-    }
+    /* } */
 
     /* while(freeMe != NULL) { */
     /*   debug("Should be freed"); */
