@@ -40,7 +40,7 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
 
     debug("Main topic is %s and status topic is %s", topic, options.status_topic);
 
-    if (options.status_topic)
+    if (strcmp(options.status_topic, "") != 0)
       mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 0, false);
   }
 }
@@ -139,7 +139,9 @@ int dial_mqtt() {
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
-  mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
+
+  if (strcmp(options.status_topic, "") != 0)
+    mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
 
   if(mosquitto_connect(mosq, options.mqtt_host, options.port, keepalive)) {
     debug("Unable to connect to %s. Sleeping 5.", options.mqtt_host);

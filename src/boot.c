@@ -75,8 +75,6 @@ void *parse_config(char *buffer)
             strcpy(options.password, json_object_get_string(val));
           if (strcmp(key, "topic") == 0)
             strcpy(options.topic, json_object_get_string(val));
-          if (strcmp(key, "status_topic") == 0)
-            strcpy(options.status_topic, json_object_get_string(val));
           if (strcmp(key, "key") == 0)
             strcpy(options.key, json_object_get_string(val));
           if (strcmp(key, "cacrt") == 0)
@@ -97,6 +95,9 @@ void *parse_config(char *buffer)
             strcpy(options.mac_file, json_object_get_string(val));
           if (strcmp(key, "token") == 0)
             strcpy(options.token, json_object_get_string(val));
+          if (strcmp(key, "status_topic") == 0) {
+            strcpy(options.status_topic, json_object_get_string(val));
+          }
           break;
       }
     }
@@ -119,6 +120,11 @@ void *parse_config(char *buffer)
   // Reboot after N seconds offline
   if (options.reboot < 600)
     options.reboot = 600;
+
+  if (strcmp(options.status_topic, "") != 0) {
+    strcat(options.status_topic, "/");
+    strcat(options.status_topic, options.mac);
+  }
 }
 
 void boot_cmd()
