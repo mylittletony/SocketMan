@@ -1189,7 +1189,7 @@ static int get_scan(struct nl_msg *msg, void *arg)
     if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
       nl80211_info_elements(bss, sl->s);
 
-    debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX %d", sl->s->channel);
     sl->s++;
     sl->len++;
   }
