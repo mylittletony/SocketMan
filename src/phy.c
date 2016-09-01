@@ -1153,8 +1153,8 @@ static int get_scan(struct nl_msg *msg, void *arg)
 
   if (bss[NL80211_BSS_BSSID]) {
 
-    memset(sl->s, 0, sizeof(*sl->s));
-    mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID]));
+    /* memset(sl->s, 0, sizeof(*sl->s)); */
+    /* mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID])); */
 
     /* memcpy(sl->s->mac, nla_data(bss[NL80211_BSS_BSSID]), 6); */
 
