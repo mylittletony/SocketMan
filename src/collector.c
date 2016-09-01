@@ -354,7 +354,7 @@ void run_interface_scan(json_object *jiface_array,
       /*   alen++; */
       /*   printf("Scanning on %s %d\n", ptr->ifname, ptr->val); */
         len_s = 0;
-        char buf_s[1024];
+        char buf_s[4096];
         if(iw->scan("wlan1-2", buf_s, &len_s)) {
           debug("DDDDDDDDDDDDDDDDDDDDD %d", len_s);
           for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
