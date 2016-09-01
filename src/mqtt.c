@@ -81,7 +81,6 @@ void mqtt_connect() {
     int rc = dial_mqtt();
 
     if (rc) {
-      debug("Srtartnglasdkjflaskjdflaskdjflaskdjflaksdjflaksdjflaksdjf %d", rc);
       pthread_t conn_thread;
       if(pthread_create(&conn_thread, NULL, inc_x, NULL)) {
         fprintf(stderr, "Error creating thread\n");
@@ -159,6 +158,8 @@ int dial_mqtt()
     mosquitto_lib_cleanup();
     return(rc);
   }
+
+  debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
   rc = mosquitto_loop_start(mosq);
 
