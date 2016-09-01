@@ -359,7 +359,7 @@ void run_interface_scan(json_object *jiface_array,
           debug("DDDDDDDDDDDDDDDDDDDDD %d", len_s);
           for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
           {
-            sc = (struct iw_scanlist_entry *) &buf_s[i];
+            /* sc = (struct iw_scanlist_entry *) &buf_s[i]; */
             /* debug("s: %s", sc->channel); */
             /* json_object *jscan = json_object_new_object(); */
             /* format_scan(sc, jscan); */
