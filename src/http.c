@@ -83,47 +83,50 @@ void post_backup(CURL *curl)
 int post(json_object *json) {
 
   if (strcmp(options.url, "") != 0) {
-  CURL *curl;
-  char url[255];
-  append_url_token(options.url, url);
+    CURL *curl;
+    char url[255];
+    append_url_token(options.url, url);
 
-  curl_global_init( CURL_GLOBAL_ALL );
+    curl_global_init( CURL_GLOBAL_ALL );
 
-  curl = curl_easy_init();
-  if (!curl)
-    return 0;
+    curl = curl_easy_init();
+    if (!curl)
+      return 0;
 
-  struct curl_slist *headers = NULL;
-  headers = curl_slist_append(headers, "Accept: application/json");
-  headers = curl_slist_append(headers, "Content-Type: application/json");
-  struct CurlResponse c;
-  init_chunk(&c);
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Accept: application/json");
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    struct CurlResponse c;
+    init_chunk(&c);
 
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
-  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-  curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
-  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-  if(do_curl(curl, url) == 0) {
-    debug("Could not connect to %s, trying backup.", url);
-    post_backup(curl);
-  } else {
-    if (c.memory) {
-      process_response(c.memory);
-      free(c.memory);
+    if(do_curl(curl, url) == 0) {
+      debug("Could not connect to %s, trying backup.", url);
+      post_backup(curl);
+    } else {
+      if (c.memory) {
+        process_response(c.memory);
+        free(c.memory);
+      }
     }
-  }
 
-  curl_easy_cleanup(curl);
-  curl_global_cleanup();
-  curl_slist_free_all(headers);
+    if (c.memory)
+      free(c.memory);
 
-  return 1;
+    curl_easy_cleanup(curl);
+    curl_global_cleanup();
+    curl_slist_free_all(headers);
+
+    return 1;
   } else {
     debug("Not sending data, invalid URL");
     return 0;
