@@ -1123,71 +1123,71 @@ static int get_scan(struct nl_msg *msg, void *arg)
   struct nl80211_scanlist *sl = arg;
   uint16_t caps;
 
-  static struct nla_policy bss_policy[NL80211_BSS_MAX + 1] = {
-    [NL80211_BSS_TSF] = { .type = NLA_U64 },
-    [NL80211_BSS_FREQUENCY] = { .type = NLA_U32 },
-    [NL80211_BSS_BSSID] = { },
-    [NL80211_BSS_BEACON_INTERVAL] = { .type = NLA_U16 },
-    [NL80211_BSS_CAPABILITY] = { .type = NLA_U16 },
-    [NL80211_BSS_INFORMATION_ELEMENTS] = { },
-    [NL80211_BSS_SIGNAL_MBM] = { .type = NLA_U32 },
-    [NL80211_BSS_SIGNAL_UNSPEC] = { .type = NLA_U8 },
-    [NL80211_BSS_STATUS] = { .type = NLA_U32 },
-    [NL80211_BSS_SEEN_MS_AGO] = { .type = NLA_U32 },
-    [NL80211_BSS_BEACON_IES] = { },
-  };
+  /* static struct nla_policy bss_policy[NL80211_BSS_MAX + 1] = { */
+  /*   [NL80211_BSS_TSF] = { .type = NLA_U64 }, */
+  /*   [NL80211_BSS_FREQUENCY] = { .type = NLA_U32 }, */
+  /*   [NL80211_BSS_BSSID] = { }, */
+  /*   [NL80211_BSS_BEACON_INTERVAL] = { .type = NLA_U16 }, */
+  /*   [NL80211_BSS_CAPABILITY] = { .type = NLA_U16 }, */
+  /*   [NL80211_BSS_INFORMATION_ELEMENTS] = { }, */
+  /*   [NL80211_BSS_SIGNAL_MBM] = { .type = NLA_U32 }, */
+  /*   [NL80211_BSS_SIGNAL_UNSPEC] = { .type = NLA_U8 }, */
+  /*   [NL80211_BSS_STATUS] = { .type = NLA_U32 }, */
+  /*   [NL80211_BSS_SEEN_MS_AGO] = { .type = NLA_U32 }, */
+  /*   [NL80211_BSS_BEACON_IES] = { }, */
+  /* }; */
 
-  // Parse and error check.
-  nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL);
-  if (!tb[NL80211_ATTR_BSS]) {
-    printf("bss info missing!\n");
-    return NL_SKIP;
-  }
-  if (nla_parse_nested(bss, NL80211_BSS_MAX, tb[NL80211_ATTR_BSS], bss_policy)) {
-    printf("failed to parse nested attributes!\n");
-    return NL_SKIP;
-  }
-  if (!bss[NL80211_BSS_BSSID]) return NL_SKIP;
-  if (!bss[NL80211_BSS_INFORMATION_ELEMENTS]) return NL_SKIP;
+  /* // Parse and error check. */
+  /* nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL); */
+  /* if (!tb[NL80211_ATTR_BSS]) { */
+  /*   printf("bss info missing!\n"); */
+  /*   return NL_SKIP; */
+  /* } */
+  /* if (nla_parse_nested(bss, NL80211_BSS_MAX, tb[NL80211_ATTR_BSS], bss_policy)) { */
+  /*   printf("failed to parse nested attributes!\n"); */
+  /*   return NL_SKIP; */
+  /* } */
+  /* if (!bss[NL80211_BSS_BSSID]) return NL_SKIP; */
+  /* if (!bss[NL80211_BSS_INFORMATION_ELEMENTS]) return NL_SKIP; */
 
-  memset(sl->s, 0, sizeof(*sl->s));
-  mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID]));
+  /* memset(sl->s, 0, sizeof(*sl->s)); */
+  /* mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID])); */
 
-  memcpy(sl->s->mac, nla_data(bss[NL80211_BSS_BSSID]), 6);
+  /* memcpy(sl->s->mac, nla_data(bss[NL80211_BSS_BSSID]), 6); */
 
-  uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
-  sl->s->channel = ieee80211_frequency_to_channel(freq);
+  /* uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]); */
+  /* sl->s->channel = ieee80211_frequency_to_channel(freq); */
 
-  if (!bss[NL80211_BSS_BSSID])
-    return NL_SKIP;
+  /* if (!bss[NL80211_BSS_BSSID]) */
+  /*   return NL_SKIP; */
 
-  if (bss[NL80211_BSS_CAPABILITY])
-    caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
+  /* if (bss[NL80211_BSS_CAPABILITY]) */
+  /*   caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]); */
 
-  if (caps & (1<<4))
-    sl->s->crypto.enabled = 1;
+  /* if (caps & (1<<4)) */
+  /*   sl->s->crypto.enabled = 1; */
 
-  if (bss[NL80211_BSS_SIGNAL_MBM]) {
-    sl->s->signal =
-      (uint8_t)((int32_t)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
+  /* if (bss[NL80211_BSS_SIGNAL_MBM]) { */
+  /*   sl->s->signal = */
+  /*     (uint8_t)((int32_t)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100); */
 
-    rssi = sl->s->signal - 0x100;
-    if (rssi < -110)
-      rssi = -110;
-    else if (rssi > -40)
-      rssi = -40;
+  /*   rssi = sl->s->signal - 0x100; */
+  /*   if (rssi < -110) */
+  /*     rssi = -110; */
+  /*   else if (rssi > -40) */
+  /*     rssi = -40; */
 
-    sl->s->quality = (rssi + 110);
-    sl->s->quality_max = 70;
-  }
+  /*   sl->s->quality = (rssi + 110); */
+  /*   sl->s->quality_max = 70; */
+  /* } */
 
-  if (bss[NL80211_BSS_SEEN_MS_AGO]) {
-    int age = nla_get_u32(bss[NL80211_BSS_SEEN_MS_AGO]);
-    sl->s->age = age;
-  }
+  /* if (bss[NL80211_BSS_SEEN_MS_AGO]) { */
+  /*   int age = nla_get_u32(bss[NL80211_BSS_SEEN_MS_AGO]); */
+  /*   sl->s->age = age; */
+  /* } */
 
-  if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
-    nl80211_info_elements(bss, sl->s);
+  /* if (bss[NL80211_BSS_INFORMATION_ELEMENTS]) */
+  /*   nl80211_info_elements(bss, sl->s); */
 
   sl->s++;
   sl->len++;
