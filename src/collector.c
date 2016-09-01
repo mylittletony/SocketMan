@@ -482,129 +482,129 @@ void collect_data(int online)
   /* if (strlen(gateway) == 0) */
   /*   route(); */
 
-  struct defaultRoute dr = route();
+  /* struct defaultRoute dr = route(); */
 
-  if (strcmp(dr.if_name, "") != 0) {
-    interface_ip(dr.if_name, wan_ip);
+  /* if (strcmp(dr.if_name, "") != 0) { */
+  /*   interface_ip(dr.if_name, wan_ip); */
 
-    struct InterfaceStats istats = stats(dr.if_name);
-    sprintf(tx, "%" PRIu64, istats.tx);
-    sprintf(rx, "%" PRIu64, istats.rx);
-  }
+  /*   struct InterfaceStats istats = stats(dr.if_name); */
+  /*   sprintf(tx, "%" PRIu64, istats.tx); */
+  /*   sprintf(rx, "%" PRIu64, istats.rx); */
+  /* } */
 
-  char machine[100];
-  machine[0] = '\0';
-  machine_type(machine);
+  /* char machine[100]; */
+  /* machine[0] = '\0'; */
+  /* machine_type(machine); */
 
-  struct SystemInfo info = system_info();
+  /* struct SystemInfo info = system_info(); */
 
-  if (options.no_survey != 1)
-  {
-    debug("Running WiFi Collection");
+  /* if (options.no_survey != 1) */
+  /* { */
+  /*   debug("Running WiFi Collection"); */
 
-    json_object *jiface_array = json_object_new_array();
-    json_object *jstations_array = json_object_new_array();
-    json_object *jscan_array = json_object_new_array();
+  /*   json_object *jiface_array = json_object_new_array(); */
+  /*   json_object *jstations_array = json_object_new_array(); */
+  /*   json_object *jscan_array = json_object_new_array(); */
 
-    run_interface_scan(jiface_array, jstations_array, jscan_array);
+  /*   run_interface_scan(jiface_array, jstations_array, jscan_array); */
 
-    json_object_object_add(jobj, "ssids", jiface_array);
-    json_object_object_add(jobj, "survey", jscan_array);
-    json_object_object_add(jobj, "stations", jstations_array);
-  }
+  /*   json_object_object_add(jobj, "ssids", jiface_array); */
+  /*   json_object_object_add(jobj, "survey", jscan_array); */
+  /*   json_object_object_add(jobj, "stations", jstations_array); */
+  /* } */
 
-#ifdef __OPENWRT__
-  char firmware[20];
-  readlineToBuffer("/etc/openwrt_version", firmware);
+/* #ifdef __OPENWRT__ */
+  /* char firmware[20]; */
+  /* readlineToBuffer("/etc/openwrt_version", firmware); */
 
-  // Should we save to options ? //
-  json_object *jfirmware = json_object_new_string(firmware);
-  json_object_object_add(jattr, "firmware", jfirmware);
-#endif
+  /* // Should we save to options ? // */
+  /* json_object *jfirmware = json_object_new_string(firmware); */
+  /* json_object_object_add(jattr, "firmware", jfirmware); */
+/* #endif */
 
-  json_object *jserial = json_object_new_string("simon says");
-  json_object_object_add(jattr, "serial", jserial);
+  /* json_object *jserial = json_object_new_string("simon says"); */
+  /* json_object_object_add(jattr, "serial", jserial); */
 
-  if (strcmp(dr.if_name, "") != 0) {
-    json_object *jwan_name = json_object_new_string(dr.if_name);
-    json_object_object_add(jattr, "wan_name", jwan_name);
-  }
+  /* if (strcmp(dr.if_name, "") != 0) { */
+  /*   json_object *jwan_name = json_object_new_string(dr.if_name); */
+  /*   json_object_object_add(jattr, "wan_name", jwan_name); */
+  /* } */
 
-  if (strcmp(dr.ip, "") != 0) {
-    json_object *jgateway = json_object_new_string(dr.ip);
-    json_object_object_add(jattr, "wan_gateway", jgateway);
-  }
+  /* if (strcmp(dr.ip, "") != 0) { */
+  /*   json_object *jgateway = json_object_new_string(dr.ip); */
+  /*   json_object_object_add(jattr, "wan_gateway", jgateway); */
+  /* } */
 
-  if (strlen(wan_ip) > 0) {
-    json_object *jwanip = json_object_new_string(wan_ip);
-    json_object_object_add(jattr, "wan_ip", jwanip);
-  }
+  /* if (strlen(wan_ip) > 0) { */
+  /*   json_object *jwanip = json_object_new_string(wan_ip); */
+  /*   json_object_object_add(jattr, "wan_ip", jwanip); */
+  /* } */
 
-  if (machine[0] !='\0') {
-    // Save to the options to prevent future lookups
-    strcpy(options.machine, machine);
-    json_object *jmachine = json_object_new_string(machine);
-    json_object_object_add(jattr, "machine_type", jmachine);
-  }
+  /* if (machine[0] !='\0') { */
+  /*   // Save to the options to prevent future lookups */
+  /*   strcpy(options.machine, machine); */
+  /*   json_object *jmachine = json_object_new_string(machine); */
+  /*   json_object_object_add(jattr, "machine_type", jmachine); */
+  /* } */
 
-  json_object *jtx = json_object_new_string(tx);
-  json_object_object_add(jattr, "tx_bytes", jtx);
+  /* json_object *jtx = json_object_new_string(tx); */
+  /* json_object_object_add(jattr, "tx_bytes", jtx); */
 
-  json_object *jrx = json_object_new_string(rx);
-  json_object_object_add(jattr, "rx_bytes", jrx);
+  /* json_object *jrx = json_object_new_string(rx); */
+  /* json_object_object_add(jattr, "rx_bytes", jrx); */
 
-  json_object *juptime = json_object_new_int(info.uptime);
-  json_object_object_add(jattr, "uptime", juptime);
+  /* json_object *juptime = json_object_new_int(info.uptime); */
+  /* json_object_object_add(jattr, "uptime", juptime); */
 
-  json_object *jload_1 = json_object_new_double(info.load_1);
-  json_object_object_add(jattr, "load_1", jload_1);
+  /* json_object *jload_1 = json_object_new_double(info.load_1); */
+  /* json_object_object_add(jattr, "load_1", jload_1); */
 
-  json_object *jload_5 = json_object_new_double(info.load_5);
-  json_object_object_add(jattr, "load_5", jload_5);
+  /* json_object *jload_5 = json_object_new_double(info.load_5); */
+  /* json_object_object_add(jattr, "load_5", jload_5); */
 
-  json_object *jload_15 = json_object_new_double(info.load_15);
-  json_object_object_add(jattr, "load_15", jload_15);
+  /* json_object *jload_15 = json_object_new_double(info.load_15); */
+  /* json_object_object_add(jattr, "load_15", jload_15); */
 
-  json_object *jtotalram = json_object_new_double(info.totalram);
-  json_object_object_add(jattr, "total_ram", jtotalram);
+  /* json_object *jtotalram = json_object_new_double(info.totalram); */
+  /* json_object_object_add(jattr, "total_ram", jtotalram); */
 
-  json_object *jfreeram = json_object_new_double(info.freeram);
-  json_object_object_add(jattr, "free_ram", jfreeram);
+  /* json_object *jfreeram = json_object_new_double(info.freeram); */
+  /* json_object_object_add(jattr, "free_ram", jfreeram); */
 
-  json_object *jprocs = json_object_new_int(info.procs);
-  json_object_object_add(jattr, "procs", jprocs);
+  /* json_object *jprocs = json_object_new_int(info.procs); */
+  /* json_object_object_add(jattr, "procs", jprocs); */
 
-  bool bonline = online ? true : false;
-  json_object *jonline = json_object_new_boolean(bonline);
-  json_object_object_add(jattr, "online", jonline);
+  /* bool bonline = online ? true : false; */
+  /* json_object *jonline = json_object_new_boolean(bonline); */
+  /* json_object_object_add(jattr, "online", jonline); */
 
-  time_t now = time(NULL);
-  json_object *jcreated_at = json_object_new_int(now);
-  json_object_object_add(jattr, "created_at", jcreated_at);
+  /* time_t now = time(NULL); */
+  /* json_object *jcreated_at = json_object_new_int(now); */
+  /* json_object_object_add(jattr, "created_at", jcreated_at); */
 
-  json_object *jdhcp_array = json_object_new_array();
-  format_dhcp(jdhcp_array);
-  json_object_object_add(jobj, "dhcp", jdhcp_array);
+  /* json_object *jdhcp_array = json_object_new_array(); */
+  /* format_dhcp(jdhcp_array); */
+  /* json_object_object_add(jobj, "dhcp", jdhcp_array); */
 
-  json_object *jsplash_array = json_object_new_array();
-  format_splash(jsplash_array);
-  json_object_object_add(jobj, "splash", jsplash_array);
+  /* json_object *jsplash_array = json_object_new_array(); */
+  /* format_splash(jsplash_array); */
+  /* json_object_object_add(jobj, "splash", jsplash_array); */
 
-  // MISSING!!!!!!!
-  // INTERFACES
-  // CAPS
-  // MQTT STATUS
+  /* // MISSING!!!!!!! */
+  /* // INTERFACES */
+  /* // CAPS */
+  /* // MQTT STATUS */
 
-  json_object_object_add(jobj, "device", jattr);
+  /* json_object_object_add(jobj, "device", jattr); */
 
-  if (online && post(jobj)) {
-    // Lookin' good
-  } else {
-    // Cache
-  }
+  /* if (online && post(jobj)) { */
+  /*   // Lookin' good */
+  /* } else { */
+  /*   // Cache */
+  /* } */
 
-  run_cleanup(info);
-  json_object_put(jobj);
+  /* run_cleanup(info); */
+  /* json_object_put(jobj); */
 }
 
 void cache_data() {
