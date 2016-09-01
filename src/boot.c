@@ -21,7 +21,7 @@
 #include "monitor.h"
 #include <json-c/json.h>
 #include "http.h"
-#include <pthread.h>
+#include <sys/prctl.h>
 
 int parent;
 
@@ -156,12 +156,24 @@ void initialised()
   }
 }
 
-void *inc_x(void *x_void_ptr)
+
+void *test_x(void *x_void_ptr)
 {
-  /* sleep(10); */
-  /* debug("EXITS"); */
-  /* exit(1); */
-  monitor();
+
+  int *x_ptr = (int *)x_void_ptr;
+  /* while(++(*x_ptr) < 10) { */
+  while(1) {
+    debug("YYYYYYYYYYYYYYY %d", *x_ptr);
+    sleep(1);
+  }
+  /*   sleep(1); */
+  /* } */
+
+
+  /*  sleep(10); */
+  /*  debug("EXITS"); */
+  /*  exit(1); */
+  /* monitor(); */
   return NULL;
 }
 
@@ -169,39 +181,9 @@ void run_collector()
 {
   debug("Starting Socketman.");
   pre_boot_cb();
-
-  int x = 0, y = 0;
-
-  pthread_t inc_x_thread;
-
-  if(pthread_create(&inc_x_thread, NULL, inc_x, NULL)) {
-    fprintf(stderr, "Error creating thread\n");
-    return;
-  }
-
-  /* if(pthread_join(inc_x_thread, NULL)) { */
-
-  /* } */
-
-  /* x = 1; */
-  /* pthread_cancel(inc_x_thread); */
   mqtt_connect();
-  /* while(1) { */
-  /*   mqtt_connect(); */
-  /*   monitor(); */
-    /* printf("Ci %d running...\n", getpid()); */
-    /* sleep(2); */
-  /* } */
-
+  monitor();
   return;
-
-  /* int pid = fork(); */
-  /* if (pid == 0) { */
-  /*   mqtt_connect(); */
-  /* } else { */
-  /*   parent = pid; */
-  /*   monitor(); */
-  /* }; */
 }
 
 void check_config()

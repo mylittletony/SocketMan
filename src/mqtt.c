@@ -1,28 +1,21 @@
+#include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdio.h>
 #include <mosquitto.h>
-/* #include "mqtt.h" */
 #include "helper.h"
 #include "options.h"
 #include "dbg.h"
 #include <time.h>
 #include <message.h>
+#include "mqtt_utils.h"
 
 bool connected = false;
 time_t m0=0;
 
 int dial_mqtt();
-
-void main_topic(char * topic, const char *name, const char *key) {
-  strcpy(topic, name);
-  strcat(topic, "/");
-  strcat(topic, key);
-  strcat(topic, "/");
-  strcat(topic, options.mac);
-}
 
 void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
 {
@@ -33,12 +26,10 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
     k = strlen(options.key);
     n = strlen(options.topic);
     char topic[k+n+19];
-    main_topic(topic, options.topic, options.key);
+    topic_id_generate(topic, options.topic, options.key);
 
     options.qos = 0;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
-
-    debug("Main topic is %s and status topic is %s", topic, options.status_topic);
 
     if (strcmp(options.status_topic, "") != 0)
       mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 0, false);
@@ -47,16 +38,21 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
 
 void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
 {
-
-  if (message->payloadlen) {
-    /* printf("%s %s\n", message->topic, message->payload); */
-  } else {
-    printf("%s (null)\n", message->topic);
-  }
-  fflush(stdout);
-
-  if(message->payloadlen)
+  if (message->payloadlen)
     process_message((const char*)message->payload);
+}
+
+void *inc_x(void *x_void_ptr)
+{
+  while(!connected) {
+    debug("Unable to connect to %s. Sleeping 15", options.mqtt_host);
+    sleep(15);
+    if (!dial_mqtt()) {
+      debug("Reconnected to %s, yay!", options.mqtt_host);
+      break;
+    }
+  }
+  return NULL;
 }
 
 void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos)
@@ -76,42 +72,54 @@ void my_log_callback()
 void my_disconnect_callback()
 {
   connected = false;
-  // Why?
-  /* create_mqfifo(0); */
   debug("Disconnected from %s server", options.mqtt_host);
 }
 
 void mqtt_connect() {
   if (strcmp(options.mqtt_host, "") != 0)
   {
-    do
-    {
-      dial_mqtt();
-      sleep(5);
-    }
-    while(!connected);
+    int rc = dial_mqtt();
+
+    if (rc) {
+      pthread_t conn_thread;
+      if(pthread_create(&conn_thread, NULL, inc_x, NULL)) {
+        fprintf(stderr, "Error creating thread\n");
+        return;
+      }
+
+      if(pthread_join(conn_thread, NULL)) {
+        fprintf(stderr, "Error joining thread\n");
+        return;
+      }
+    };
   }
   debug("No MQTT host, skipping connect.");
   return;
 }
 
-int dial_mqtt() {
-
+int dial_mqtt()
+{
   debug("Connecting to MQTT");
   char id[27];
 
-  sprintf(id, "CUCUMBER-%s", options.mac);
+  client_id_generate(id);
 
   int keepalive = 60;
   bool clean_session = true;
   struct mosquitto *mosq = NULL;
 
-  mosquitto_lib_init();
   mosq = mosquitto_new(id, clean_session, NULL);
-
   if(!mosq){
-    fprintf(stderr, "M Error: Out of memory.\n");
-    exit(1); // Or not, re-run
+    switch(errno){
+      case ENOMEM:
+        fprintf(stderr, "Error: Out of memory.\n");
+        break;
+      case EINVAL:
+        fprintf(stderr, "Error: Invalid id and/or clean_session.\n");
+        break;
+    }
+    mosquitto_lib_cleanup();
+    return 1;
   }
 
   if (options.tls) {
@@ -133,7 +141,7 @@ int dial_mqtt() {
     }
   }
 
-  mosquitto_log_callback_set(mosq, my_log_callback);
+  /* mosquitto_log_callback_set(mosq, my_log_callback); */
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
@@ -143,14 +151,27 @@ int dial_mqtt() {
   if (strcmp(options.status_topic, "") != 0)
     mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
 
-  if(mosquitto_connect(mosq, options.mqtt_host, options.port, keepalive)) {
-    debug("Unable to connect to %s. Sleeping 5.", options.mqtt_host);
+  int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
+  if (rc) {
     mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
-    return(0);
+    return(rc);
   }
 
-  mosquitto_loop_forever(mosq, -1, 1);
+  rc = mosquitto_loop_start(mosq);
 
-  return(1);
+  /* mosquitto_disconnect(mosq); */
+  /* mosquitto_loop_stop(mosq, false); */
+  /* mosquitto_lib_cleanup(); */
+  /* mosquitto_destroy(mosq); */
+  /* mosq = 0; */
+
+  if(rc == MOSQ_ERR_NO_CONN){
+    rc = 0;
+    connected = 1;
+  }
+  if(rc){
+    fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
+  }
+  return rc;
 }

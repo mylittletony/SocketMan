@@ -1,4 +1,6 @@
 void mqtt_connect();
+/* int mqtt_alarm; */
+
 /* int connect_timeout; */
 /* int mqtt_connect_timeout; */
 /* int tls; */
