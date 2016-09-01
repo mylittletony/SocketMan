@@ -42,7 +42,17 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
     process_message((const char*)message->payload);
 }
 
-void *inc_x(void *x_void_ptr)
+void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos)
+{
+  int i;
+  debug("Subscribed (mid: %d): %d", mid, granted_qos[0]);
+
+  for(i=1; i<qos_count; i++) {
+    debug("QOS: %d", granted_qos[i]);
+  }
+}
+
+void *reconnect(void *x)
 {
   while(!connected) {
     debug("Unable to connect to %s. Sleeping 15", options.mqtt_host);
@@ -53,16 +63,6 @@ void *inc_x(void *x_void_ptr)
     }
   }
   return NULL;
-}
-
-void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos)
-{
-  int i;
-  debug("Subscribed (mid: %d): %d", mid, granted_qos[0]);
-
-  for(i=1; i<qos_count; i++) {
-    debug("QOS: %d", granted_qos[i]);
-  }
 }
 
 void my_disconnect_callback()
@@ -78,7 +78,7 @@ void mqtt_connect() {
 
     if (rc) {
       pthread_t conn_thread;
-      if(pthread_create(&conn_thread, NULL, inc_x, NULL)) {
+      if(pthread_create(&conn_thread, NULL, reconnect, NULL)) {
         fprintf(stderr, "Error creating thread\n");
         return;
       }
