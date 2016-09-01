@@ -156,33 +156,12 @@ void initialised()
   }
 }
 
-
-void *test_x(void *x_void_ptr)
-{
-
-  int *x_ptr = (int *)x_void_ptr;
-  /* while(++(*x_ptr) < 10) { */
-  while(1) {
-    debug("YYYYYYYYYYYYYYY %d", *x_ptr);
-    sleep(1);
-  }
-  /*   sleep(1); */
-  /* } */
-
-
-  /*  sleep(10); */
-  /*  debug("EXITS"); */
-  /*  exit(1); */
-  /* monitor(); */
-  return NULL;
-}
-
 void run_collector()
 {
   debug("Starting Socketman.");
   pre_boot_cb();
   mqtt_connect();
-  monitor();
+  /* monitor(); */
   return;
 }
 
