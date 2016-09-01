@@ -152,7 +152,7 @@ int dial_mqtt()
   if (strcmp(options.status_topic, "") != 0)
     mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
 
-  int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
+  int rc = mosquitto_connect(mosq, options.mqtt_host, options.port, keepalive);
   if (rc) {
     mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
