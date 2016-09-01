@@ -337,6 +337,7 @@ void run_interface_scan(json_object *jiface_array,
   // Needs scan logic built in
   if (!options.no_survey) {
     int alen = 0;
+    char buf_s[4096];
     int len_s;
     static int myArray[2] = {100,100};
     struct radio_list *ptr = head;
@@ -354,8 +355,7 @@ void run_interface_scan(json_object *jiface_array,
         alen++;
         printf("Scanning on %s %d\n", ptr->ifname, ptr->val);
         len_s = 0;
-        char buf_s[4096];
-        /* if(iw->scan("wlan0-1", buf_s, &len_s)) { */
+        buf_s[0] = '\0';
         if(iw->scan(ptr->ifname, buf_s, &len_s)) {
           debug("DDDDDDDDDDDDDDDDDDDDD %d", len_s);
           for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
