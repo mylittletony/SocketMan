@@ -353,7 +353,7 @@ void run_interface_scan(json_object *jiface_array,
         myArray[alen] = ptr->val;
         alen++;
         printf("Scanning on %s %d\n", ptr->ifname, ptr->val);
-        if(iw->scan(ptr->ifname, buf_s, &len_s)) {
+        if(iw->scan("wlan1-2", buf_s, &len_s)) {
           for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
           {
             sc = (struct iw_scanlist_entry *) &buf_s[i];
