@@ -101,6 +101,7 @@ int in_array(int val, int *arr, int size){
   int i;
   for (i=0; i < size; i++) {
     if (arr[i] == val)
+      debug("FOUND");
       return 1;
   }
   return 0;
