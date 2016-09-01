@@ -65,14 +65,10 @@ void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int 
   }
 }
 
-void my_log_callback()
-{
-}
-
 void my_disconnect_callback()
 {
   connected = false;
-  debug("Disconnected from %s server", options.mqtt_host);
+  debug("MQTT Lost connected to %s", options.mqtt_host);
 }
 
 void mqtt_connect() {

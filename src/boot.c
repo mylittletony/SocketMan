@@ -161,7 +161,7 @@ void run_collector()
   debug("Starting Socketman.");
   pre_boot_cb();
   mqtt_connect();
-  /* monitor(); */
+  monitor();
   return;
 }
 
