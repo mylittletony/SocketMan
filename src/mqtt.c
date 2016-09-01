@@ -81,6 +81,7 @@ void mqtt_connect() {
     int rc = dial_mqtt();
 
     if (rc) {
+      debug("Srtartnglasdkjflaskjdflaskdjflaskdjflaksdjflaksdjflaksdjf %d", rc);
       pthread_t conn_thread;
       if(pthread_create(&conn_thread, NULL, inc_x, NULL)) {
         fprintf(stderr, "Error creating thread\n");
@@ -100,7 +101,7 @@ void mqtt_connect() {
 
 int dial_mqtt()
 {
-  debug("Connecting to MQTT");
+  debug("Connecting to MQTT...");
   char id[27];
 
   client_id_generate(id);
