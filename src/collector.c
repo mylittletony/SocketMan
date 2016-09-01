@@ -370,7 +370,6 @@ void run_interface_scan(json_object *jiface_array,
     }
 
     while(freeMe != NULL) {
-      debug("Should be freed");
       holdMe = freeMe->next;
       free(freeMe);
       freeMe = holdMe;
