@@ -350,8 +350,8 @@ void run_interface_scan(json_object *jiface_array,
     while(ptr != NULL)
     {
       if (!in_array(ptr->val, myArray, 2)) { // only 2 radios
-      /*   myArray[alen] = ptr->val; */
-      /*   alen++; */
+        myArray[alen] = ptr->val;
+        alen++;
       /*   debug("SSSS: %d", myArray[alen]); */
       /*   printf("Scanning on %s %d\n", ptr->ifname, ptr->val); */
       /*   if(iw->scan("wlan0", buf_s, &len_s)) { */
