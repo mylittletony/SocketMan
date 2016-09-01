@@ -92,8 +92,9 @@ void mqtt_connect() {
         return;
       }
     };
+  } else {
+    debug("No MQTT host, skipping connect.");
   }
-  debug("No MQTT host, skipping connect.");
   return;
 }
 
