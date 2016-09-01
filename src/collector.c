@@ -366,13 +366,13 @@ void run_interface_scan(json_object *jiface_array,
       ptr = ptr->next;
     }
 
-    /* while(freeMe != NULL) { */
-    /*   debug("Should be freed"); */
-    /*   holdMe = freeMe->next; */
-    /*   free(freeMe); */
-    /*   freeMe = holdMe; */
-    /* } */
-    /* free(ptr); */
+    while(freeMe != NULL) {
+      debug("Should be freed");
+      holdMe = freeMe->next;
+      free(freeMe);
+      freeMe = holdMe;
+    }
+    free(ptr);
   }
 
   if (0) { // Not implemented
