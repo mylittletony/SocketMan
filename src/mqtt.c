@@ -61,7 +61,7 @@ void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int 
   debug("Subscribed (mid: %d): %d", mid, granted_qos[0]);
 
   for(i=1; i<qos_count; i++) {
-    debug("WHHHHAT, %d", granted_qos[i]);
+    debug("QOS: %d", granted_qos[i]);
   }
 }
 
@@ -152,22 +152,14 @@ int dial_mqtt()
   if (strcmp(options.status_topic, "") != 0)
     mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
 
-  int rc = mosquitto_connect(mosq, options.mqtt_host, options.port, keepalive);
+  int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
   if (rc) {
     mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
     return(rc);
   }
 
-  debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
   rc = mosquitto_loop_start(mosq);
-
-  /* mosquitto_disconnect(mosq); */
-  /* mosquitto_loop_stop(mosq, false); */
-  /* mosquitto_lib_cleanup(); */
-  /* mosquitto_destroy(mosq); */
-  /* mosq = 0; */
 
   if(rc == MOSQ_ERR_NO_CONN){
     rc = 0;

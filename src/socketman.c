@@ -134,11 +134,6 @@ int main( int argc,char **argv)
     perror("Error: cannot handle SIGUSR1"); // Should not happen
   }
 
-  /* if (sigaction(SIGKILL, &sa, NULL) == -1) { */
-  /*   perror("Cannot handle SIGKILL"); // Will always happen */
-  /*   printf("You can never handle SIGKILL anyway...\n"); */
-  /* } */
-
   if (sigaction(SIGINT, &sa, NULL) == -1) {
     perror("Error: cannot handle SIGINT"); // Should not happen
   }
