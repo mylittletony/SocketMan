@@ -37,19 +37,8 @@ int verbose_flag, cpid;
 /* volatile sig_atomic_t g_eflag = 0; */
 /* volatile sig_atomic_t g_hupflag = 1; */
 
-void sig_handler(int signo) {
-  /*   kill(parent, SIGTERM); */
-  /*   kill(0, SIGTERM); */
-  /*   debug("received  EXIT or KILL signal going to exit \n"); */
-  /*   openlog("Socketman", LOG_PID|LOG_CONS, LOG_USER); */
-  /*   syslog(LOG_INFO, "Received signal for pause or kill now "); */
-  /*   closelog(); */
-  exit(0);
-}
-
 void handle_signal(int signal) {
   const char *signal_name;
-  sigset_t pending;
 
   switch (signal) {
     case SIGHUP:
@@ -59,38 +48,21 @@ void handle_signal(int signal) {
       signal_name = "SIGUSR1";
       break;
     case SIGINT:
-      /* mqtt_alarm = 1; */
       printf("Caught SIGINT, exiting now\n");
-      sleep(1);
       exit(0);
     case SIGTERM:
-      /* mqtt_alarm = 1; */
       printf("Caught SIGTERM, exiting now\n");
-      sleep(1);
       exit(0);
     default:
       fprintf(stderr, "Caught wrong signal: %d\n", signal);
       return;
   }
 
-  /*
-   * Please note that printf et al. are NOT safe to use in signal handlers.
-   * Look for async safe functions.
-   */
-  printf("Caught %s, sleeping for ~3 seconds\n"
-      "Try sending another SIGHUP / SIGINT / SIGALRM "
-      "(or more) meanwhile\n", signal_name);
+  /* printf("Caught %s, sleeping for ~3 seconds\n" */
+  /*     "Try sending another SIGHUP / SIGINT / SIGALRM " */
+  /*     "(or more) meanwhile\n", signal_name); */
 
-  // So what did you send me while I was asleep?
-  sigpending(&pending);
-  if (sigismember(&pending, SIGHUP)) {
-    printf("A SIGHUP is waiting\n");
-  }
-  if (sigismember(&pending, SIGUSR1)) {
-    printf("A SIGUSR1 is waiting\n");
-  }
-
-  printf("Done handling %s\n\n", signal_name);
+  /* printf("Done handling %s\n\n", signal_name); */
 }
 
 void validate_options()
@@ -144,68 +116,32 @@ void validate_options()
   }
 }
 
-/* static void child_handler(int sig) */
-/* { */
-/*   pid_t pid; */
-/*   int status; */
-
-/*   debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
-/* } */
-
 int main( int argc,char **argv)
 {
   int c;
 
-  /* struct sigaction sa; */
-  /* sigemptyset(&sa.sa_mask); */
-  /* sa.sa_flags = 0; */
-  /* sa.sa_handler = child_handler; */
-
-  /* sigaction(SIGCHLD, &sa, NULL); */
-
-  if (signal(SIGHUP, sig_handler) == SIG_ERR)
-    debug("n't catch SIGHUP\n");
-  if (signal(SIGSEGV, sig_handler) == SIG_ERR)
-    printf("n't catch SIGSEGV\n");
-  if (signal(SIGINT, sig_handler) == SIG_ERR)
-    printf("n't catch SIGINTV\n");
-  if (signal(SIGTERM, sig_handler) == SIG_ERR)
-    printf("n't catch SIGTERM\n");
-  if (signal(SIGTSTP,sig_handler) == SIG_ERR)
-    printf("n't catch SIGTSTP\n");
-  if (signal(SIGBUS,sig_handler) == SIG_ERR)
-    printf("n't catch SIGBUS\n");
-  if (signal(SIGABRT,sig_handler) == SIG_ERR)
-    printf("n't catch SIGABRT\n");
-
-  /* signal(SIGCHLD, SIG_IGN); /1*  Silently (and portably) reap children. *1/ */
-
   struct sigaction sa;
 
-  printf("My pid is: %d\n", getpid());
+  sa.sa_handler = &handle_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART;
 
-  /* sa.sa_handler = &handle_signal; */
-  /* sa.sa_flags = SA_RESTART; */
-  /* sigfillset(&sa.sa_mask); */
+  if (sigaction(SIGHUP, &sa, NULL) == -1) {
+    perror("Error: cannot handle SIGHUP"); // Should not happen
+  }
 
-  /* // Intercept SIGHUP and SIGINT */
-  /* if (sigaction(SIGHUP, &sa, NULL) == -1) { */
-  /*   perror("Error: cannot handle SIGHUP"); // Should not happen */
-  /* } */
+  if (sigaction(SIGUSR1, &sa, NULL) == -1) {
+    perror("Error: cannot handle SIGUSR1"); // Should not happen
+  }
 
-  /* if (sigaction(SIGUSR1, &sa, NULL) == -1) { */
-  /*   perror("Error: cannot handle SIGUSR1"); // Should not happen */
-  /* } */
-
-  /* // Will always fail, SIGKILL is intended to force kill your process */
   /* if (sigaction(SIGKILL, &sa, NULL) == -1) { */
   /*   perror("Cannot handle SIGKILL"); // Will always happen */
   /*   printf("You can never handle SIGKILL anyway...\n"); */
   /* } */
 
-  /* if (sigaction(SIGINT, &sa, NULL) == -1) { */
-  /*   perror("Error: cannot handle SIGINT"); // Should not happen */
-  /* } */
+  if (sigaction(SIGINT, &sa, NULL) == -1) {
+    perror("Error: cannot handle SIGINT"); // Should not happen
+  }
 
   // Implement better args
   while(1)
