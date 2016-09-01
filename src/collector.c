@@ -350,7 +350,7 @@ void run_interface_scan(json_object *jiface_array,
 
     while(ptr != NULL)
     {
-      if (in_array(ptr->val, myArray, 2) == 0) { // only 2 radios
+      if (in_array(ptr->val, myArray, sizeof(myArray)) == 0) { // only 2 radios
         myArray[alen] = ptr->val;
         debug("SSSS: %d, %d", myArray[alen], ptr->val);
         alen++;
