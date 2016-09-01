@@ -97,10 +97,8 @@ void readlineToBuffer(char *file, char *buffer) {
 }
 
 int in_array(int val, int *arr, int size){
-  debug("XXXXXXXXXXXXXXXXXXXXXXXXX %d", val);
   int i;
   for (i=0; i < size; i++) {
-    debug("FOUND %d", arr[i]);
     if (arr[i] == val)
       return 1;
   }
