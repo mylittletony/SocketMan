@@ -339,8 +339,7 @@ void run_interface_scan(json_object *jiface_array,
     int alen = 0;
     int len_s;
     char buf_s[1024];
-    static int myArray[5];
-    myArray[0] = 100;
+    static int myArray[2] = {100,100};
     struct radio_list *ptr = head;
     struct iw_scanlist_entry *sc;
     i = 0, x = 0;
