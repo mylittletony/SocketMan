@@ -357,7 +357,6 @@ void run_interface_scan(json_object *jiface_array,
         len_s = 0;
         buf_s[0] = '\0';
         if(iw->scan(ptr->ifname, buf_s, &len_s)) {
-          debug("DDDDDDDDDDDDDDDDDDDDD %d", len_s);
           for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
           {
             sc = (struct iw_scanlist_entry *) &buf_s[i];
@@ -371,13 +370,13 @@ void run_interface_scan(json_object *jiface_array,
       ptr = ptr->next;
     }
 
-    /* while(freeMe != NULL) { */
-    /*   debug("Should be freed"); */
-    /*   holdMe = freeMe->next; */
-    /*   free(freeMe); */
-    /*   freeMe = holdMe; */
-    /* } */
-    /* free(ptr); */
+    while(freeMe != NULL) {
+      debug("Should be freed");
+      holdMe = freeMe->next;
+      free(freeMe);
+      freeMe = holdMe;
+    }
+    free(ptr);
   }
 
   if (0) { // Not implemented
