@@ -349,21 +349,21 @@ void run_interface_scan(json_object *jiface_array,
 
     while(ptr != NULL)
     {
-      if (!in_array(ptr->val, myArray, 2)) { // only 2 radios
-        myArray[alen] = ptr->val;
-        alen++;
-        debug("SSSS: %d", myArray[alen]);
-        printf("Scanning on %s %d\n", ptr->ifname, ptr->val);
-        if(iw->scan("wlan0", buf_s, &len_s)) {
-          for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
-          {
-            sc = (struct iw_scanlist_entry *) &buf_s[i];
-            json_object *jscan = json_object_new_object();
-            format_scan(sc, jscan);
-            json_object_array_add(jscan_array, jscan);
-          }
-        }
-      }
+      /* if (!in_array(ptr->val, myArray, 2)) { // only 2 radios */
+      /*   myArray[alen] = ptr->val; */
+      /*   alen++; */
+      /*   debug("SSSS: %d", myArray[alen]); */
+      /*   printf("Scanning on %s %d\n", ptr->ifname, ptr->val); */
+      /*   if(iw->scan("wlan0", buf_s, &len_s)) { */
+      /*     for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++) */
+      /*     { */
+      /*       sc = (struct iw_scanlist_entry *) &buf_s[i]; */
+      /*       json_object *jscan = json_object_new_object(); */
+      /*       format_scan(sc, jscan); */
+      /*       json_object_array_add(jscan_array, jscan); */
+      /*     } */
+      /*   } */
+      /* } */
       debug("HAY:  sssssssssssssssssssssss %d", ptr->val);
       ptr = ptr->next;
     }
