@@ -341,7 +341,6 @@ void run_interface_scan(json_object *jiface_array,
     char buf_s[1024];
     static int myArray[2] = {100,100};
     struct radio_list *ptr = head;
-    struct iw_scanlist_entry *sc;
     i = 0, x = 0;
 
     struct radio_list *holdMe = NULL;
@@ -353,13 +352,15 @@ void run_interface_scan(json_object *jiface_array,
         myArray[alen] = ptr->val;
         alen++;
         printf("Scanning on %s %d\n", ptr->ifname, ptr->val);
+        struct iw_scanlist_entry *sc;
+
         if(iw->scan("wlan1-2", buf_s, &len_s)) {
           for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
           {
             sc = (struct iw_scanlist_entry *) &buf_s[i];
-            /* json_object *jscan = json_object_new_object(); */
-          /*   format_scan(sc, jscan); */
-            /* json_object_array_add(jscan_array, jscan); */
+            json_object *jscan = json_object_new_object();
+            format_scan(sc, jscan);
+            json_object_array_add(jscan_array, jscan);
           }
         }
       }
