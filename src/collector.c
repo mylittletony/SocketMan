@@ -308,89 +308,89 @@ void run_interface_scan(json_object *jiface_array,
 
   iw->disconnect(NULL);
   // Can cause mem. leak if no SSIDS
-  iw->ssids(ssids, &len);
+  /* iw->ssids(ssids, &len); */
 
-  for (i = 0, x = 1; i < len; i += sizeof(struct iw_ssid_entry), x++)
-  {
-    e = (struct iw_ssid_entry *) &ssids[i];
+  /* for (i = 0, x = 1; i < len; i += sizeof(struct iw_ssid_entry), x++) */
+  /* { */
+  /*   e = (struct iw_ssid_entry *) &ssids[i]; */
 
-    /* printf("Collecting Data for SSID %s (phy %d)\n", e->ifname, e->phy); */
+  /*   /1* printf("Collecting Data for SSID %s (phy %d)\n", e->ifname, e->phy); *1/ */
 
-    iw->stations(e->ifname, buf_a, &len_a);
-    for (ii = 0, xx = 1; ii < len_a; ii += sizeof(struct iw_stationlist_entry), xx++)
-    {
-      st = (struct iw_stationlist_entry *) &buf_a[ii];
-      json_object *jstations = json_object_new_object();
-      format_stations(e->ssid, e->ifname, st, jstations);
-      json_object_array_add(jstations_array, jstations);
-    }
-    debug("%d Stations Connected to %s", xx-1, e->ifname);
+  /*   iw->stations(e->ifname, buf_a, &len_a); */
+  /*   for (ii = 0, xx = 1; ii < len_a; ii += sizeof(struct iw_stationlist_entry), xx++) */
+  /*   { */
+  /*     st = (struct iw_stationlist_entry *) &buf_a[ii]; */
+  /*     json_object *jstations = json_object_new_object(); */
+  /*     format_stations(e->ssid, e->ifname, st, jstations); */
+  /*     json_object_array_add(jstations_array, jstations); */
+  /*   } */
+  /*   debug("%d Stations Connected to %s", xx-1, e->ifname); */
 
-    json_object *jssids = json_object_new_object();
-    format_ssids(iw, e, jssids, len_a);
-    json_object_array_add(jiface_array, jssids);
+  /*   json_object *jssids = json_object_new_object(); */
+  /*   format_ssids(iw, e, jssids, len_a); */
+  /*   json_object_array_add(jiface_array, jssids); */
 
-    int ret = strcmp(e->ifname, "mon0");
-    if (ret != 0 && !options.no_survey)
-      add_to_list(e);
-  }
+  /*   int ret = strcmp(e->ifname, "mon0"); */
+  /*   if (ret != 0 && !options.no_survey) */
+  /*     add_to_list(e); */
+  /* } */
 
-  // Needs scan logic built in
-  if (!options.no_survey) {
-    int alen = 0;
-    char buf_s[4096];
-    int len_s;
-    static int myArray[2] = {100,100};
-    struct radio_list *ptr = head;
-    struct iw_scanlist_entry *sc;
+  /* // Needs scan logic built in */
+  /* if (!options.no_survey) { */
+  /*   int alen = 0; */
+  /*   char buf_s[4096]; */
+  /*   int len_s; */
+  /*   static int myArray[2] = {100,100}; */
+  /*   struct radio_list *ptr = head; */
+  /*   struct iw_scanlist_entry *sc; */
 
-    i = 0, x = 0;
+  /*   i = 0, x = 0; */
 
-    struct radio_list *holdMe = NULL;
-    struct radio_list *freeMe = ptr;
+  /*   struct radio_list *holdMe = NULL; */
+  /*   struct radio_list *freeMe = ptr; */
 
-    while(ptr != NULL)
-    {
-      if (in_array(ptr->val, myArray, 2) == 0) {
-        myArray[alen] = ptr->val;
-        alen++;
-        len_s = 0;
-        buf_s[0] = '\0';
+  /*   while(ptr != NULL) */
+  /*   { */
+  /*     if (in_array(ptr->val, myArray, 2) == 0) { */
+  /*       myArray[alen] = ptr->val; */
+  /*       alen++; */
+  /*       len_s = 0; */
+  /*       buf_s[0] = '\0'; */
 
-        printf("Scanning on %s %d\n", ptr->ifname, ptr->val);
-        if(iw->scan(ptr->ifname, buf_s, &len_s)) {
-          for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++)
-          {
-            sc = (struct iw_scanlist_entry *) &buf_s[i];
-            json_object *jscan = json_object_new_object();
-            format_scan(sc, jscan);
-            json_object_array_add(jscan_array, jscan);
-          }
-        }
-      }
-      ptr = ptr->next;
-    }
+  /*       printf("Scanning on %s %d\n", ptr->ifname, ptr->val); */
+  /*       if(iw->scan(ptr->ifname, buf_s, &len_s)) { */
+  /*         for (i = 0, x = 1; i < len_s; i += sizeof(struct iw_scanlist_entry), x++) */
+  /*         { */
+  /*           sc = (struct iw_scanlist_entry *) &buf_s[i]; */
+  /*           json_object *jscan = json_object_new_object(); */
+  /*           format_scan(sc, jscan); */
+  /*           json_object_array_add(jscan_array, jscan); */
+  /*         } */
+  /*       } */
+  /*     } */
+  /*     ptr = ptr->next; */
+  /*   } */
 
-    while(freeMe != NULL) {
-      holdMe = freeMe->next;
-      free(freeMe);
-      freeMe = holdMe;
-    }
-    free(ptr);
-  }
+  /*   while(freeMe != NULL) { */
+  /*     holdMe = freeMe->next; */
+  /*     free(freeMe); */
+  /*     freeMe = holdMe; */
+  /*   } */
+  /*   free(ptr); */
+  /* } */
 
-  if (0) { // Not implemented
-    struct iw_info_entry *il;
-    char bufff[1024];
-    int len, i, x;
-    if (iw->info(bufff, &len)) {
-      for (i = 0, x = 1; i < len; i += sizeof(struct iw_info_entry), x++)
-      {
-        il = (struct iw_info_entry *) &bufff[i];
-        debug("s: %d", il->phy);
-      }
-    }
-  }
+  /* if (0) { // Not implemented */
+  /*   struct iw_info_entry *il; */
+  /*   char bufff[1024]; */
+  /*   int len, i, x; */
+  /*   if (iw->info(bufff, &len)) { */
+  /*     for (i = 0, x = 1; i < len; i += sizeof(struct iw_info_entry), x++) */
+  /*     { */
+  /*       il = (struct iw_info_entry *) &bufff[i]; */
+  /*       debug("s: %d", il->phy); */
+  /*     } */
+  /*   } */
+  /* } */
 }
 
 void format_splash(json_object *jsplash_array)
