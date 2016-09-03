@@ -1725,45 +1725,22 @@ int nl80211_disconnect(char *buf)
   if (req)
   {
 
-    /* char *mac_addr = "3c:15:c2:c0:b8:ae"; */
-    /* NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr); */
-    /* nla_put_u8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 10); */
-
-    char mac[20];
-    strcpy(mac, "3c:15:c2:c0:b8:ae");
-
     unsigned char mac_addr[ETH_ALEN];
 
-    if (mac_addr_a2n(mac_addr, mac)) {
+    if (mac_addr_a2n(mac_addr, buf)) {
       fprintf(stderr, "invalid mac address\n");
       return 2;
     }
     NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr);
-
     /* NLA_PUT_U8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 11); */
 
     nl80211_send(req, NULL, NULL);
-    /* nl80211_free(req); */
+    nl80211_free(req);
     return 0;
   }
 
-  /* int err = do_scan_trigger(); */
-  /* if (err != 0) { */
-  /*   printf("do_scan_trigger() failed with %d.\n", err); */
-  /*   return err; */
-  /* } */
-
-  /* req = nl80211_msg(ifname, NL80211_CMD_GET_SCAN, NLM_F_DUMP); */
-  /* if (req) */
-  /* { */
-  /*   nl80211_send(req, get_scan, &sl); */
-  /*   nl80211_free(req); */
-  /* } */
-
-  /* *len = sl.len * sizeof(struct iw_scanlist_entry); */
-  /* return *len ? 1 : 0; */
 nla_put_failure:
-  debug("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+  return 1;
 }
 
 const struct iw_ops nl80211_exec = {

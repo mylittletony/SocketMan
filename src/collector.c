@@ -306,7 +306,9 @@ void run_interface_scan(json_object *jiface_array,
   // Check chipset / drivers required
   iw = &nl80211_exec;
 
-  iw->disconnect(NULL);
+  char mac[20];
+  strcpy(mac, "3c:15:c2:c0:b8:ae");
+  iw->disconnect(mac);
   // Can cause mem. leak if no SSIDS
   /* iw->ssids(ssids, &len); */
 
