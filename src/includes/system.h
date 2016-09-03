@@ -16,7 +16,7 @@ struct SystemInfo
 };
 #endif
 
-void reboot();
+int reboot();
 void machine_type(char *type);
 void clear_caches();
 struct SystemInfo system_info();

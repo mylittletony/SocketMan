@@ -10,12 +10,10 @@
 #include "math.h"
 #include <fcntl.h>
 
-void reboot() {
-  debug("Rebooooottting!");
-  debug("Rebooooottting!");
-  debug("Rebooooottting!");
-  debug("Rebooooottting!");
-  system("reboot");
+int reboot() {
+  debug("Rebooting system");
+  int i = system("reboot");
+  return i;
 }
 
 void machine_type(char *type)

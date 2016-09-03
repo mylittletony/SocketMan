@@ -177,18 +177,17 @@ struct defaultRoute route()
   return dr;
 }
 
+void recover_network() {
+  // Not implemented yet
+  /* if (strcmp(OS, "OPENWRT") == 0); */
+  /* if (strcmp(OS, "LINUX") == 0); */
+}
+
 void restart_network() {
-  debug("Restarting networks then sleeping for a bit.");
-  int rc = strcmp(OS, "OPENWRT");
-  if (rc == 0) {
+  if (strcmp(OS, "OPENWRT") == 0)
     system("/etc/init.d/network restart");
-  } else {
-    /* Not implemented */
-    int rc = strcmp(OS, "LINUX");
-    if (rc == 0) {
-      system("/etc/init.d/network restart");
-    }
-  }
+  if (strcmp(OS, "LINUX") == 0)
+    system("/etc/init.d/network restart");
 }
 
 static int get_interface_common(const int fd, struct ifreq *const ifr, struct interface *const info)

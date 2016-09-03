@@ -31,7 +31,7 @@ void flag(char *error) {
 
 int open_socket(char *ip)
 {
-  debug("CHECKING THE SOCKET!");
+  /* debug("CHECKING THE SOCKET!"); */
   struct sockaddr_in address;
   short int sock = -1;
   fd_set fdset;
@@ -69,7 +69,6 @@ int open_socket(char *ip)
 int connection_check()
 {
   struct addrinfo *result;
-  /* struct addrinfo *res; */
   struct in_addr addr;
 
   int error;
@@ -147,10 +146,4 @@ out_error:
 
   errno = saved_errno;
   return 0;
-}
-
-void recover_network() {
-  // Not implemented yet
-  /* if (strcmp(OS, "OPENWRT") == 0); */
-  /* if (strcmp(OS, "LINUX") == 0); */
 }

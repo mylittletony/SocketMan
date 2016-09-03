@@ -7,6 +7,7 @@
 #include "options.h"
 #include "network.h"
 #include "tools.h"
+#include "system.h"
 #include "collector.h"
 #include "platform.h"
 #include "helper.h"
@@ -21,7 +22,7 @@
 int delay = 5;
 
 time_t went_offline;
-int online, tried_backup;
+int tried_backup;
 
 void restart_or_reboot();
 void heartbeat();
@@ -31,6 +32,12 @@ void go_offline();
 void monitor();
 void recover_connection();
 
+void reset()
+{
+  went_offline = 0;
+  delay = 5;
+}
+
 void run_monitor()
 {
   struct defaultRoute dr = route();
@@ -39,9 +46,9 @@ void run_monitor()
   if (strlen(dr.ip) != 0)
   {
     debug("Default route: %s", dr.ip);
-    if ( connection_check() )
+    if (connection_check())
     {
-      if (online) {
+      if (went_offline == 0) {
         debug("CONNECTION WORKING !!!!");
       } else {
         recover_connection();
@@ -50,18 +57,19 @@ void run_monitor()
       return;
     }
   } else {
-    debug("NO ROUTE");
+    debug("No route found");
   }
   go_offline();
 }
 
 void go_offline() {
-  online = 0;
-  debug("DEVICE OFFLINE");
-  if (went_offline == 0) {
+  int online = 0;
+  if (went_offline == 0)
     went_offline = time(NULL);
-    /* debug("Setting offline to %lld", went_offline); */
-  }
+
+  // Fill-in reason
+  debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, 1);
+
   attempt_recovery();
   collect_and_send_data(online);
   restart_or_reboot();
@@ -76,7 +84,7 @@ void restore_original()
   if (copy_file(NETWORK_BAK, NETWORK_FILE) != 1) {
     if (access(NETWORK_FILE, F_OK ) == -1)
       recover_network();
-      debug("I HAVE NO NETWORK FILE!");
+    debug("I HAVE NO NETWORK FILE!");
   }
 }
 
@@ -103,12 +111,23 @@ void attempt_recovery()
 {
   if (should_recover())
     debug("Trying to connect with the backup config.");
-    recover_network_config();
+  recover_network_config();
 }
 
-int should_restart_network() {
-  time_t now = time(NULL);
-  return (delay >= MAX_INTERVAL) || ((now - went_offline) >= delay);
+int should_reboot()
+{
+  if (options.reboot > 0 && went_offline > 0)
+    return (time(NULL) - went_offline) >= options.reboot;
+  return 0;
+}
+
+int should_restart_network()
+{
+  if ((delay >= MAX_INTERVAL) ||
+    ((time(NULL) - went_offline) >= delay)) {
+      debug("Restarting network after %d second delay", delay);
+      return 1;
+    }
 }
 
 int network_restart() {
@@ -118,22 +137,24 @@ int network_restart() {
 
 void restart_or_reboot()
 {
-  if (options.reboot > 60 && (delay >= options.reboot)) {
-    reboot();
+  if (should_reboot()) {
+    if (reboot() != 0) {
+      debug("Could not restart the device.");
+      reset();
+    }
     return;
   } else {
     network_restart();
   }
   delay *= 2;
-  debug("Delay now set to %d seconds. Sleeping for %d before re-check.", delay, OFFLINE_INTERVAL);
+  debug("Network restart delay set to %d seconds. Sleeping for %d before connection check.", delay, OFFLINE_INTERVAL);
   sleep(OFFLINE_INTERVAL);
   monitor();
 }
 
 void recover_connection() {
-  debug("CONNECTION RECOVERED!");
-  delay = 5;
-  went_offline = 0;
+  debug("Connection recovered!");
+  reset();
 }
 
 void backup_config()
@@ -148,7 +169,7 @@ void backup_config()
 void heartbeat()
 {
   backup_config();
-  collect_and_send_data(online);
+  collect_and_send_data(1);
 
   debug("Sleeping for %d seconds.", options.monitor);
   sleep(options.monitor);
@@ -164,7 +185,7 @@ void monitor()
 
   do
   {
-    online = 1;
+    /* online = 1; */
     run_monitor();
   }
   while(1);
