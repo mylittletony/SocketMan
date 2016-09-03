@@ -1740,7 +1740,7 @@ int nl80211_disconnect(char *buf)
     }
     NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr);
 
-    NLA_PUT_U8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 11);
+    /* NLA_PUT_U8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 11); */
 
     nl80211_send(req, NULL, NULL);
     /* nl80211_free(req); */
