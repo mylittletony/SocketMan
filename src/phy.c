@@ -1718,7 +1718,7 @@ int nl80211_run_scan(const char *ifname, char *buf, int *len)
 
 int nl80211_disconnect(char *buf)
 {
-  debug("Disconnecting client");
+  debug("Disconnecting client %s", buf);
   struct nl80211_msg_conveyor *req;
 
   req = nl80211_msg("wlan1", NL80211_CMD_DEL_STATION, 0);
@@ -1732,7 +1732,7 @@ int nl80211_disconnect(char *buf)
       return 2;
     }
     NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr);
-    /* NLA_PUT_U8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 11); */
+    NLA_PUT_U8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 10);
 
     nl80211_send(req, NULL, NULL);
     nl80211_free(req);
