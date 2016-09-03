@@ -1724,11 +1724,14 @@ int nl80211_disconnect(char *buf)
   req = nl80211_msg("wlan1", NL80211_CMD_DEL_STATION, 0);
   if (req)
   {
+
     /* char *mac_addr = "3c:15:c2:c0:b8:ae"; */
     /* NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr); */
     /* nla_put_u8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 10); */
 
-    char *mac = "3c:15:c2:c0:b8:ae";
+    char mac[20];
+    strcpy(mac, "3c:15:c2:c0:b8:ae");
+
     unsigned char mac_addr[ETH_ALEN];
 
     if (mac_addr_a2n(mac_addr, mac)) {
