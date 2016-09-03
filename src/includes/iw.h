@@ -16,6 +16,8 @@
 #ifndef __IW_H
 #define __IW_H
 
+#define ETH_ALEN 6
+
 /* #include <ctype.h> */
 /* #include <netlink/genl/genl.h> */
 /* #include <netlink/genl/family.h> */

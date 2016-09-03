@@ -32,4 +32,6 @@ struct splash_ops {
   void (*clients)(struct splash_list **);
 };
 
+int mac_addr_a2n(unsigned char *mac_addr, char *arg);
+
 #endif

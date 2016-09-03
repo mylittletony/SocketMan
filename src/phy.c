@@ -18,10 +18,10 @@
 #include <errno.h>
 #include "iw.h"
 #include "phy.h"
+#include "utils.h"
 
 #define min(x, y) ((x) < (y)) ? (x) : (y)
 #define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
-#define ETH_ALEN 6
 
 static struct nl80211_state *nlstate = NULL;
 static int (*registered_handler)(struct nl_msg *, void *);
@@ -1724,14 +1724,20 @@ int nl80211_disconnect(char *buf)
   req = nl80211_msg("wlan1", NL80211_CMD_DEL_STATION, 0);
   if (req)
   {
-    char *mac_addr = "3c:15:c2:c0:b8:ae";
-    NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr);
+    /* char *mac_addr = "3c:15:c2:c0:b8:ae"; */
+    /* NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr); */
     /* nla_put_u8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 10); */
 
-    /* char mac_addr[20]; */
-    /* strcpy(mac_addr, "3c:15:c2:c0:b8:ae"); */
-    /* NLA_PUT(cv->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr); */
-    /* NLA_PUT_U8(cv->msg, NL80211_ATTR_MGMT_SUBTYPE, 11); */
+    char *mac = "3c:15:c2:c0:b8:ae";
+    unsigned char mac_addr[ETH_ALEN];
+
+    if (mac_addr_a2n(mac_addr, mac)) {
+      fprintf(stderr, "invalid mac address\n");
+      return 2;
+    }
+    NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr);
+
+    NLA_PUT_U8(req->msg, NL80211_ATTR_MGMT_SUBTYPE, 11);
 
     nl80211_send(req, NULL, NULL);
     /* nl80211_free(req); */
