@@ -179,8 +179,6 @@ struct defaultRoute route()
 
 void recover_network() {
   // Not implemented yet
-  /* if (strcmp(OS, "OPENWRT") == 0); */
-  /* if (strcmp(OS, "LINUX") == 0); */
 }
 
 void restart_network() {
