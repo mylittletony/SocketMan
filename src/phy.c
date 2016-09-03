@@ -1721,7 +1721,7 @@ int nl80211_disconnect(char *buf)
   debug("Disconnecting client");
   struct nl80211_msg_conveyor *req;
 
-  req = nl80211_msg("wlan0", NL80211_CMD_DEL_STATION, 0);
+  req = nl80211_msg("wlan1", NL80211_CMD_DEL_STATION, 0);
   if (req)
   {
     char *mac_addr = "3c:15:c2:c0:b8:ae";
