@@ -306,6 +306,7 @@ void run_interface_scan(json_object *jiface_array,
   // Check chipset / drivers required
   iw = &nl80211_exec;
 
+  iw->disconnect(NULL);
   // Can cause mem. leak if no SSIDS
   iw->ssids(ssids, &len);
 
@@ -496,7 +497,7 @@ void collect_data(int online)
 
   struct SystemInfo info = system_info();
 
-  if (options.no_survey != 1)
+  if (options.no_scan != 1)
   {
     debug("Running WiFi Collection");
 

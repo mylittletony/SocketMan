@@ -150,6 +150,7 @@ struct iw_ops {
   int (*encryption)(const char *, char *);
   int (*stations)(const char *, char *, int *);
   int (*info)(char *, int *);
+  int (*disconnect)(char *);
 };
 
 const struct iw_ops nl80211_exec;

@@ -21,6 +21,7 @@
 
 #define min(x, y) ((x) < (y)) ? (x) : (y)
 #define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
+#define ETH_ALEN 6
 
 static struct nl80211_state *nlstate = NULL;
 static int (*registered_handler)(struct nl_msg *, void *);
@@ -1715,6 +1716,40 @@ int nl80211_run_scan(const char *ifname, char *buf, int *len)
   return *len ? 1 : 0;
 }
 
+int nl80211_disconnect(char *buf)
+{
+  debug("Disconnecting client");
+  struct nl80211_msg_conveyor *req;
+
+  req = nl80211_msg("wlan0", NL80211_CMD_DEL_STATION, 0);
+  if (req)
+  {
+    char *mac_addr = "3c:15:c2:c0:b8:ae";
+    NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr);
+
+    nl80211_send(req, NULL, NULL);
+    nl80211_free(req);
+  }
+
+  /* int err = do_scan_trigger(); */
+  /* if (err != 0) { */
+  /*   printf("do_scan_trigger() failed with %d.\n", err); */
+  /*   return err; */
+  /* } */
+
+  /* req = nl80211_msg(ifname, NL80211_CMD_GET_SCAN, NLM_F_DUMP); */
+  /* if (req) */
+  /* { */
+  /*   nl80211_send(req, get_scan, &sl); */
+  /*   nl80211_free(req); */
+  /* } */
+
+  /* *len = sl.len * sizeof(struct iw_scanlist_entry); */
+  /* return *len ? 1 : 0; */
+nla_put_failure:
+  debug("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+}
+
 const struct iw_ops nl80211_exec = {
   .name           = "nl80211",
   .txpower        = nl80211_get_txpower,
@@ -1730,4 +1765,5 @@ const struct iw_ops nl80211_exec = {
   .encryption     = nl80211_get_encryption,
   .stations       = nl80211_get_stations,
   .info           = nl80211_get_info,
+  .disconnect     = nl80211_disconnect
 };

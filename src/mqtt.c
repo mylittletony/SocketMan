@@ -83,10 +83,10 @@ void mqtt_connect() {
         return;
       }
 
-      if(pthread_join(conn_thread, NULL)) {
-        fprintf(stderr, "Error joining thread\n");
-        return;
-      }
+      /* if(pthread_join(conn_thread, NULL)) { */
+      /*   fprintf(stderr, "Error joining thread\n"); */
+      /*   return; */
+      /* } */
     };
   } else {
     debug("No MQTT host, skipping connect.");
