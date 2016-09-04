@@ -68,9 +68,9 @@ int open_socket(char *ip)
     if (send(sock , message , strlen(message) , 0) < 0)
       error = 180;
 
-    char server_reply[2000];
-    if( recv(sock, server_reply , 2000 , 0) < 0)
-      error = 190;
+    /* char server_reply[2000]; */
+    /* if( recv(sock, server_reply , 2000 , 0) < 0) */
+    /*   error = 190; */
   }
 
   /* shutdown(sock, SHUT_RDWR); */
