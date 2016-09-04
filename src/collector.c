@@ -575,6 +575,7 @@ void collect_data(int online)
   json_object *jprocs = json_object_new_int(info.procs);
   json_object_object_add(jattr, "procs", jprocs);
 
+  // Reason code ! //
   bool bonline = online ? true : false;
   json_object *jonline = json_object_new_boolean(bonline);
   json_object_object_add(jattr, "online", jonline);
@@ -598,7 +599,9 @@ void collect_data(int online)
 
   json_object_object_add(jobj, "device", jattr);
 
-  if (online && post(jobj)) {
+  // Should try and post, even if not online //
+  if (post(jobj)) {
+    /* if success / online */
     // Lookin' good
   } else {
     // Cache

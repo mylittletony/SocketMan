@@ -20,8 +20,8 @@
 #endif
 
 /// CONFIG ///
-int port = 53;
-char *hostname = "health.cucumberwifi.io";
+int port = 443;
+char *hostname = "api.ctapp.io";
 /// CONFIG ///
 
 void flag(char *error) {
@@ -31,34 +31,42 @@ void flag(char *error) {
 
 int open_socket(char *ip)
 {
-  int error = 200; // Socket error
+  int error = 0; // Socket error
   struct sockaddr_in address;
   short int sock = -1;
   fd_set fdset;
   struct timeval tv;
 
+  sock = socket(PF_INET, SOCK_STREAM , 0);
+  if (sock < 0)
+    return 150;
+
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = inet_addr(ip);
   address.sin_port = htons(port);
+  /* address.sin_addr.s_addr = INADDR_ANY; */
 
-  sock = socket(AF_INET, SOCK_STREAM, 0);
-  fcntl(sock, F_SETFL, O_NONBLOCK);
-
-  connect(sock, (struct sockaddr *)&address, sizeof(address));
+  /* int yes = 1; */
+  /* setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)); */
 
   FD_ZERO(&fdset);
   FD_SET(sock, &fdset);
   tv.tv_sec =  3;
   tv.tv_usec = 0;
 
-  if (select(sock + 1, NULL, &fdset, NULL, &tv) == 1)
-  {
-    int so_error;
-    socklen_t len = sizeof so_error;
-    getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
-    error = so_error;
+  setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
+  setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv,sizeof(struct timeval));
+
+  if (connect(sock, (struct sockaddr *)&address , sizeof(address)) < 0)
+    error = 150;
+
+  if (error == 0) {
+    char *message = "HELLO";
+    if (send(sock , message , strlen(message) , 0) < 0)
+      error = 180;
   }
 
+  shutdown(sock, SHUT_RDWR);
   close(sock);
   return error;
 }
