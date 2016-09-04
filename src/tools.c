@@ -21,8 +21,8 @@
 
 /// CONFIG ///
 int port = 443;
-char *hostname = "google.com";
-/* char *hostname = "api.ctapp.io"; */
+/* char *hostname = "google.com"; */
+char *hostname = "api.ctapp.io";
 /* char *hostname = "health.cucumberwifi.io"; */
 /// CONFIG ///
 
