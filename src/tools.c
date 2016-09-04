@@ -21,7 +21,9 @@
 
 /// CONFIG ///
 int port = 443;
-char *hostname = "api.ctapp.io";
+char *hostname = "google.com";
+/* char *hostname = "api.ctapp.io"; */
+/* char *hostname = "health.cucumberwifi.io"; */
 /// CONFIG ///
 
 void flag(char *error) {
@@ -36,6 +38,7 @@ int open_socket(char *ip)
   short int sock = -1;
   fd_set fdset;
   struct timeval tv;
+  int so_keepalive = 0;
 
   sock = socket(PF_INET, SOCK_STREAM , 0);
   if (sock < 0)
@@ -46,16 +49,16 @@ int open_socket(char *ip)
   address.sin_port = htons(port);
   /* address.sin_addr.s_addr = INADDR_ANY; */
 
-  /* int yes = 1; */
-  /* setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)); */
-
   FD_ZERO(&fdset);
   FD_SET(sock, &fdset);
   tv.tv_sec =  3;
   tv.tv_usec = 0;
 
-  setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
-  setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv,sizeof(struct timeval));
+  int yes = 1;
+  setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int));
+  setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
+  setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv, sizeof(struct timeval));
+  setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &so_keepalive, sizeof(so_keepalive));
 
   if (connect(sock, (struct sockaddr *)&address , sizeof(address)) < 0)
     error = 150;
@@ -64,9 +67,13 @@ int open_socket(char *ip)
     char *message = "HELLO";
     if (send(sock , message , strlen(message) , 0) < 0)
       error = 180;
+
+    char server_reply[2000];
+    if( recv(sock, server_reply , 2000 , 0) < 0)
+      error = 190;
   }
 
-  shutdown(sock, SHUT_RDWR);
+  /* shutdown(sock, SHUT_RDWR); */
   close(sock);
   return error;
 }
