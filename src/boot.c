@@ -131,8 +131,8 @@ void *parse_config(char *buffer)
     strcat(options.status_topic, options.mac);
   }
 
-  if (strcmp(options.health_url, "") != 0)
-    strcat(options.health_url, "health.cucumberwifi.io");
+  if (strcmp(options.health_url, "") == 0)
+    strcpy(options.health_url, "health.cucumberwifi.io");
 
   if (!options.health_port)
     options.health_port = 53;

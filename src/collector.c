@@ -477,6 +477,9 @@ void format_dhcp(json_object *jdhcp_array)
 
 void collect_data(int online)
 {
+  struct timespec tstart={0,0}, tend={0,0};
+  clock_gettime(CLOCK_MONOTONIC, &tstart);
+
   debug("Collecting the device stats");
 
   char rx[21], tx[21], wan_ip[21];
@@ -598,6 +601,11 @@ void collect_data(int online)
   // MQTT STATUS
 
   json_object_object_add(jobj, "device", jattr);
+
+  clock_gettime(CLOCK_MONOTONIC, &tend);
+  printf("Stats collection finished in %.5f seconds\n",
+      ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
+      ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
   // Should try and post, even if not online //
   if (post(jobj)) {

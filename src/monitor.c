@@ -167,7 +167,7 @@ void backup_config()
 void heartbeat()
 {
   if (went_offline == 0) {
-    debug("CONNECTION WORKING !!!!");
+    debug("Connection check passed, all systems go.");
   } else {
     recover_connection();
   }
@@ -176,7 +176,6 @@ void heartbeat()
 
   debug("Sleeping for %d seconds.", options.monitor);
   sleep(options.monitor);
-  /* monitor(); */
 }
 
 void monitor()
@@ -188,7 +187,6 @@ void monitor()
 
   do
   {
-    /* online = 1; */
     run_monitor();
   }
   while(1);
