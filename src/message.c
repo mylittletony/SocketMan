@@ -25,7 +25,7 @@ void parse_message(const char *msg)
 {
   int save = 0;
   char id[100];
-  char cmd[100];
+  char cmd[10000];
 
   json_object *jobj = json_tokener_parse(msg);
 

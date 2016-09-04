@@ -39,6 +39,7 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
 void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
 {
   if (message->payloadlen)
+    debug("Inbound message recieved");
     process_message((const char*)message->payload);
 }
 
