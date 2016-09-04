@@ -11,6 +11,7 @@ struct _options {
   char url[128];
   char backup_url[128];
   char boot_url[128];
+  char health_url[128];
   char boot_cmd[128];
   char mac[18];
   char cacrt[18];
@@ -21,6 +22,7 @@ struct _options {
   int qos;
   int heartbeat;
   int reboot;
+  int health_port;
   int monitor;
   int sleep;
   int no_scan;

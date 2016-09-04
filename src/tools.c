@@ -19,18 +19,6 @@
 #define   NI_MAXHOST 1025
 #endif
 
-/// CONFIG ///
-int port = 53;
-/* char *hostname = "google.com"; */
-/* char *hostname = "api.ctapp.io"; */
-char *hostname = "health.cucumberwifi.io";
-/// CONFIG ///
-
-void flag(char *error) {
-  // What to do?
-  // Not sure where to log
-}
-
 int open_socket(char *ip)
 {
   int error = 0; // Socket error
@@ -46,8 +34,7 @@ int open_socket(char *ip)
 
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = inet_addr(ip);
-  address.sin_port = htons(port);
-  /* address.sin_addr.s_addr = INADDR_ANY; */
+  address.sin_port = htons(options.health_port);
 
   FD_ZERO(&fdset);
   FD_SET(sock, &fdset);
@@ -63,17 +50,10 @@ int open_socket(char *ip)
   if (connect(sock, (struct sockaddr *)&address , sizeof(address)) < 0)
     error = 150;
 
-  if (error == 0) {
-    char *message = "HELLO";
-    if (send(sock , message , strlen(message) , 0) < 0)
-      error = 180;
+  char *message = "HELLO";
+  if ((error == 0) && (send(sock , message , strlen(message) , 0) < 0))
+    error = 180;
 
-    /* char server_reply[2000]; */
-    /* if( recv(sock, server_reply , 2000 , 0) < 0) */
-    /*   error = 190; */
-  }
-
-  /* shutdown(sock, SHUT_RDWR); */
   close(sock);
   return error;
 }
@@ -85,7 +65,7 @@ int connection_check()
 
   int error;
 
-  error = getaddrinfo(hostname, NULL, NULL, &result);
+  error = getaddrinfo(options.health_url, NULL, NULL, &result);
   if (error != 0)
   {
     fprintf(stderr, "DNS Lookup Failed: %s\n", gai_strerror(error));
@@ -155,3 +135,9 @@ out_error:
   errno = saved_errno;
   return 0;
 }
+
+void flag(char *error) {
+  // What to do?
+  // Not sure where to log
+}
+
