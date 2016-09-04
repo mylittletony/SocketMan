@@ -20,10 +20,10 @@
 #endif
 
 /// CONFIG ///
-int port = 443;
+int port = 53;
 /* char *hostname = "google.com"; */
-char *hostname = "api.ctapp.io";
-/* char *hostname = "health.cucumberwifi.io"; */
+/* char *hostname = "api.ctapp.io"; */
+char *hostname = "health.cucumberwifi.io";
 /// CONFIG ///
 
 void flag(char *error) {
