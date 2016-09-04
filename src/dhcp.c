@@ -10,19 +10,19 @@ void get_clients(struct dhcp_list **buf)
   char *line = NULL;
   size_t len = 0;
 
-  struct dhcp_list *ptr;
-  ptr = malloc(sizeof(struct dhcp_list));
-
-  ptr->next = NULL;
-  conductor = ptr;
-
   fp = fopen(DHCP_LEASES, "r");
-  if(NULL == fp)
+  if(fp == NULL)
     return;
 
   int created;
   char mask[100];
   ssize_t read;
+
+  struct dhcp_list *ptr;
+  ptr = malloc(sizeof(struct dhcp_list));
+
+  ptr->next = NULL;
+  conductor = ptr;
 
   while ((read = getline(&line, &len, fp)) != -1) {
     ptr->next = malloc(sizeof(struct dhcp_list));

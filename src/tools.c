@@ -31,7 +31,6 @@ void flag(char *error) {
 
 int open_socket(char *ip)
 {
-  /* debug("CHECKING THE SOCKET!"); */
   struct sockaddr_in address;
   short int sock = -1;
   fd_set fdset;
@@ -57,13 +56,13 @@ int open_socket(char *ip)
     socklen_t len = sizeof so_error;
     getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
     if (so_error == 0) {
-      return 1;
+      return 0;
     }
   }
 
-  flag("SOCKET");
+  /* flag("SOCKET"); */
   close(sock);
-  return 0;
+  return 200; // Socket error
 }
 
 int connection_check()
@@ -76,9 +75,9 @@ int connection_check()
   error = getaddrinfo(hostname, NULL, NULL, &result);
   if (error != 0)
   {
-    flag("DNS");
+    /* flag("DNS"); */
     fprintf(stderr, "DNS Lookup Failed: %s\n", gai_strerror(error));
-    return 0;
+    return 100;
   }
 
   addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;

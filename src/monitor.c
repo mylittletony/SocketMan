@@ -16,9 +16,9 @@
 #define OFFLINE_INTERVAL 10
 
 // Max time to wait before restarting the network
-#define MAX_INTERVAL 300
+#define MAX_INTERVAL 600
 
-// The delay between connection checks when offline
+// The delay between network restarts when offline
 int delay = 5;
 
 time_t went_offline;
@@ -40,35 +40,31 @@ void reset()
 
 void run_monitor()
 {
+  int rc = 0;
   struct defaultRoute dr = route();
 
   debug("Running the network monitor");
   if (strlen(dr.ip) != 0)
   {
     debug("Default route: %s", dr.ip);
-    if (connection_check())
+    rc = connection_check();
+    if (rc == 0)
     {
-      if (went_offline == 0) {
-        debug("CONNECTION WORKING !!!!");
-      } else {
-        recover_connection();
-      }
       heartbeat();
       return;
     }
   } else {
     debug("No route found");
   }
-  go_offline();
+  go_offline(rc);
 }
 
-void go_offline() {
+void go_offline(int reason) {
   int online = 0;
   if (went_offline == 0)
     went_offline = time(NULL);
 
-  // Fill-in reason
-  debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, 1);
+  debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason);
 
   attempt_recovery();
   collect_and_send_data(online);
@@ -146,7 +142,9 @@ void restart_or_reboot()
   } else {
     network_restart();
   }
-  delay *= 2;
+  if (delay <= MAX_INTERVAL)
+    delay *= 2;
+
   debug("Network restart delay set to %d seconds. Sleeping for %d before connection check.", delay, OFFLINE_INTERVAL);
   sleep(OFFLINE_INTERVAL);
   monitor();
@@ -168,12 +166,17 @@ void backup_config()
 
 void heartbeat()
 {
+  if (went_offline == 0) {
+    debug("CONNECTION WORKING !!!!");
+  } else {
+    recover_connection();
+  }
   backup_config();
   collect_and_send_data(1);
 
   debug("Sleeping for %d seconds.", options.monitor);
   sleep(options.monitor);
-  monitor();
+  /* monitor(); */
 }
 
 void monitor()
