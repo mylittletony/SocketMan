@@ -17,6 +17,11 @@ time_t m0=0;
 
 int dial_mqtt();
 
+void read_message()
+{
+
+}
+
 void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
 {
   if(!result) {
@@ -28,11 +33,10 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
     char topic[k+n+19];
     topic_id_generate(topic, options.topic, options.key);
 
-    options.qos = 0;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
     if (strcmp(options.status_topic, "") != 0)
-      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 0, false);
+      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 1, false);
   }
 }
 
@@ -40,7 +44,19 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
 {
   if (message->payloadlen)
     debug("Inbound message recieved");
-    process_message((const char*)message->payload);
+
+  char id[100];
+  char cmd[10000];
+  id[0] = '\0';
+  cmd[0] = '\0';
+
+  process_message((const char*)message->payload, cmd, id);
+  if (id[0] != '\0') {
+    mosquitto_publish(mosq, 0, options.status_topic, strlen(id), id, 1, false);
+    debug("READ: %s", id);
+  }
+  if (cmd[0] != '\0')
+    process_cmd(cmd, id);
 }
 
 void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos)
