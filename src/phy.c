@@ -563,6 +563,10 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
     mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
   }
 
+  if (mcs < 0) {
+    mcs = 0;
+  }
+
   *buf = mcs;
 }
 
