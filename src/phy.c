@@ -564,9 +564,9 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
   }
 
   debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS %d", mcs);
-  if (mcs < 0) {
-    mcs = 0;
-  }
+  /* if (mcs < 0) { */
+  /*   mcs = 0; */
+  /* } */
 
   *buf = mcs;
 }
