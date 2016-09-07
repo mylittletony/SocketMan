@@ -556,11 +556,11 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
 
   if (rinfo[NL80211_RATE_INFO_VHT_MCS])
   {
-    mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_VHT_MCS]);
+    mcs = (int8_t)nla_get_u8(rinfo[NL80211_RATE_INFO_VHT_MCS]);
   }
   else if (rinfo[NL80211_RATE_INFO_MCS])
   {
-    mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
+    mcs = (int8_t)nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
   }
 
   debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS %d", mcs);
