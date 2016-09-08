@@ -573,6 +573,7 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
   /*   pos += snprintf(pos, buflen - (pos - buf), */
   /*       " VHT-MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_VHT_MCS])); */
 
+  debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS %d", mcs);
   *buf = mcs;
 
 
@@ -593,7 +594,6 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
   /* } */
 
   /* mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]); */
-  /* debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS %d", mcs); */
   /* /1* if (mcs < 0) { *1/ */
   /* /1*   mcs = 0; *1/ */
   /* /1* } *1/ */
