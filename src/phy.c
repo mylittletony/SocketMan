@@ -1045,7 +1045,7 @@ static int get_stations(struct nl_msg *msg, void *arg)
     sl->s->rx_bitrate = buf;
 
     int8_t buff = 0;
-    parse_mcs(sinfo[NL80211_STA_INFO_TX_BITRATE], &buff);
+    parse_mcs(sinfo[NL80211_STA_INFO_RX_BITRATE], &buff);
     sl->s->mcs = buff;
   }
 

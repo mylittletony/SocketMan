@@ -217,7 +217,6 @@ void format_stations(const char *ssid,
   json_object_object_add(jstations, "expected_tput", jexpected_tput);
 
   int8_t mcs = s->mcs;
-  debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD %d", mcs);
   json_object *jmcs = json_object_new_int(mcs);
   json_object_object_add(jstations, "mcs", jmcs);
 }
