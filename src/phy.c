@@ -541,6 +541,7 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
 {
   int mcs = 0;
   struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
+
   static struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = {
     [NL80211_RATE_INFO_BITRATE] = { .type = NLA_U16 },
     [NL80211_RATE_INFO_BITRATE32] = { .type = NLA_U32 },
@@ -556,11 +557,11 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
 
   if (rinfo[NL80211_RATE_INFO_VHT_MCS])
   {
-    mcs = (int8_t)nla_get_u8(rinfo[NL80211_RATE_INFO_VHT_MCS]);
+    mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_VHT_MCS]);
   }
   else if (rinfo[NL80211_RATE_INFO_MCS])
   {
-    mcs = (int8_t)nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
+    mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
   }
 
   debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS %d", mcs);
