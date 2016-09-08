@@ -539,9 +539,10 @@ void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
 
 void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
 {
-  int mcs = 0;
-  struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
 
+  int mcs = 0;
+  char *pos = buf;
+  struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
   static struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = {
     [NL80211_RATE_INFO_BITRATE] = { .type = NLA_U16 },
     [NL80211_RATE_INFO_BITRATE32] = { .type = NLA_U32 },
@@ -552,16 +553,52 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
 
   if (nla_parse_nested(rinfo, NL80211_RATE_INFO_MAX,
         bitrate_attr, rate_policy)) {
+    /* snprintf(buf, buflen, "failed to parse nested rate attributes!"); */
     return;
   }
 
-  mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
-  debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS %d", mcs);
-  /* if (mcs < 0) { */
-  /*   mcs = 0; */
-  /* } */
+  /* if (rinfo[NL80211_RATE_INFO_BITRATE32]) */
+  /*   rate = nla_get_u32(rinfo[NL80211_RATE_INFO_BITRATE32]); */
+  /* else if (rinfo[NL80211_RATE_INFO_BITRATE]) */
+  /*   rate = nla_get_u16(rinfo[NL80211_RATE_INFO_BITRATE]); */
+  /* if (rate > 0) */
+  /* pos += snprintf(pos, buflen - (pos - buf), */
+  /*     "%d.%d MBit/s", rate / 10, rate % 10); */
+
+  if (rinfo[NL80211_RATE_INFO_MCS])
+    mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
+    /* pos += snprintf(pos, buflen - (pos - buf), */
+    /*     " MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_MCS])); */
+  /* if (rinfo[NL80211_RATE_INFO_VHT_MCS]) */
+  /*   pos += snprintf(pos, buflen - (pos - buf), */
+  /*       " VHT-MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_VHT_MCS])); */
 
   *buf = mcs;
+
+
+  /* int mcs = 0; */
+  /* struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1]; */
+
+  /* static struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = { */
+  /*   [NL80211_RATE_INFO_BITRATE] = { .type = NLA_U16 }, */
+  /*   [NL80211_RATE_INFO_BITRATE32] = { .type = NLA_U32 }, */
+  /*   [NL80211_RATE_INFO_MCS] = { .type = NLA_U8 }, */
+  /*   [NL80211_RATE_INFO_40_MHZ_WIDTH] = { .type = NLA_FLAG }, */
+  /*   [NL80211_RATE_INFO_SHORT_GI] = { .type = NLA_FLAG }, */
+  /* }; */
+
+  /* if (nla_parse_nested(rinfo, NL80211_RATE_INFO_MAX, */
+  /*       bitrate_attr, rate_policy)) { */
+  /*   return; */
+  /* } */
+
+  /* mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]); */
+  /* debug("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS %d", mcs); */
+  /* /1* if (mcs < 0) { *1/ */
+  /* /1*   mcs = 0; *1/ */
+  /* /1* } *1/ */
+
+  /* *buf = mcs; */
 }
 
 int nl80211_init(void)
