@@ -569,6 +569,9 @@ void collect_data(int online)
     json_object_object_add(jattr, "machine_type", jmachine);
   }
 
+  json_object *jmac = json_object_new_string(options.mac);
+  json_object_object_add(jattr, "mac", jmac);
+
   json_object *jtx = json_object_new_string(tx);
   json_object_object_add(jattr, "tx_bytes", jtx);
 
