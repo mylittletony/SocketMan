@@ -1046,7 +1046,7 @@ static int get_stations(struct nl_msg *msg, void *arg)
 
     int8_t buff = 0;
     parse_mcs(sinfo[NL80211_STA_INFO_TX_BITRATE], &buff);
-    sl->s->mcs = buf;
+    sl->s->mcs = buff;
   }
 
   if (sinfo[NL80211_STA_INFO_EXPECTED_THROUGHPUT]) {
