@@ -107,6 +107,8 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
+
+    // Remove when not testing
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     if(do_curl(curl, url) == 0) {
