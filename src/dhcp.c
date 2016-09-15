@@ -28,7 +28,7 @@ void get_clients(struct dhcp_list **buf)
     ptr->next = malloc(sizeof(struct dhcp_list));
     if (ptr->next == NULL) break;
 
-    sscanf(line, "%d %s %s %s %s\n",
+    sscanf(line, "%d %17s %19s %254s %99s\n",
         &created,
         ptr->mac,
         ptr->ip,
