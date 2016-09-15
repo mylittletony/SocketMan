@@ -134,7 +134,7 @@ void parseRoutes(struct nlmsghdr *nlHdr,
 
 struct defaultRoute route()
 {
-  struct defaultRoute dr;
+  struct defaultRoute dr = { 0 };
   struct nlmsghdr *nlMsg;
   struct route_info *rtInfo;
   char msgBuf[BUFSIZE];
