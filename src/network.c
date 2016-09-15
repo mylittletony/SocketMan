@@ -439,7 +439,7 @@ struct InterfaceStats stats(char *interface)
 {
   struct rtnl_link *link;
   struct nl_sock *socket;
-  uint64_t kbytes_in, kbytes_out, rxerrors, txerrors;
+  uint64_t kbytes_in = 0, kbytes_out = 0, rxerrors = 0, txerrors = 0;
 
   socket = nl_socket_alloc();
   nl_connect(socket, NETLINK_ROUTE);
