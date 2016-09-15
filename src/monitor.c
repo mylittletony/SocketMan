@@ -129,6 +129,7 @@ int should_restart_network()
 int network_restart() {
   if (should_restart_network())
     restart_network();
+  return 0;
 }
 
 void restart_or_reboot()
