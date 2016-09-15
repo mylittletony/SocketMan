@@ -318,6 +318,7 @@ int read_event(int sockint, int (*msg_handler)(struct sockaddr_nl *,
   if(status == 0)
   {
     printf("read_netlink: EOF\n");
+    return ret;
   }
 
   /* We need to handle more than one message per 'recvmsg' */
