@@ -77,7 +77,7 @@ void readlineToBuffer(char *file, char *buffer) {
 
       fseek(sinfile,0L,SEEK_SET);
       if(snumbytes >= 0)
-        sbuffer = (char*)calloc(snumbytes,sizeof(char));
+        sbuffer = (char*)calloc(snumbytes+1,sizeof(char));
 
       if(sbuffer != NULL) {
         fread(sbuffer,sizeof(char),snumbytes,sinfile);
