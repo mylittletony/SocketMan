@@ -158,6 +158,7 @@ struct defaultRoute route()
 
   if (send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0) {
     debug("Write To Socket Failed...\n");
+    close(sock);
     return dr;
   }
 
