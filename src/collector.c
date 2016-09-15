@@ -482,7 +482,7 @@ void collect_data(int online)
 
   debug("Collecting the device stats");
 
-  char rx[21], tx[21], wan_ip[21];
+  char rx[21], tx[21], wan_ip[21] = "";
   json_object *jobj = json_object_new_object();
   json_object *jattr = json_object_new_object();
 
