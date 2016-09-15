@@ -66,7 +66,7 @@ void *reconnect(void *x)
   return NULL;
 }
 
-void my_disconnect_callback()
+void my_disconnect_callback(struct mosquitto *mosq, void *userdata, int rc)
 {
   connected = false;
   debug("MQTT Lost connected to %s", options.mqtt_host);
