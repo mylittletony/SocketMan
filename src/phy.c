@@ -1122,7 +1122,7 @@ static int get_scan(struct nl_msg *msg, void *arg)
   struct nlattr *bss[NL80211_BSS_MAX + 1];
   char mac_addr[20];
   struct nl80211_scanlist *sl = arg;
-  uint16_t caps;
+  uint16_t caps = 0;
 
   static struct nla_policy bss_policy[NL80211_BSS_MAX + 1] = {
     [NL80211_BSS_TSF] = { .type = NLA_U64 },
