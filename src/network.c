@@ -281,8 +281,10 @@ int open_netlink()
   addr.nl_family = AF_NETLINK;
   addr.nl_pid = getpid();
   addr.nl_groups = RTMGRP_LINK|RTMGRP_IPV4_IFADDR|RTMGRP_IPV6_IFADDR;
-  if (bind(sock,(struct sockaddr *)&addr,sizeof(addr))<0)
+  if (bind(sock,(struct sockaddr *)&addr,sizeof(addr))<0) {
+    close(sock);
     return -1;
+  }
   return sock;
 }
 
