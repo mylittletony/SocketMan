@@ -40,7 +40,7 @@ int should_collect() {
   return 0;
 }
 
-void *format_ssids(const struct iw_ops *iw,
+void format_ssids(const struct iw_ops *iw,
     struct iw_ssid_entry *e,
     json_object *jssids, int len)
 {
