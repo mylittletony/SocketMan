@@ -91,8 +91,8 @@ void readlineToBuffer(char *file, char *buffer) {
         }
       }
       free(sbuffer);
+      fclose(sinfile);
     }
-    fclose(sinfile);
     return;
   }
 
