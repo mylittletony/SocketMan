@@ -54,9 +54,9 @@ void machine_type(char *type)
 
 struct SystemInfo system_info() {
   struct sysinfo info;
+  struct SystemInfo s = { 0 };
   if ( sysinfo (&info) != -1 ){
 
-    struct SystemInfo s;
     double pf = (double)info.freeram / (double)info.totalram;
 
     // Not functioning
@@ -73,6 +73,6 @@ struct SystemInfo system_info() {
     s.load_1 = info.loads[0] / LINUX_SYSINFO_LOADS_SCALE;
     s.load_5 = info.loads[1] / LINUX_SYSINFO_LOADS_SCALE;
     s.load_15 = info.loads[2] / LINUX_SYSINFO_LOADS_SCALE;
-    return s;
   }
+  return s;
 }
