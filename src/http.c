@@ -118,6 +118,7 @@ int post(json_object *json) {
       if (c.memory) {
         process_response(c.memory);
         free(c.memory);
+        c.memory = NULL;
       }
     }
 
