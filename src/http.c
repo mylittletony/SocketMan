@@ -44,7 +44,7 @@ size_t write_data(void *contents, size_t size, size_t nmemb, void *userp)
   return realsize;
 }
 
-char append_url_token(char *url, char *buf)
+void append_url_token(char *url, char *buf)
 {
   strcpy(buf, url);
   if (strcmp(options.token, "") != 0) {
