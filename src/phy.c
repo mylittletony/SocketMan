@@ -959,7 +959,7 @@ static int get_stations(struct nl_msg *msg, void *arg)
     sl->s->t_offset = (unsigned long long)nla_get_u64(sinfo[NL80211_STA_INFO_T_OFFSET]);
 
   if (sinfo[NL80211_STA_INFO_TX_BITRATE]) {
-    int16_t buf;
+    int16_t buf = 0;
     parse_bitrate(sinfo[NL80211_STA_INFO_TX_BITRATE], &buf);
     sl->s->tx_bitrate = buf;
   }
