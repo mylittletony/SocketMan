@@ -45,6 +45,7 @@ char *read_config(char *file) {
     if( 1!=fread( buffer , lSize, 1 , fp) ) {
       fclose(fp);
       free(buffer);
+      buffer = NULL;
       fputs("entire read fails",stderr);
       return buffer;
     }
