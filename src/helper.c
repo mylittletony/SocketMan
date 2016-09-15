@@ -35,19 +35,21 @@ char *read_config(char *file) {
     lSize = ftell( fp );
     rewind( fp );
 
-    buffer = calloc( 1, lSize+1 );
-    if( !buffer ) {
-      fclose(fp);
-      fputs("memory alloc fails",stderr);
-      return buffer;
-    }
+    if(lSize >= 0) {
+      buffer = calloc( 1, lSize+1 );
+      if( !buffer ) {
+        fclose(fp);
+        fputs("memory alloc fails",stderr);
+        return buffer;
+      }
 
-    if( 1!=fread( buffer , lSize, 1 , fp) ) {
-      fclose(fp);
-      free(buffer);
-      buffer = NULL;
-      fputs("entire read fails",stderr);
-      return buffer;
+      if( 1!=fread( buffer , lSize, 1 , fp) ) {
+        fclose(fp);
+        free(buffer);
+        buffer = NULL;
+        fputs("entire read fails",stderr);
+        return buffer;
+      }
     }
 
     fclose(fp);
