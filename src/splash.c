@@ -70,6 +70,7 @@ void get_splash_clients(struct splash_list **buf)
   while (fgets(path, sizeof(path)-1, fp) != NULL) {
     json_sessions = json_tokener_parse(path);
     if (is_error(json_sessions)) {
+      pclose(fp);
       free(ptr);
       return;
     }
