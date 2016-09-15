@@ -64,6 +64,11 @@ void get_splash_clients(struct splash_list **buf)
   struct splash_list *ptr;
   ptr = malloc(sizeof(struct splash_list));
 
+  if (ptr == NULL) {
+    printf("Out of memory\n");
+    return;
+  }
+
   ptr->next = NULL;
   splash_conductor = ptr;
 
