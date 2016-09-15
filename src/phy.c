@@ -248,7 +248,8 @@ char * format_enc_suites(int suites)
   if (!suites || (suites & MGMT_NONE))
     pos += sprintf(pos, "NONE/");
 
-  *(pos - 1) = 0;
+  if (pos > 0)
+    *(pos - 1) = 0;
 
   return str;
 }
