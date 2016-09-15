@@ -21,6 +21,9 @@ void get_clients(struct dhcp_list **buf)
   struct dhcp_list *ptr;
   ptr = malloc(sizeof(struct dhcp_list));
 
+  if(ptr == NULL)
+      return;
+
   ptr->next = NULL;
   conductor = ptr;
 
