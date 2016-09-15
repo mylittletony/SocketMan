@@ -211,7 +211,7 @@ void *format_stations(const char *ssid,
   json_object_object_add(jstations, "expected_tput", jexpected_tput);
 }
 
-void *format_scan(struct iw_scanlist_entry *s, json_object *jscan)
+void format_scan(struct iw_scanlist_entry *s, json_object *jscan)
 {
   char enc[512];
   static char buf[18];
