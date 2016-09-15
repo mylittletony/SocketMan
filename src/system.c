@@ -22,7 +22,7 @@ void machine_type(char *type, size_t len)
     strcpy(type, options.machine);
   } else {
     FILE* fp;
-    size_t bytes_read;
+    size_t bytes_read = 0;
     char *match;
     char buffer[1024];
     char fmt[64];
@@ -31,8 +31,10 @@ void machine_type(char *type, size_t len)
 #elif __linux
     fp = fopen ("/etc/os-release", "r");
 #endif
-    bytes_read = fread (buffer, 1, sizeof (buffer), fp);
-    fclose (fp);
+    if (fp) {
+      bytes_read = fread (buffer, 1, sizeof (buffer), fp);
+      fclose (fp);
+    }
 
     if (bytes_read == 0 || bytes_read == sizeof (buffer))
       return;
