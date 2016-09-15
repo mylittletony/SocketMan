@@ -283,7 +283,8 @@ char * format_enc_ciphers(int ciphers)
   if (!ciphers || (ciphers & NONE))
     pos += sprintf(pos, "NONE, ");
 
-  *(pos - 2) = 0;
+  if ((pos - str) >= 2)
+    *(pos - 2) = 0;
 
   return str;
 }
