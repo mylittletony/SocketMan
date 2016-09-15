@@ -79,9 +79,7 @@ void readlineToBuffer(char *file, char *buffer) {
       if(snumbytes >= 0)
         sbuffer = (char*)calloc(snumbytes,sizeof(char));
 
-      if(sbuffer == NULL) {
-        strcpy(buffer, sbuffer);
-      } else {
+      if(sbuffer != NULL) {
         fread(sbuffer,sizeof(char),snumbytes,sinfile);
         char *ret = strpbrk(sbuffer, "\n");
         if(ret) {
@@ -89,8 +87,8 @@ void readlineToBuffer(char *file, char *buffer) {
         } else {
           strcpy(buffer, sbuffer);
         }
+        free(sbuffer);
       }
-      free(sbuffer);
       fclose(sinfile);
     }
     return;
