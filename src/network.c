@@ -168,6 +168,12 @@ struct defaultRoute route()
   }
 
   rtInfo = (struct route_info *) malloc(sizeof(struct route_info));
+
+  if (rtInfo == NULL) {
+    close(sock);
+    return dr;
+  }
+
   for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
     memset(rtInfo, 0, sizeof(struct route_info));
     parseRoutes(nlMsg, rtInfo, &dr);
