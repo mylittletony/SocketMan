@@ -66,7 +66,7 @@ void readlineToBuffer(char *file, char *buffer) {
 
   if( access(file, F_OK ) != -1 ) {
     FILE *sinfile;
-    char *sbuffer;
+    char *sbuffer = NULL;
     long snumbytes;
     sinfile = fopen(file, "r");
     if(sinfile != NULL) {
@@ -74,7 +74,8 @@ void readlineToBuffer(char *file, char *buffer) {
       snumbytes = ftell(sinfile);
 
       fseek(sinfile,0L,SEEK_SET);
-      sbuffer = (char*)calloc(snumbytes,sizeof(char));
+      if(snumbytes >= 0)
+        sbuffer = (char*)calloc(snumbytes,sizeof(char));
 
       if(sbuffer == NULL) {
         strcpy(buffer, sbuffer);
