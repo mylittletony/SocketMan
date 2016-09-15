@@ -106,7 +106,7 @@ void format_ssids(const struct iw_ops *iw,
   /* } */
 }
 
-void *format_stations(const char *ssid,
+void format_stations(const char *ssid,
     const char *ifname, struct iw_stationlist_entry *s, json_object *jstations
     )
 {
