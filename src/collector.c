@@ -498,7 +498,7 @@ void collect_data(int online)
 
   char machine[100];
   machine[0] = '\0';
-  machine_type(machine);
+  machine_type(machine, sizeof(machine));
 
   struct SystemInfo info = system_info();
 

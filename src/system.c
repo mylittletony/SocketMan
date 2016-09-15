@@ -16,7 +16,7 @@ int reboot() {
   return i;
 }
 
-void machine_type(char *type)
+void machine_type(char *type, size_t len)
 {
   if (strlen(options.machine) > 0) {
     strcpy(type, options.machine);
@@ -25,6 +25,7 @@ void machine_type(char *type)
     size_t bytes_read;
     char *match;
     char buffer[1024];
+    char fmt[64];
 #ifdef __OPENWRT__
     fp = fopen ("/proc/cpuinfo", "r");
 #elif __linux
@@ -41,13 +42,15 @@ void machine_type(char *type)
     match = strstr (buffer, "machine");
     if (match == NULL)
       return;
-    sscanf (match, "machine : %[^\t\n]", type);
+    snprintf(fmt, sizeof(fmt), "machine : %%%zu[^\t\n]", len - 1);
+    sscanf (match, fmt, type);
 #elif __linux
     match = strstr(buffer, "NAME");
 
     if (match == NULL)
       return;
-    sscanf(match, "NAME=\"%[^\t\n]\"", type);
+    snprintf(fmt, sizeof(fmt), "NAME=\"%%%zu[^\t\n]\"", len - 1);
+    sscanf(match, fmt, type);
 #endif
   }
 }
