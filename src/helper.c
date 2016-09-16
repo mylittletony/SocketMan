@@ -31,27 +31,27 @@ char *read_config(char *file) {
   fp = fopen (options.config, "r");
   if( fp ) {;
     debug("Reading config from %s", options.config);
-    fseek( fp , 0L , SEEK_END);
-    lSize = ftell( fp );
-    rewind( fp );
+    if( fseek( fp , 0L , SEEK_END) == 0 ) {
+      lSize = ftell( fp );
+      rewind( fp );
 
-    if(lSize >= 0) {
-      buffer = calloc( 1, lSize+1 );
-      if( !buffer ) {
-        fclose(fp);
-        fputs("memory alloc fails",stderr);
-        return buffer;
-      }
+      if(lSize >= 0) {
+        buffer = calloc( 1, lSize+1 );
+        if( !buffer ) {
+          fclose(fp);
+          fputs("memory alloc fails",stderr);
+          return buffer;
+        }
 
-      if( 1!=fread( buffer , lSize, 1 , fp) ) {
-        fclose(fp);
-        free(buffer);
-        buffer = NULL;
-        fputs("entire read fails",stderr);
-        return buffer;
+        if( 1!=fread( buffer , lSize, 1 , fp) ) {
+          fclose(fp);
+          free(buffer);
+          buffer = NULL;
+          fputs("entire read fails",stderr);
+          return buffer;
+        }
       }
     }
-
     fclose(fp);
   } else {
     debug("No config file found at %s", options.config);
