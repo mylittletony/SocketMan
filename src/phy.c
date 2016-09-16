@@ -693,7 +693,7 @@ static int get_link_noise(struct nl_msg *msg, void *arg)
     return NL_SKIP;
   }
 
-  if (sinfo[NL80211_SURVEY_INFO_NOISE] && sinfo[NL80211_SURVEY_INFO_IN_USE] && !*noise) {
+  if (sinfo[NL80211_SURVEY_INFO_IN_USE] && !*noise) {
     *noise = (int8_t)nla_get_u8(sinfo[NL80211_SURVEY_INFO_NOISE]);
     /* printf("\tnoise:\t\t\t\t%d dBm\n", *noise); */
   }
