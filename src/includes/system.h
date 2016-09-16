@@ -2,6 +2,7 @@
 #define SYSTEM_STATS
 #define LINUX_SYSINFO_LOADS_SCALE 65536.0
 #include <inttypes.h>
+#include <stddef.h>
 
 struct SystemInfo
 {
