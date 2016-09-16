@@ -48,8 +48,6 @@ static int * nl80211_send(
     nl_recvmsgs(nlstate->nl_sock, cv->cb);
 
   return 0;
-nla_put_failure:
-  return 0;
 }
 
 static int family_handler(struct nl_msg *msg, void *arg)
