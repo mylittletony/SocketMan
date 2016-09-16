@@ -745,7 +745,7 @@ static int get_bssid(struct nl_msg *msg, void *arg)
     return NL_SKIP;
   }
 
-  if (is->bssid && (tb_msg[NL80211_ATTR_MAC])) {
+  if (tb_msg[NL80211_ATTR_MAC]) {
     memcpy(is->bssid, nla_data(tb_msg[NL80211_ATTR_MAC]), nla_len(tb_msg[NL80211_ATTR_MAC]));
     is->bssid[nla_len(tb_msg[NL80211_ATTR_MAC])] = '\0';
     return NL_SKIP;
