@@ -172,7 +172,7 @@ void send_boot_message()
     res = curl_easy_perform(curl);
     if(res == CURLE_OK) {
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-      if (http_code == 200 && res != CURLE_ABORTED_BY_CALLBACK && c.memory)
+      if (http_code == 200 && c.memory)
         process_response(c.memory);
     }
 
