@@ -410,7 +410,7 @@ static int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 }
 
 
-void interface_ip(char *interface, char *wan_ip)
+void interface_ip(char *interface, char *wan_ip, size_t len)
 {
   struct ifaddrs *ifaddr, *ifa;
   int family, n;
@@ -433,7 +433,7 @@ void interface_ip(char *interface, char *wan_ip)
       if (rc == 0) {
         sa = (struct sockaddr_in *) ifa->ifa_addr;
         addr = inet_ntoa(sa->sin_addr);
-        sprintf(wan_ip, (char *) addr);
+        snprintf(wan_ip, len, "%s", (char *) addr);
         break;
       }
     }

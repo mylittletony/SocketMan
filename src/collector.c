@@ -489,7 +489,7 @@ void collect_data(int online)
   struct defaultRoute dr = route();
 
   if (strcmp(dr.if_name, "") != 0) {
-    interface_ip(dr.if_name, wan_ip);
+    interface_ip(dr.if_name, wan_ip, sizeof(wan_ip));
 
     struct InterfaceStats istats = stats(dr.if_name);
     sprintf(tx, "%" PRIu64, istats.tx);
