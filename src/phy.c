@@ -1049,37 +1049,38 @@ static int get_ssids(struct nl_msg *msg, void *arg)
   struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
   struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
   struct nl80211_ssid_list *sl = arg;
-  unsigned int *wiphy = arg;
 
   nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
       genlmsg_attrlen(gnlh, 0), NULL);
 
-  memset(sl->e, 0, sizeof(*sl->e));
+  if (sl) {
+    memset(sl->e, 0, sizeof(*sl->e));
 
-  if (wiphy && tb_msg[NL80211_ATTR_WIPHY]) {
-    unsigned int thiswiphy = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]);
-    sl->e->phy = thiswiphy;
+    if (tb_msg[NL80211_ATTR_WIPHY]) {
+      unsigned int thiswiphy = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]);
+      sl->e->phy = thiswiphy;
+    }
+
+    if (tb_msg[NL80211_ATTR_IFNAME]) {
+      char *ifname = nla_data(tb_msg[NL80211_ATTR_IFNAME]);
+      memcpy(sl->e->ifname, ifname, 10);
+    }
+
+    if (tb_msg[NL80211_ATTR_SSID]) {
+      memcpy(sl->e->ssid, nla_data(tb_msg[NL80211_ATTR_SSID]), nla_len(tb_msg[NL80211_ATTR_SSID]));
+      sl->e->ssid[nla_len(tb_msg[NL80211_ATTR_SSID])] = '\0';
+    }
+
+    if (tb_msg[NL80211_ATTR_WIPHY_FREQ]) {
+      uint32_t freq = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_FREQ]);
+
+      int channel = ieee80211_frequency_to_channel(freq);
+      sl->e->channel = channel;
+    }
+
+    sl->e++;
+    sl->len++;
   }
-
-  if (tb_msg[NL80211_ATTR_IFNAME]) {
-    char *ifname = nla_data(tb_msg[NL80211_ATTR_IFNAME]);
-    memcpy(sl->e->ifname, ifname, 10);
-  }
-
-  if (tb_msg[NL80211_ATTR_SSID]) {
-    memcpy(sl->e->ssid, nla_data(tb_msg[NL80211_ATTR_SSID]), nla_len(tb_msg[NL80211_ATTR_SSID]));
-    sl->e->ssid[nla_len(tb_msg[NL80211_ATTR_SSID])] = '\0';
-  }
-
-  if (tb_msg[NL80211_ATTR_WIPHY_FREQ]) {
-    uint32_t freq = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_FREQ]);
-
-    int channel = ieee80211_frequency_to_channel(freq);
-    sl->e->channel = channel;
-  }
-
-  sl->e++;
-  sl->len++;
 
   return NL_SKIP;
 }
