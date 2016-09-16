@@ -426,7 +426,6 @@ void interface_ip(char *interface, char *wan_ip, size_t len)
     family = ifa->ifa_addr->sa_family;
 
     if (family == AF_INET) {
-      sa = (struct sockaddr_in *) ifa->ifa_addr;
       int rc = strcmp(ifa->ifa_name, interface);
       if (rc == 0) {
         sa = (struct sockaddr_in *) ifa->ifa_addr;
