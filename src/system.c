@@ -13,7 +13,7 @@
 int reboot() {
   debug("Rebooting system");
   int i = system("reboot");
-  return i;
+  return i < 0 ? i : WEXITSTATUS(i);
 }
 
 void machine_type(char *type, size_t len)
