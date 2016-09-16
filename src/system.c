@@ -70,7 +70,6 @@ struct SystemInfo system_info() {
     // Not functioning
 
     s.uptime = info.uptime;
-    s.uptime = info.uptime;
     s.totalram = t_ram;
     s.freeram = f_ram;
     s.percent_used = pf;
