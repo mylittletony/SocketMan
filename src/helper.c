@@ -29,7 +29,7 @@ char *read_config(char *file) {
   char *buffer = NULL;
 
   fp = fopen (options.config, "r");
-  if( fp ) {;
+  if( fp ) {
     debug("Reading config from %s", options.config);
     if( fseek( fp , 0L , SEEK_END) == 0 ) {
       lSize = ftell( fp );
