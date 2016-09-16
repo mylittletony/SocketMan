@@ -189,10 +189,11 @@ void recover_network() {
 }
 
 void restart_network() {
-  if (strcmp(OS, "OPENWRT") == 0)
+#ifdef __OPENWRT__
     system("/etc/init.d/network restart");
-  if (strcmp(OS, "LINUX") == 0)
+#elif defined __linux
     system("/etc/init.d/network restart");
+#endif
 }
 
 static int get_interface_common(const int fd, struct ifreq *const ifr, struct interface *const info)
