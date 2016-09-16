@@ -366,8 +366,6 @@ static int netlink_link_state(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 {
   struct ifinfomsg *ifi;
 
-  nl = nl;
-
   ifi = NLMSG_DATA(msg);
   char ifname[1024];if_indextoname(ifi->ifi_index,ifname);
 
