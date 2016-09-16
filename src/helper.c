@@ -75,19 +75,20 @@ void readlineToBuffer(char *file, char *buffer) {
       fseek(sinfile, 0L, SEEK_END);
       snumbytes = ftell(sinfile);
 
-      fseek(sinfile,0L,SEEK_SET);
-      if(snumbytes >= 0)
-        sbuffer = (char*)calloc(snumbytes+1,sizeof(char));
+      if(fseek(sinfile,0L,SEEK_SET)==0) {
+        if(snumbytes >= 0)
+          sbuffer = (char*)calloc(snumbytes+1,sizeof(char));
 
-      if(sbuffer != NULL) {
-        fread(sbuffer,sizeof(char),snumbytes,sinfile);
-        char *ret = strpbrk(sbuffer, "\n");
-        if(ret) {
-          strcpy(buffer, strtok(sbuffer,"\n"));
-        } else {
-          strcpy(buffer, sbuffer);
+        if(sbuffer != NULL) {
+          fread(sbuffer,sizeof(char),snumbytes,sinfile);
+          char *ret = strpbrk(sbuffer, "\n");
+          if(ret) {
+            strcpy(buffer, strtok(sbuffer,"\n"));
+          } else {
+            strcpy(buffer, sbuffer);
+          }
+          free(sbuffer);
         }
-        free(sbuffer);
       }
       fclose(sinfile);
     }
