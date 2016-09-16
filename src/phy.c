@@ -1155,47 +1155,44 @@ static int get_scan(struct nl_msg *msg, void *arg)
   if (!bss[NL80211_BSS_INFORMATION_ELEMENTS]) return NL_SKIP;
 
 
-  if (bss[NL80211_BSS_BSSID]) {
+  memset(sl->s, 0, sizeof(*sl->s));
+  mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID]));
 
-    memset(sl->s, 0, sizeof(*sl->s));
-    mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID]));
+  memcpy(sl->s->mac, nla_data(bss[NL80211_BSS_BSSID]), 6);
 
-    memcpy(sl->s->mac, nla_data(bss[NL80211_BSS_BSSID]), 6);
+  uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
+  sl->s->channel = ieee80211_frequency_to_channel(freq);
 
-    uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
-    sl->s->channel = ieee80211_frequency_to_channel(freq);
+  if (bss[NL80211_BSS_CAPABILITY])
+    caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
 
-    if (bss[NL80211_BSS_CAPABILITY])
-      caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
+  if (caps & (1<<4))
+    sl->s->crypto.enabled = 1;
 
-    if (caps & (1<<4))
-      sl->s->crypto.enabled = 1;
+  if (bss[NL80211_BSS_SIGNAL_MBM]) {
+    sl->s->signal =
+      (uint8_t)((int32_t)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
 
-    if (bss[NL80211_BSS_SIGNAL_MBM]) {
-      sl->s->signal =
-        (uint8_t)((int32_t)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
+    rssi = sl->s->signal - 0x100;
+    if (rssi < -110)
+      rssi = -110;
+    else if (rssi > -40)
+      rssi = -40;
 
-      rssi = sl->s->signal - 0x100;
-      if (rssi < -110)
-        rssi = -110;
-      else if (rssi > -40)
-        rssi = -40;
-
-      sl->s->quality = (rssi + 110);
-      sl->s->quality_max = 70;
-    }
-
-    if (bss[NL80211_BSS_SEEN_MS_AGO]) {
-      int age = nla_get_u32(bss[NL80211_BSS_SEEN_MS_AGO]);
-      sl->s->age = age;
-    }
-
-    if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
-      nl80211_info_elements(bss, sl->s);
-
-    sl->s++;
-    sl->len++;
+    sl->s->quality = (rssi + 110);
+    sl->s->quality_max = 70;
   }
+
+  if (bss[NL80211_BSS_SEEN_MS_AGO]) {
+    int age = nla_get_u32(bss[NL80211_BSS_SEEN_MS_AGO]);
+    sl->s->age = age;
+  }
+
+  if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
+    nl80211_info_elements(bss, sl->s);
+
+  sl->s++;
+  sl->len++;
 
   return NL_SKIP;
 }
