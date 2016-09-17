@@ -124,11 +124,13 @@ int should_restart_network()
       debug("Restarting network after %d second delay", delay);
       return 1;
     }
+  return 0;
 }
 
 int network_restart() {
   if (should_restart_network())
     restart_network();
+  return 0;
 }
 
 void restart_or_reboot()

@@ -23,14 +23,8 @@ void save_and_notify(char *id, char *cmd)
 
 void process_cmd(char *cmd, char *id)
 {
-  /* if (save == 1) { */
   save_and_notify(id, cmd);
   return;
-  /* } */
-
-  /* int c = 0; */
-  /* c = system(cmd); */
-  /* cmd_notify(c, id, NULL); */
 }
 
 void process_message(const char *msg, char *cmd, char *id)
@@ -62,10 +56,6 @@ void process_message(const char *msg, char *cmd, char *id)
     json_object_put(jobj);
   }
 }
-
-/* void process_message(const char *msg) { */
-/*   parse_message(msg); */
-/* } */
 
 void process_response(char *msg)
 {

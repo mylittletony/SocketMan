@@ -10,8 +10,10 @@ void clear_caches()
 
   sync(); // Not sure we should include, this increases the # of files
   fd = open("/proc/sys/vm/drop_caches", O_WRONLY);
-  write(fd, data, sizeof(char));
-  close(fd);
+  if (fd != -1) {
+    write(fd, data, sizeof(char));
+    close(fd);
+  }
 }
 
 void run_cleanup(struct SystemInfo info)

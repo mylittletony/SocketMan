@@ -53,7 +53,7 @@ void get_splash_clients(struct splash_list **buf)
   FILE *fp;
   char path[1035];
   path[0] = '\0';
-  json_object *json_sessions;
+  json_object *json_sessions = NULL;
 
   fp = popen("chilli_query -json list", "r");
   if (fp == NULL) {
@@ -64,12 +64,18 @@ void get_splash_clients(struct splash_list **buf)
   struct splash_list *ptr;
   ptr = malloc(sizeof(struct splash_list));
 
+  if (ptr == NULL) {
+    printf("Out of memory\n");
+    return;
+  }
+
   ptr->next = NULL;
   splash_conductor = ptr;
 
   while (fgets(path, sizeof(path)-1, fp) != NULL) {
     json_sessions = json_tokener_parse(path);
     if (is_error(json_sessions)) {
+      pclose(fp);
       free(ptr);
       return;
     }
@@ -79,12 +85,13 @@ void get_splash_clients(struct splash_list **buf)
   if (path[0] == '\0') {
     free(ptr);
     return;
-  } else {
+  } else if (json_sessions) {
     parse_splash_clients(json_sessions, ptr);
   }
 
   *buf = splash_conductor;
-  json_object_put(json_sessions);
+  if (json_sessions)
+    json_object_put(json_sessions);
 }
 
 const struct splash_ops splash_exec = {
