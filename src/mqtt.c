@@ -28,11 +28,11 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
     char topic[k+n+19];
     topic_id_generate(topic, options.topic, options.key);
 
-    options.qos = 0;
+    options.qos = 2;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
     if (strcmp(options.status_topic, "") != 0)
-      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 0, false);
+      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 2, false);
   }
 }
 
@@ -147,7 +147,7 @@ int dial_mqtt()
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
   if (strcmp(options.status_topic, "") != 0)
-    mosquitto_will_set(mosq, options.status_topic, 1, "0", 0, false);
+    mosquitto_will_set(mosq, options.status_topic, 1, "0", 2, false);
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
   if (rc) {
