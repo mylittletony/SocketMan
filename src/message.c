@@ -29,9 +29,6 @@ void process_cmd(char *cmd, char *id)
 
 void process_message(const char *msg, char *cmd, char *id)
 {
-  /* int save = 0; */
-  /* char cmd[10000]; */
-
   json_object *jobj = json_tokener_parse(msg);
 
   if (!is_error(jobj)) {
@@ -40,10 +37,6 @@ void process_message(const char *msg, char *cmd, char *id)
       type = json_object_get_type(val);
       switch (type) {
         case json_type_boolean:
-          /* if ((strcmp(key, "save") == 0) && */
-          /*     json_object_get_boolean(val)) { */
-          /*   save = 1; */
-          /* } */
         case json_type_string:
           if (strcmp(key, "cmd") == 0)
             strcpy(cmd, json_object_get_string(val));
