@@ -21,25 +21,35 @@ void save_and_notify(char *id, char *cmd)
   cmd_notify(response, id, buffer);
 }
 
-void parse_message(const char *msg)
+void process_cmd(char *cmd, char *id)
 {
-  int save = 0;
-  char id[100];
-  char cmd[10000];
+  /* if (save == 1) { */
+  save_and_notify(id, cmd);
+  return;
+  /* } */
+
+  /* int c = 0; */
+  /* c = system(cmd); */
+  /* cmd_notify(c, id, NULL); */
+}
+
+void process_message(const char *msg, char *cmd, char *id)
+{
+  /* int save = 0; */
+  /* char cmd[10000]; */
 
   json_object *jobj = json_tokener_parse(msg);
 
   if (!is_error(jobj)) {
     enum json_type type;
-
     json_object_object_foreach(jobj, key, val) {
       type = json_object_get_type(val);
       switch (type) {
         case json_type_boolean:
-          if ((strcmp(key, "save") == 0) &&
-              json_object_get_boolean(val)) {
-            save = 1;
-          }
+          /* if ((strcmp(key, "save") == 0) && */
+          /*     json_object_get_boolean(val)) { */
+          /*   save = 1; */
+          /* } */
         case json_type_string:
           if (strcmp(key, "cmd") == 0)
             strcpy(cmd, json_object_get_string(val));
@@ -51,17 +61,11 @@ void parse_message(const char *msg)
     }
     json_object_put(jobj);
   }
-  if (save == 1) {
-    save_and_notify(id, cmd);
-    return;
-  }
-
-  cmd_notify(system(cmd), id, NULL);
 }
 
-void process_message(const char *msg) {
-  parse_message(msg);
-}
+/* void process_message(const char *msg) { */
+/*   parse_message(msg); */
+/* } */
 
 void process_response(char *msg)
 {

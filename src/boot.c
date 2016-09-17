@@ -58,6 +58,8 @@ void *parse_config(char *buffer)
             options.reboot = json_object_get_int(val);
           if (strcmp(key, "health_port") == 0)
             options.health_port = json_object_get_int(val);
+          if (strcmp(key, "qos") == 0)
+            options.qos = json_object_get_int(val);
           break;
         case json_type_null:
           break;
@@ -101,7 +103,8 @@ void *parse_config(char *buffer)
           if (strcmp(key, "token") == 0)
             strcpy(options.token, json_object_get_string(val));
           if (strcmp(key, "status_topic") == 0) {
-            strcpy(options.status_topic, json_object_get_string(val));
+            strcpy(options.status_topic, "status/");
+            strcat(options.status_topic, json_object_get_string(val));
           }
           break;
       }
@@ -126,16 +129,17 @@ void *parse_config(char *buffer)
   if (options.reboot < 600)
     options.reboot = 600;
 
-  if (strcmp(options.status_topic, "") != 0) {
-    strcat(options.status_topic, "/");
-    strcat(options.status_topic, options.mac);
-  }
-
   if (strcmp(options.health_url, "") == 0)
     strcpy(options.health_url, "health.cucumberwifi.io");
 
   if (!options.health_port)
     options.health_port = 53;
+
+  if (!options.qos)
+    options.qos = 0;
+
+  strcat(options.status_topic, "/");
+  strcat(options.status_topic, options.mac);
 }
 
 void boot_cmd()
