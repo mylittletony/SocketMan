@@ -48,8 +48,6 @@ static int * nl80211_send(
     nl_recvmsgs(nlstate->nl_sock, cv->cb);
 
   return 0;
-nla_put_failure:
-  return 0;
 }
 
 static int family_handler(struct nl_msg *msg, void *arg)
@@ -248,7 +246,8 @@ char * format_enc_suites(int suites)
   if (!suites || (suites & MGMT_NONE))
     pos += sprintf(pos, "NONE/");
 
-  *(pos - 1) = 0;
+  if (pos > 0)
+    *(pos - 1) = 0;
 
   return str;
 }
@@ -282,7 +281,8 @@ char * format_enc_ciphers(int ciphers)
   if (!ciphers || (ciphers & NONE))
     pos += sprintf(pos, "NONE, ");
 
-  *(pos - 2) = 0;
+  if ((pos - str) >= 2)
+    *(pos - 2) = 0;
 
   return str;
 }
@@ -691,7 +691,7 @@ static int get_link_noise(struct nl_msg *msg, void *arg)
     return NL_SKIP;
   }
 
-  if (sinfo[NL80211_SURVEY_INFO_NOISE] && sinfo[NL80211_SURVEY_INFO_IN_USE] && !*noise) {
+  if (sinfo[NL80211_SURVEY_INFO_IN_USE] && !*noise) {
     *noise = (int8_t)nla_get_u8(sinfo[NL80211_SURVEY_INFO_NOISE]);
     /* printf("\tnoise:\t\t\t\t%d dBm\n", *noise); */
   }
@@ -743,7 +743,7 @@ static int get_bssid(struct nl_msg *msg, void *arg)
     return NL_SKIP;
   }
 
-  if (is->bssid && (tb_msg[NL80211_ATTR_MAC])) {
+  if (tb_msg[NL80211_ATTR_MAC]) {
     memcpy(is->bssid, nla_data(tb_msg[NL80211_ATTR_MAC]), nla_len(tb_msg[NL80211_ATTR_MAC]));
     is->bssid[nla_len(tb_msg[NL80211_ATTR_MAC])] = '\0';
     return NL_SKIP;
@@ -959,13 +959,13 @@ static int get_stations(struct nl_msg *msg, void *arg)
     sl->s->t_offset = (unsigned long long)nla_get_u64(sinfo[NL80211_STA_INFO_T_OFFSET]);
 
   if (sinfo[NL80211_STA_INFO_TX_BITRATE]) {
-    int16_t buf;
+    int16_t buf = 0;
     parse_bitrate(sinfo[NL80211_STA_INFO_TX_BITRATE], &buf);
     sl->s->tx_bitrate = buf;
   }
 
   if (sinfo[NL80211_STA_INFO_RX_BITRATE]) {
-    int16_t buf;
+    int16_t buf = 0;
     parse_bitrate(sinfo[NL80211_STA_INFO_RX_BITRATE], &buf);
     sl->s->rx_bitrate = buf;
   }
@@ -1047,37 +1047,38 @@ static int get_ssids(struct nl_msg *msg, void *arg)
   struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
   struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
   struct nl80211_ssid_list *sl = arg;
-  unsigned int *wiphy = arg;
 
   nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
       genlmsg_attrlen(gnlh, 0), NULL);
 
-  memset(sl->e, 0, sizeof(*sl->e));
+  if (sl) {
+    memset(sl->e, 0, sizeof(*sl->e));
 
-  if (wiphy && tb_msg[NL80211_ATTR_WIPHY]) {
-    unsigned int thiswiphy = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]);
-    sl->e->phy = thiswiphy;
+    if (tb_msg[NL80211_ATTR_WIPHY]) {
+      unsigned int thiswiphy = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY]);
+      sl->e->phy = thiswiphy;
+    }
+
+    if (tb_msg[NL80211_ATTR_IFNAME]) {
+      char *ifname = nla_data(tb_msg[NL80211_ATTR_IFNAME]);
+      memcpy(sl->e->ifname, ifname, 10);
+    }
+
+    if (tb_msg[NL80211_ATTR_SSID]) {
+      memcpy(sl->e->ssid, nla_data(tb_msg[NL80211_ATTR_SSID]), nla_len(tb_msg[NL80211_ATTR_SSID]));
+      sl->e->ssid[nla_len(tb_msg[NL80211_ATTR_SSID])] = '\0';
+    }
+
+    if (tb_msg[NL80211_ATTR_WIPHY_FREQ]) {
+      uint32_t freq = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_FREQ]);
+
+      int channel = ieee80211_frequency_to_channel(freq);
+      sl->e->channel = channel;
+    }
+
+    sl->e++;
+    sl->len++;
   }
-
-  if (tb_msg[NL80211_ATTR_IFNAME]) {
-    char *ifname = nla_data(tb_msg[NL80211_ATTR_IFNAME]);
-    memcpy(sl->e->ifname, ifname, 10);
-  }
-
-  if (tb_msg[NL80211_ATTR_SSID]) {
-    memcpy(sl->e->ssid, nla_data(tb_msg[NL80211_ATTR_SSID]), nla_len(tb_msg[NL80211_ATTR_SSID]));
-    sl->e->ssid[nla_len(tb_msg[NL80211_ATTR_SSID])] = '\0';
-  }
-
-  if (tb_msg[NL80211_ATTR_WIPHY_FREQ]) {
-    uint32_t freq = nla_get_u32(tb_msg[NL80211_ATTR_WIPHY_FREQ]);
-
-    int channel = ieee80211_frequency_to_channel(freq);
-    sl->e->channel = channel;
-  }
-
-  sl->e++;
-  sl->len++;
 
   return NL_SKIP;
 }
@@ -1122,7 +1123,7 @@ static int get_scan(struct nl_msg *msg, void *arg)
   struct nlattr *bss[NL80211_BSS_MAX + 1];
   char mac_addr[20];
   struct nl80211_scanlist *sl = arg;
-  uint16_t caps;
+  uint16_t caps = 0;
 
   static struct nla_policy bss_policy[NL80211_BSS_MAX + 1] = {
     [NL80211_BSS_TSF] = { .type = NLA_U64 },
@@ -1152,47 +1153,44 @@ static int get_scan(struct nl_msg *msg, void *arg)
   if (!bss[NL80211_BSS_INFORMATION_ELEMENTS]) return NL_SKIP;
 
 
-  if (bss[NL80211_BSS_BSSID]) {
+  memset(sl->s, 0, sizeof(*sl->s));
+  mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID]));
 
-    memset(sl->s, 0, sizeof(*sl->s));
-    mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID]));
+  memcpy(sl->s->mac, nla_data(bss[NL80211_BSS_BSSID]), 6);
 
-    memcpy(sl->s->mac, nla_data(bss[NL80211_BSS_BSSID]), 6);
+  uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
+  sl->s->channel = ieee80211_frequency_to_channel(freq);
 
-    uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
-    sl->s->channel = ieee80211_frequency_to_channel(freq);
+  if (bss[NL80211_BSS_CAPABILITY])
+    caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
 
-    if (bss[NL80211_BSS_CAPABILITY])
-      caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
+  if (caps & (1<<4))
+    sl->s->crypto.enabled = 1;
 
-    if (caps & (1<<4))
-      sl->s->crypto.enabled = 1;
+  if (bss[NL80211_BSS_SIGNAL_MBM]) {
+    sl->s->signal =
+      (uint8_t)((int32_t)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
 
-    if (bss[NL80211_BSS_SIGNAL_MBM]) {
-      sl->s->signal =
-        (uint8_t)((int32_t)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
+    rssi = sl->s->signal - 0x100;
+    if (rssi < -110)
+      rssi = -110;
+    else if (rssi > -40)
+      rssi = -40;
 
-      rssi = sl->s->signal - 0x100;
-      if (rssi < -110)
-        rssi = -110;
-      else if (rssi > -40)
-        rssi = -40;
-
-      sl->s->quality = (rssi + 110);
-      sl->s->quality_max = 70;
-    }
-
-    if (bss[NL80211_BSS_SEEN_MS_AGO]) {
-      int age = nla_get_u32(bss[NL80211_BSS_SEEN_MS_AGO]);
-      sl->s->age = age;
-    }
-
-    if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
-      nl80211_info_elements(bss, sl->s);
-
-    sl->s++;
-    sl->len++;
+    sl->s->quality = (rssi + 110);
+    sl->s->quality_max = 70;
   }
+
+  if (bss[NL80211_BSS_SEEN_MS_AGO]) {
+    int age = nla_get_u32(bss[NL80211_BSS_SEEN_MS_AGO]);
+    sl->s->age = age;
+  }
+
+  if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
+    nl80211_info_elements(bss, sl->s);
+
+  sl->s++;
+  sl->len++;
 
   return NL_SKIP;
 }

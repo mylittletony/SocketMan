@@ -40,12 +40,12 @@ int should_collect() {
   return 0;
 }
 
-void *format_ssids(const struct iw_ops *iw,
+void format_ssids(const struct iw_ops *iw,
     struct iw_ssid_entry *e,
     json_object *jssids, int len)
 {
 
-  int noise, signal, quality, quality_max, bitrate, txpower, channel;
+  int noise, signal = 0, quality, quality_max, bitrate, txpower, channel;
   static char bssid[18] = { 0 };
   char ssid[ESSID_MAX_SIZE+1] = { 0 };
   char *interface = e->ifname;
@@ -106,7 +106,7 @@ void *format_ssids(const struct iw_ops *iw,
   /* } */
 }
 
-void *format_stations(const char *ssid,
+void format_stations(const char *ssid,
     const char *ifname, struct iw_stationlist_entry *s, json_object *jstations
     )
 {
@@ -211,7 +211,7 @@ void *format_stations(const char *ssid,
   json_object_object_add(jstations, "expected_tput", jexpected_tput);
 }
 
-void *format_scan(struct iw_scanlist_entry *s, json_object *jscan)
+void format_scan(struct iw_scanlist_entry *s, json_object *jscan)
 {
   char enc[512];
   static char buf[18];
@@ -482,14 +482,14 @@ void collect_data(int online)
 
   debug("Collecting the device stats");
 
-  char rx[21], tx[21], wan_ip[21];
+  char rx[21], tx[21], wan_ip[21] = "";
   json_object *jobj = json_object_new_object();
   json_object *jattr = json_object_new_object();
 
   struct defaultRoute dr = route();
 
   if (strcmp(dr.if_name, "") != 0) {
-    interface_ip(dr.if_name, wan_ip);
+    interface_ip(dr.if_name, wan_ip, sizeof(wan_ip));
 
     struct InterfaceStats istats = stats(dr.if_name);
     sprintf(tx, "%" PRIu64, istats.tx);
@@ -498,7 +498,7 @@ void collect_data(int online)
 
   char machine[100];
   machine[0] = '\0';
-  machine_type(machine);
+  machine_type(machine, sizeof(machine));
 
   struct SystemInfo info = system_info();
 

@@ -125,8 +125,8 @@ void parseRoutes(struct nlmsghdr *nlHdr,
   }
 
   if (rtInfo->dstAddr.s_addr == 0) {
-    sprintf(dr->if_name, (char *) rtInfo->ifName);
-    sprintf(dr->ip, (char *)inet_ntoa(rtInfo->gateWay));
+    snprintf(dr->if_name, sizeof(dr->if_name), "%s", (char *) rtInfo->ifName);
+    snprintf(dr->ip, sizeof(dr->ip), "%s", (char *)inet_ntoa(rtInfo->gateWay));
   }
 
   return;
@@ -134,7 +134,7 @@ void parseRoutes(struct nlmsghdr *nlHdr,
 
 struct defaultRoute route()
 {
-  struct defaultRoute dr;
+  struct defaultRoute dr = { 0 };
   struct nlmsghdr *nlMsg;
   struct route_info *rtInfo;
   char msgBuf[BUFSIZE];
@@ -158,6 +158,7 @@ struct defaultRoute route()
 
   if (send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0) {
     debug("Write To Socket Failed...\n");
+    close(sock);
     return dr;
   }
 
@@ -167,6 +168,12 @@ struct defaultRoute route()
   }
 
   rtInfo = (struct route_info *) malloc(sizeof(struct route_info));
+
+  if (rtInfo == NULL) {
+    close(sock);
+    return dr;
+  }
+
   for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
     memset(rtInfo, 0, sizeof(struct route_info));
     parseRoutes(nlMsg, rtInfo, &dr);
@@ -182,10 +189,11 @@ void recover_network() {
 }
 
 void restart_network() {
-  if (strcmp(OS, "OPENWRT") == 0)
+#ifdef __OPENWRT__
     system("/etc/init.d/network restart");
-  if (strcmp(OS, "LINUX") == 0)
+#elif defined __linux
     system("/etc/init.d/network restart");
+#endif
 }
 
 static int get_interface_common(const int fd, struct ifreq *const ifr, struct interface *const info)
@@ -281,8 +289,10 @@ int open_netlink()
   addr.nl_family = AF_NETLINK;
   addr.nl_pid = getpid();
   addr.nl_groups = RTMGRP_LINK|RTMGRP_IPV4_IFADDR|RTMGRP_IPV6_IFADDR;
-  if (bind(sock,(struct sockaddr *)&addr,sizeof(addr))<0)
+  if (bind(sock,(struct sockaddr *)&addr,sizeof(addr))<0) {
+    close(sock);
     return -1;
+  }
   return sock;
 }
 
@@ -315,6 +325,7 @@ int read_event(int sockint, int (*msg_handler)(struct sockaddr_nl *,
   if(status == 0)
   {
     printf("read_netlink: EOF\n");
+    return ret;
   }
 
   /* We need to handle more than one message per 'recvmsg' */
@@ -355,8 +366,6 @@ int read_event(int sockint, int (*msg_handler)(struct sockaddr_nl *,
 static int netlink_link_state(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 {
   struct ifinfomsg *ifi;
-
-  nl = nl;
 
   ifi = NLMSG_DATA(msg);
   char ifname[1024];if_indextoname(ifi->ifi_index,ifname);
@@ -400,7 +409,7 @@ static int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 }
 
 
-void interface_ip(char *interface, char *wan_ip)
+void interface_ip(char *interface, char *wan_ip, size_t len)
 {
   struct ifaddrs *ifaddr, *ifa;
   int family, n;
@@ -418,12 +427,11 @@ void interface_ip(char *interface, char *wan_ip)
     family = ifa->ifa_addr->sa_family;
 
     if (family == AF_INET) {
-      sa = (struct sockaddr_in *) ifa->ifa_addr;
       int rc = strcmp(ifa->ifa_name, interface);
       if (rc == 0) {
         sa = (struct sockaddr_in *) ifa->ifa_addr;
         addr = inet_ntoa(sa->sin_addr);
-        sprintf(wan_ip, (char *) addr);
+        snprintf(wan_ip, len, "%s", (char *) addr);
         break;
       }
     }
@@ -436,7 +444,7 @@ struct InterfaceStats stats(char *interface)
 {
   struct rtnl_link *link;
   struct nl_sock *socket;
-  uint64_t kbytes_in, kbytes_out, rxerrors, txerrors;
+  uint64_t kbytes_in = 0, kbytes_out = 0, rxerrors = 0, txerrors = 0;
 
   socket = nl_socket_alloc();
   nl_connect(socket, NETLINK_ROUTE);

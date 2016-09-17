@@ -28,7 +28,7 @@ int parent;
 void check_config();
 void boot();
 
-void *parse_config(char *buffer)
+void parse_config(char *buffer)
 {
   json_object *json_config = json_tokener_parse(buffer);
 

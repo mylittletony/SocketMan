@@ -17,7 +17,7 @@ void cmd_notify(int response, char *id, char *buf)
     json_object_object_add(jattr, "id", jid);
   }
 
-  if (buf != '\0' && buf != NULL) {
+  if (buf != NULL && *buf != '\0') {
     json_object *jbuf = json_object_new_string(buf);
     json_object_object_add(jattr, "output", jbuf);
   }

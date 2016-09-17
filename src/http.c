@@ -44,7 +44,7 @@ size_t write_data(void *contents, size_t size, size_t nmemb, void *userp)
   return realsize;
 }
 
-char append_url_token(char *url, char *buf)
+void append_url_token(char *url, char *buf)
 {
   strcpy(buf, url);
   if (strcmp(options.token, "") != 0) {
@@ -63,7 +63,7 @@ int do_curl(CURL *curl, char *url)
 
   if(res == CURLE_OK) {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-    if (http_code == 200 && res != CURLE_ABORTED_BY_CALLBACK)
+    if (http_code == 200)
       return 1;
   }
   return 0;
@@ -118,6 +118,7 @@ int post(json_object *json) {
       if (c.memory) {
         process_response(c.memory);
         free(c.memory);
+        c.memory = NULL;
       }
     }
 
@@ -171,7 +172,7 @@ void send_boot_message()
     res = curl_easy_perform(curl);
     if(res == CURLE_OK) {
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-      if (http_code == 200 && res != CURLE_ABORTED_BY_CALLBACK && c.memory)
+      if (http_code == 200 && c.memory)
         process_response(c.memory);
     }
 
