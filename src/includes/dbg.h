@@ -1,10 +1,3 @@
-extern int verbose_flag;
-extern int syslog_flag;
-extern int tsec;
-extern int rabbit_flag;
-extern char *post_url;
-extern char *health_url;
-
 #ifndef __dbg_h__
 #define __dbg_h__
 
