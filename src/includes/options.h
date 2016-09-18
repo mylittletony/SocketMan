@@ -8,8 +8,9 @@ struct _options {
   char key[128];
   char config[128];
   char mqtt_host[128];
-  char url[128];
-  char backup_url[128];
+  char api_url[128];
+  char stats_url[128];
+  char backup_stats_url[128];
   char boot_url[128];
   char health_url[128];
   char boot_cmd[128];
@@ -19,6 +20,8 @@ struct _options {
   char *id;
   int timeout;
   int port;
+  int debug;
+  int insecure;
   int qos;
   int heartbeat;
   int reboot;

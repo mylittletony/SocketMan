@@ -1,6 +1,7 @@
 #include "dbg.h"
 #include <stdbool.h>
 #include "http.h"
+#include "operations.h"
 
 void cmd_notify(int response, char *id, char *buf)
 {
@@ -21,10 +22,10 @@ void cmd_notify(int response, char *id, char *buf)
     json_object *jbuf = json_object_new_string(buf);
     json_object_object_add(jattr, "output", jbuf);
   }
+  json_object_object_add(jobj, "report", jattr);
 
-  json_object_object_add(jobj, "message", jattr);
-
-  post(jobj);
+  // Should be moved into separate project
+  update_operation(jobj, id);
 
   json_object_put(jobj);
 }

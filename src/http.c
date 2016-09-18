@@ -71,10 +71,10 @@ int do_curl(CURL *curl, char *url)
 
 void post_backup(CURL *curl)
 {
-  if (strcmp(options.backup_url, "") != 0) {
+  if (strcmp(options.backup_stats_url, "") != 0) {
     char buff[255]; // should clear URL buff and use instead
     debug("Attempting to send to backup URL");
-    append_url_token(options.backup_url, buff);
+    append_url_token(options.backup_stats_url, buff);
     do_curl(curl, buff);
   }
   debug("No backup URL, moving on.");
@@ -82,10 +82,10 @@ void post_backup(CURL *curl)
 
 int post(json_object *json) {
 
-  if (strcmp(options.url, "") != 0) {
+  if (strcmp(options.stats_url, "") != 0) {
     CURL *curl;
     char url[255];
-    append_url_token(options.url, url);
+    append_url_token(options.stats_url, url);
 
     curl_global_init( CURL_GLOBAL_ALL );
 
@@ -108,8 +108,8 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
 
-    // Remove when not testing
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    if (options.insecure)
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     if(do_curl(curl, url) == 0) {
       debug("Could not connect to %s, trying backup.", url);

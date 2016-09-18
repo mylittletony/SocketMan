@@ -1,8 +1,8 @@
 # CC=gcc
 IDIR = "./includes"
 INCLUDES = "-I/usr/include/libnl3"
-# CFLAGS=-g -O2 -Wall -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS) -I$(IDIR) -I$(INCLUDES)
-CFLAGS= -I$(IDIR) $(INCLUDES) $(CUCUMBER)
+#CFLAGS=-g -O2 -Wall -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS) -I$(IDIR) -I$(INCLUDES)
+CFLAGS= -g -O2 -Wall -Wextra -Isrc -I$(IDIR) $(INCLUDES) $(CUCUMBER)
 
 ODIR=obj
 LDIR =../lib

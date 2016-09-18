@@ -30,8 +30,8 @@
 #include "mqtt.h"
 #include "platform.h"
 #include <sys/wait.h>
-#include <curl/curl.h>
-#include "mqtt.h"
+/* #include <curl/curl.h> */
+/* #include "mqtt.h" */
 
 int verbose_flag, cpid;
 /* volatile sig_atomic_t g_eflag = 0; */
@@ -99,7 +99,7 @@ void validate_options()
       exit(EXIT_FAILURE);
     }
 
-    if (strlen(options.url) == 0) {
+    if (strlen(options.api_url) == 0) {
       debug("API URI is required");
       exit(EXIT_FAILURE);
     }
@@ -155,7 +155,8 @@ int main( int argc,char **argv)
       {"topic",        required_argument,    0,              't'},
       {"key",          required_argument,    0,              'k'},
       {"host",         required_argument,    0,              'H'},
-      {"url",          required_argument,    0,              'a'},
+      {"api-url",      required_argument,    0,              'a'},
+      {"stats-url",    required_argument,    0,              'f'},
       {"mac",          required_argument,    0,              'm'},
       {"mac-file",     required_argument,    0,              'w'},
       {"tls",          no_argument,          &options.tls,   1  },
@@ -166,7 +167,7 @@ int main( int argc,char **argv)
     };
 
     int option_index = 0;
-    c = getopt_long_only(argc,argv,"h:u:p:e:x:s:P:qt:k:H:a:m:f:k:T:C",long_options, &option_index);
+    c = getopt_long_only(argc,argv,"h:u:p:e:x:s:P:qt:k:H:a:f:m:f:k:T:C",long_options, &option_index);
 
     if (c == -1)
       break;
@@ -227,7 +228,11 @@ int main( int argc,char **argv)
         break;
 
       case 'a':
-        strcpy(options.url, optarg);
+        strcpy(options.api_url, optarg);
+        break;
+
+      case 'f':
+        strcpy(options.stats_url, optarg);
         break;
 
       case 'k':

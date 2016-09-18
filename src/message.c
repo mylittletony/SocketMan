@@ -1,8 +1,10 @@
 #include <json-c/json.h>
 #include "notify.h"
 #include "dbg.h"
+#include "options.h"
 
-#define BUFF_SIZE 100000 // ? too much ?
+// ? too much ?
+#define BUFF_SIZE 100000
 
 void save_and_notify(char *id, char *cmd)
 {
@@ -18,6 +20,9 @@ void save_and_notify(char *id, char *cmd)
     fread(buffer, sizeof(char), BUFF_SIZE, fp);
     pclose(fp);
   }
+  if (options.debug)
+    debug("%s", buffer);
+
   cmd_notify(response, id, buffer);
 }
 

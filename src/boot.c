@@ -40,6 +40,8 @@ void parse_config(char *buffer)
 
       switch (type) {
         case json_type_int:
+          if (strcmp(key, "debug") == 0)
+            options.debug = 1;
           if (strcmp(key, "no_scan") == 0)
             options.no_scan = 1;
           if (strcmp(key, "no_survey") == 0)
@@ -60,6 +62,8 @@ void parse_config(char *buffer)
             options.health_port = json_object_get_int(val);
           if (strcmp(key, "qos") == 0)
             options.qos = json_object_get_int(val);
+          if (strcmp(key, "insecure") == 0)
+            options.insecure = json_object_get_int(val);
           break;
         case json_type_null:
           break;
@@ -86,10 +90,12 @@ void parse_config(char *buffer)
             strcpy(options.cacrt, json_object_get_string(val));
           if (strcmp(key, "mqtt_host") == 0)
             strcpy(options.mqtt_host, json_object_get_string(val));
-          if (strcmp(key, "url") == 0)
-            strcpy(options.url, json_object_get_string(val));
-          if (strcmp(key, "backup_url") == 0)
-            strcpy(options.backup_url, json_object_get_string(val));
+          if (strcmp(key, "api_url") == 0)
+            strcpy(options.api_url, json_object_get_string(val));
+          if (strcmp(key, "stats_url") == 0)
+            strcpy(options.stats_url, json_object_get_string(val));
+          if (strcmp(key, "backup_stats_url") == 0)
+            strcpy(options.backup_stats_url, json_object_get_string(val));
           if (strcmp(key, "health_url") == 0)
             strcpy(options.health_url, json_object_get_string(val));
           if (strcmp(key, "boot_url") == 0)

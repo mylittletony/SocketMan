@@ -1,13 +1,4 @@
-/* #include <net/if.h> */
-/* #include <errno.h> */
-/* #include <string.h> */
 #include <stdbool.h>
-
-/* #include <netlink/genl/genl.h> */
-/* #include <netlink/genl/family.h> */
-/* #include <netlink/genl/ctrl.h> */
-/* #include <netlink/msg.h> */
-/* #include <netlink/attr.h> */
 
 /* These are a mix of functions from IW
    Many thanks for helping get this going
@@ -95,26 +86,7 @@ static int ack_handler(struct nl_msg *msg, void *arg) {
 
 int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *group);
 
-/* static void print_ssid(const uint8_t type, uint8_t len, const uint8_t *data); */
-
 void print_ssid_escaped(const uint8_t len, const uint8_t *data);
-
-/* void print_ssid(unsigned char *ie, int ielen); */
-
-/* void print_ssid_escaped(const uint8_t len, const uint8_t *data) */
-/* { */
-/*   int i; */
-
-/*   for (i = 0; i < len; i++) { */
-/*     if (isprint(data[i]) && data[i] != ' ' && data[i] != '\\') */
-/*       printf("%c", data[i]); */
-/*     else if (data[i] == ' ' && */
-/*         (i != 0 && i != len -1)) */
-/*       printf(" "); */
-/*     else */
-/*       printf("\\x%.2x", data[i]); */
-/*   } */
-/* } */
 
 static void print_capa_dmg(__u16 capa)
 {
@@ -180,4 +152,4 @@ static void print_capa_non_dmg(__u16 capa)
     printf(" ImmediateBACK");
 }
 
-#endif /* __IW_H */
+#endif
