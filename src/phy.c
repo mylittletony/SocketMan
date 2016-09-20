@@ -246,7 +246,7 @@ char * format_enc_suites(int suites)
   if (!suites || (suites & MGMT_NONE))
     pos += sprintf(pos, "NONE/");
 
-  if (pos > 0)
+  if ((pos - str) > 0)
     *(pos - 1) = 0;
 
   return str;
