@@ -32,6 +32,7 @@
 #include <netlink/route/link.h>
 #include "platform.h"
 #include "network.h"
+#include <compiler.h>
 
 struct route_info {
   struct in_addr dstAddr;
@@ -49,7 +50,7 @@ struct interface {
 };
 
 // Much of this logic was taken from StackO and other linux forums
-int readNlSock(int sockFd, char *bufPtr, int seqNum, int pId)
+int readNlSock(int sockFd, char *bufPtr, __u32 seqNum, pid_t pId)
 {
   struct nlmsghdr *nlHdr;
   int readLen = 0, msgLen = 0;
@@ -84,7 +85,7 @@ int readNlSock(int sockFd, char *bufPtr, int seqNum, int pId)
       /* return if its not */
       break;
     }
-  } while ((nlHdr->nlmsg_seq != seqNum) || (nlHdr->nlmsg_pid != pId));
+  } while ((nlHdr->nlmsg_seq != seqNum) || (nlHdr->nlmsg_pid != (__u32)pId));
   return msgLen;
 }
 
@@ -138,7 +139,8 @@ struct defaultRoute route()
   struct nlmsghdr *nlMsg;
   struct route_info *rtInfo;
   char msgBuf[BUFSIZE];
-  int sock, len, msgSeq = 0;
+  int sock, len;
+  __u32 msgSeq = 0;
 
   if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0) {
     debug("Socket creation failed, exiting.");
@@ -363,7 +365,7 @@ int read_event(int sockint, int (*msg_handler)(struct sockaddr_nl *,
   return ret;
 }
 
-static int netlink_link_state(struct sockaddr_nl *nl, struct nlmsghdr *msg)
+/*static int netlink_link_state(UNUSED(struct sockaddr_nl *nl), struct nlmsghdr *msg)
 {
   struct ifinfomsg *ifi;
 
@@ -371,12 +373,12 @@ static int netlink_link_state(struct sockaddr_nl *nl, struct nlmsghdr *msg)
   char ifname[1024];if_indextoname(ifi->ifi_index,ifname);
 
   printf("netlink_link_state: Link %s %s\n",
-      /*(ifi->ifi_flags & IFF_RUNNING)?"Up":"Down");*/
+      //(ifi->ifi_flags & IFF_RUNNING)?"Up":"Down");
     ifname,(ifi->ifi_flags & IFF_UP)?"Up":"Down");
   return 0;
-}
+}*/
 
-static int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
+/*static int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 {
   struct ifinfomsg *ifi=NLMSG_DATA(msg);
   struct ifaddrmsg *ifa=NLMSG_DATA(msg);
@@ -406,7 +408,7 @@ static int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
       break;
   }
   return 0;
-}
+}*/
 
 
 void interface_ip(char *interface, char *wan_ip, size_t len)

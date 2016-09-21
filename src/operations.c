@@ -3,8 +3,9 @@
 #include "options.h"
 #include "http.h"
 #include "dbg.h"
+#include <compiler.h>
 
-size_t write_null(void *buffer, size_t size, size_t nmemb, void *u)
+size_t write_null(UNUSED(void *buffer), size_t size, size_t nmemb, UNUSED(void *u))
 {
      return size * nmemb;
 }

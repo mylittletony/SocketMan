@@ -19,6 +19,7 @@
 #include "iw.h"
 #include "phy.h"
 #include "utils.h"
+#include <compiler.h>
 
 #define min(x, y) ((x) < (y)) ? (x) : (y)
 #define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
@@ -28,7 +29,6 @@ static int (*registered_handler)(struct nl_msg *, void *);
 static void *registered_handler_data;
 static unsigned char ms_oui[3] = { 0x00, 0x50, 0xf2 };
 static unsigned char ieee80211_oui[3] = { 0x00, 0x0f, 0xac };
-static unsigned char wfa_oui[3] = { 0x50, 0x6f, 0x9a };
 
 static int * nl80211_send(
     struct nl80211_msg_conveyor *cv,
@@ -202,7 +202,7 @@ void register_handler(int (*handler)(struct nl_msg *, void *), void *data)
   registered_handler_data = data;
 }
 
-int valid_handler(struct nl_msg *msg, void *arg)
+int valid_handler(struct nl_msg *msg, UNUSED(void *arg))
 {
   if (registered_handler)
     return registered_handler(msg, registered_handler_data);
@@ -210,7 +210,7 @@ int valid_handler(struct nl_msg *msg, void *arg)
   return NL_OK;
 }
 
-static int no_seq_check(struct nl_msg *msg, void *arg) {
+static int no_seq_check(UNUSED(struct nl_msg *msg), UNUSED(void *arg)) {
   // Callback for NL_CB_SEQ_CHECK.
   return NL_OK;
 }
@@ -355,9 +355,6 @@ void iwinfo_parse_rsn(struct crypto_entry *c, uint8_t *data, uint8_t len,
 {
   uint16_t i, count;
 
-  static unsigned char ms_oui[3]        = { 0x00, 0x50, 0xf2 };
-  static unsigned char ieee80211_oui[3] = { 0x00, 0x0f, 0xac };
-
   data += 2;
   len -= 2;
 
@@ -458,7 +455,6 @@ static void nl80211_info_elements(struct nlattr **bss,
 {
   int ielen = nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]);
   unsigned char *ie = nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]);
-  static unsigned char ms_oui[3] = { 0x00, 0x50, 0xf2 };
   int len;
 
   while (ielen >= 2 && ielen >= ie[1])
@@ -489,7 +485,7 @@ static void nl80211_info_elements(struct nlattr **bss,
 }
 
 // From IW
-static char *get_chain_signal(struct nlattr *attr_list)
+/*static char *get_chain_signal(struct nlattr *attr_list)
 {
   struct nlattr *attr;
   static char buf[64];
@@ -514,7 +510,7 @@ static char *get_chain_signal(struct nlattr *attr_list)
     snprintf(cur, sizeof(buf) - (cur - buf), "] ");
 
   return buf;
-}
+}*/
 
 void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
 {
@@ -542,7 +538,7 @@ void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
   *buf = rate;
 }
 
-static struct nlattr ** nl80211_parse(struct nl_msg *msg)
+/*static struct nlattr ** nl80211_parse(struct nl_msg *msg)
 {
   struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
   static struct nlattr *attr[NL80211_ATTR_MAX + 1];
@@ -551,7 +547,7 @@ static struct nlattr ** nl80211_parse(struct nl_msg *msg)
       genlmsg_attrlen(gnlh, 0), NULL);
 
   return attr;
-}
+}*/
 
 int nl80211_init(void)
 {
@@ -1270,17 +1266,17 @@ static int print_info(struct nl_msg *msg, void *arg)
   struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
   struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
   struct nlattr *tb_band[NL80211_BAND_ATTR_MAX + 1];
-  struct nlattr *tb_freq[NL80211_FREQUENCY_ATTR_MAX + 1];
+  //struct nlattr *tb_freq[NL80211_FREQUENCY_ATTR_MAX + 1];
   struct nl80211_info_list *sl = arg;
 
-  static struct nla_policy freq_policy[NL80211_FREQUENCY_ATTR_MAX + 1] = {
+  /*static struct nla_policy freq_policy[NL80211_FREQUENCY_ATTR_MAX + 1] = {
     [NL80211_FREQUENCY_ATTR_FREQ] = { .type = NLA_U32 },
     [NL80211_FREQUENCY_ATTR_DISABLED] = { .type = NLA_FLAG },
     [NL80211_FREQUENCY_ATTR_NO_IR] = { .type = NLA_FLAG },
     [__NL80211_FREQUENCY_ATTR_NO_IBSS] = { .type = NLA_FLAG },
     [NL80211_FREQUENCY_ATTR_RADAR] = { .type = NLA_FLAG },
     [NL80211_FREQUENCY_ATTR_MAX_TX_POWER] = { .type = NLA_U32 },
-  };
+  };*/
 
 
   struct nlattr *nl_band;
@@ -1536,7 +1532,7 @@ int nl80211_get_quality_max(int *buf)
   return 1;
 }
 
-int nl80211_get_encryption(const char *ifname, char *buf)
+int nl80211_get_encryption(UNUSED(const char *ifname), UNUSED(char *buf))
 {
   // Not implemented
   return 1;
@@ -1637,7 +1633,6 @@ int do_scan_trigger()
   struct nl_cb *cb;
   struct nl_msg *ssids_to_scan;
   int err;
-  int ret;
   int mcid = nl_get_multicast_id(nlstate->nl_sock, "nl80211", "scan");
 
   nl_socket_add_membership(nlstate->nl_sock, mcid);

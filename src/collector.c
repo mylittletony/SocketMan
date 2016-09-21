@@ -45,7 +45,8 @@ void format_ssids(const struct iw_ops *iw,
     json_object *jssids, int len)
 {
 
-  int noise, signal = 0, quality, quality_max, bitrate, txpower, channel;
+  int noise, signal = 0, quality, quality_max, bitrate;
+  //int txpower, channel;
   static char bssid[18] = { 0 };
   char ssid[ESSID_MAX_SIZE+1] = { 0 };
   char *interface = e->ifname;
