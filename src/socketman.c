@@ -30,6 +30,7 @@
 #include "mqtt.h"
 #include "platform.h"
 #include <sys/wait.h>
+#include <compiler.h>
 /* #include <curl/curl.h> */
 /* #include "mqtt.h" */
 
@@ -38,7 +39,7 @@ int verbose_flag, cpid;
 /* volatile sig_atomic_t g_hupflag = 1; */
 
 void handle_signal(int signal) {
-  const char *signal_name;
+  UNUSED(const char *signal_name);
 
   switch (signal) {
     case SIGHUP:

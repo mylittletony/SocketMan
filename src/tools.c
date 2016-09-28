@@ -14,6 +14,7 @@
 #include "dbg.h"
 #include "platform.h"
 #include "system.h"
+#include <compiler.h>
 
 #ifndef   NI_MAXHOST
 #define   NI_MAXHOST 1025
@@ -136,7 +137,7 @@ out_error:
   return 0;
 }
 
-void flag(char *error) {
+void flag(UNUSED(char *error)) {
   // What to do?
   // Not sure where to log
 }

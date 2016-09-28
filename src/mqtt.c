@@ -11,6 +11,7 @@
 #include <time.h>
 #include <message.h>
 #include "mqtt_utils.h"
+#include <compiler.h>
 
 bool connected = false;
 time_t m0=0;
@@ -22,7 +23,7 @@ void read_message()
 
 }
 
-void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
+void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int result)
 {
   if(!result) {
     connected = true;
@@ -41,7 +42,7 @@ void my_connect_callback(struct mosquitto *mosq, void *userdata, int result)
   }
 }
 
-void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mosquitto_message *message)
+void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const struct mosquitto_message *message)
 {
   if (message->payloadlen)
     debug("Inbound message recieved");
@@ -60,7 +61,7 @@ void my_message_callback(struct mosquitto *mosq, void *userdata, const struct mo
     process_cmd(cmd, id);
 }
 
-void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int qos_count, const int *granted_qos)
+void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
 {
   int i;
   debug("Subscribed (mid: %d): %d", mid, granted_qos[0]);
@@ -70,7 +71,7 @@ void my_subscribe_callback(struct mosquitto *mosq, void *userdata, int mid, int 
   }
 }
 
-void *reconnect(void *x)
+void *reconnect(UNUSED(void *x))
 {
   while(!connected) {
     debug("Unable to connect to %s. Sleeping 15", options.mqtt_host);
@@ -83,7 +84,7 @@ void *reconnect(void *x)
   return NULL;
 }
 
-void my_disconnect_callback(struct mosquitto *mosq, void *userdata, int rc)
+void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
   connected = false;
   debug("MQTT Lost connected to %s", options.mqtt_host);

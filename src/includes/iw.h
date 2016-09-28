@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "compiler.h"
 
 /* These are a mix of functions from IW
    Many thanks for helping get this going
@@ -45,9 +46,10 @@
 
 void mac_addr_n2a(char *mac_addr, unsigned char *arg);
 
-static int error_handler(struct sockaddr_nl *nla, struct nlmsgerr *err, void *arg) {
+UNUSED(static int error_handler(UNUSED(struct sockaddr_nl *nla), struct nlmsgerr *err, void *arg));
+static int error_handler(UNUSED(struct sockaddr_nl *nla), struct nlmsgerr *err, void *arg) {
   // Callback for errors.
-  printf("error_handler() called. %s\n", err);
+  printf("error_handler() called. %d\n", err->error);
   int *ret = arg;
   *ret = err->error;
   return NL_STOP;
@@ -70,14 +72,16 @@ struct scan_params {
   bool show_both_ie_sets;
 };
 
-static int finish_handler(struct nl_msg *msg, void *arg) {
+UNUSED(static int finish_handler(UNUSED(struct nl_msg *msg), void *arg));
+static int finish_handler(UNUSED(struct nl_msg *msg), void *arg) {
   // Callback for NL_CB_FINISH.
   int *ret = arg;
   *ret = 0;
   return NL_SKIP;
 }
 
-static int ack_handler(struct nl_msg *msg, void *arg) {
+UNUSED(static int ack_handler(UNUSED(struct nl_msg *msg), void *arg));
+static int ack_handler(UNUSED(struct nl_msg *msg), void *arg) {
   // Callback for NL_CB_ACK.
   int *ret = arg;
   *ret = 0;
@@ -88,7 +92,7 @@ int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *gr
 
 void print_ssid_escaped(const uint8_t len, const uint8_t *data);
 
-static void print_capa_dmg(__u16 capa)
+/*static void print_capa_dmg(__u16 capa)
 {
   switch (capa & WLAN_CAPABILITY_DMG_TYPE_MASK) {
     case WLAN_CAPABILITY_DMG_TYPE_AP:
@@ -114,9 +118,9 @@ static void print_capa_dmg(__u16 capa)
     printf(" SpectrumMgmt");
   if (capa & WLAN_CAPABILITY_DMG_RADIO_MEASURE)
     printf(" RadioMeasure");
-}
+}*/
 
-static void print_capa_non_dmg(__u16 capa)
+/*static void print_capa_non_dmg(__u16 capa)
 {
   if (capa & WLAN_CAPABILITY_ESS)
     printf(" ESS");
@@ -150,6 +154,6 @@ static void print_capa_non_dmg(__u16 capa)
     printf(" DelayedBACK");
   if (capa & WLAN_CAPABILITY_IMM_BACK)
     printf(" ImmediateBACK");
-}
+}*/
 
 #endif

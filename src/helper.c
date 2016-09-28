@@ -23,7 +23,7 @@ char *strrev(char *str) {
   return str;
 }
 
-char *read_config(char *file) {
+char *read_config() {
   FILE *fp;
   long lSize;
   char *buffer = NULL;
