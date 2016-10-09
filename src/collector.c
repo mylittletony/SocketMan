@@ -339,8 +339,9 @@ void run_interface_scan(json_object *jiface_array,
   }
 
   // Needs scan logic built in
+  // Right now the scan doesn't run everytime. Not sure why, might be the loop
+  // Actually, it does run. However the JSON is always NULL
   if (options.survey == 1) {
-    debug("ssssssssssssssssssssssssssssssss", "444444444444444444444444444444444444444444444444444444");
     int alen = 0;
     char buf_s[4096];
     int len_s;
@@ -353,9 +354,12 @@ void run_interface_scan(json_object *jiface_array,
     struct radio_list *holdMe = NULL;
     struct radio_list *freeMe = ptr;
 
+    debug("777777777777777777777777777777777777777", "1");
     while(ptr != NULL)
     {
+      debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "1");
       if (in_array(ptr->val, myArray, 2) == 0) {
+        debug("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", "1");
         myArray[alen] = ptr->val;
         alen++;
         len_s = 0;
