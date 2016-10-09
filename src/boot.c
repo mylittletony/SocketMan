@@ -43,9 +43,9 @@ void parse_config(char *buffer)
           if (strcmp(key, "debug") == 0)
             options.debug = 1;
           if (strcmp(key, "no_scan") == 0)
-            options.no_scan = 1;
+            options.no_scan = json_object_get_int(val);
           if (strcmp(key, "no_survey") == 0)
-            options.no_survey = 1;
+            options.no_survey = json_object_get_int(val);
           if (strcmp(key, "sleep") == 0)
             options.sleep = json_object_get_int(val);
           if (strcmp(key, "port") == 0)

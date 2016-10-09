@@ -63,7 +63,7 @@ int do_curl(CURL *curl, char *url)
 
   if(res == CURLE_OK) {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-    if (http_code == 200)
+    if (http_code == 200 || http_code == 201)
       return 1;
   }
   return 0;
