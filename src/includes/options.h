@@ -28,7 +28,7 @@ struct _options {
   int health_port;
   int monitor;
   int sleep;
-  int no_scan;
+  int scan;
   int survey;
   int tls;
   int psk; // Not the right name;

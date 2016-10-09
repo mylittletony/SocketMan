@@ -39,12 +39,14 @@ void parse_config(char *buffer)
       type = json_object_get_type(val);
 
       options.survey = 1;
+      options.scan = 1;
+
       switch (type) {
         case json_type_int:
           if (strcmp(key, "debug") == 0)
             options.debug = 1;
-          if (strcmp(key, "no_scan") == 0)
-            options.no_scan = json_object_get_int(val);
+          if (strcmp(key, "scan") == 0)
+            options.scan = json_object_get_int(val);
           if (strcmp(key, "survey") == 0)
             options.survey = json_object_get_int(val);
           if (strcmp(key, "sleep") == 0)

@@ -503,7 +503,7 @@ void collect_data(int online)
 
   struct SystemInfo info = system_info();
 
-  if (options.no_scan != 1)
+  if (options.scan == 1)
   {
     debug("Running WiFi Collection");
 

@@ -189,7 +189,7 @@ int main( int argc,char **argv)
         break;
 
       case 'e':
-        options.no_scan = 1;
+        options.scan = 1;
         break;
 
       case 'x':
