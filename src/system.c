@@ -9,6 +9,7 @@
 #include "options.h"
 #include "math.h"
 #include <fcntl.h>
+#include <sys/wait.h>
 
 int reboot() {
   debug("Rebooting system");
