@@ -193,7 +193,7 @@ int main( int argc,char **argv)
         break;
 
       case 'x':
-        options.no_survey = 1;
+        options.survey = 1;
         break;
 
       case 'p':
