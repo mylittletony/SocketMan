@@ -29,7 +29,7 @@ struct _options {
   int monitor;
   int sleep;
   int no_scan;
-  int no_survey;
+  int survey;
   int tls;
   int psk; // Not the right name;
   int random;

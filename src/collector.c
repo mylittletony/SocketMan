@@ -334,12 +334,12 @@ void run_interface_scan(json_object *jiface_array,
     json_object_array_add(jiface_array, jssids);
 
     int ret = strcmp(e->ifname, "mon0");
-    if (ret != 0 && options.no_survey != 0)
+    if (ret != 0 && options.survey != 0)
       add_to_list(e);
   }
 
   // Needs scan logic built in
-  if (options.no_survey != 0) {
+  if (options.survey != 0) {
     int alen = 0;
     char buf_s[4096];
     int len_s;
