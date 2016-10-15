@@ -50,6 +50,8 @@ void append_url_token(char *url, char *buf)
   if (strcmp(options.token, "") != 0) {
     strcat(buf, "?access_token=");
     strcat(buf, options.token);
+    strcat(buf, "&mac=");
+    strcat(buf, options.mac);
   }
 }
 
