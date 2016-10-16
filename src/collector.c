@@ -68,7 +68,7 @@ void format_ssids(const struct iw_ops *iw,
       json_object_object_add(jssids, "signal", jsignal);
     }
     // THE QUALITY CAN BE NULL SOMETIMES - IE. MON INTERFACE //
-    if (signal > 0 && iw->quality(signal, &quality)) {
+    if (signal < 0 && iw->quality(signal, &quality)) {
       json_object *jquality = json_object_new_int(quality);
       json_object_object_add(jssids, "quality", jquality);
     }

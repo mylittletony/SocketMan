@@ -512,6 +512,7 @@ static void nl80211_info_elements(struct nlattr **bss,
   return buf;
 }*/
 
+// This can get the MCS values also
 void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
 {
   int rate = 0;
