@@ -38,7 +38,6 @@ struct nl80211_msg_conveyor {
 
 struct nl80211_rssi {
   int16_t rate;
-  /* int8_t mcs; */
   int8_t  rssi;
 };
 
@@ -141,7 +140,6 @@ struct iw_ops {
   int (*channel)(const char *, int *);
   int (*txpower)(const char *, int *);
   int (*bitrate)(const char *, int *);
-  /* int (*mcs)(const char *, int *); */
   int (*signal)(const char *, int *);
   int (*noise)(const char *, int *);
   int (*ssids)(char *, int *);

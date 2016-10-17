@@ -512,7 +512,6 @@ static void nl80211_info_elements(struct nlattr **bss,
   return buf;
 }*/
 
-// Parse bitrate and parse MCS should be merged into one function
 void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
 {
   int rate = 0;
@@ -564,11 +563,8 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
     mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
   }
 
-  debug("ssssssssssssssssssss %d", mcs);
-
   *buf = mcs;
 }
-// Parse bitrate and parse MCS should be merged into one function
 
 int nl80211_init(void)
 {
@@ -1111,7 +1107,6 @@ static void nl80211_signal(const char *ifname, struct nl80211_rssi *r)
 
   r->rssi = 0;
   r->rate = 0;
-  /* r->mcs = 0; */
 
   req = nl80211_msg(ifname, NL80211_CMD_GET_STATION, NLM_F_DUMP);
 
@@ -1528,20 +1523,6 @@ int nl80211_get_bitrate(const char *ifname, int *buf)
   return 0;
 }
 
-/* int nl80211_get_mcs(const char *ifname, int *buf) */
-/* { */
-/*   struct nl80211_rssi r; */
-/*   nl80211_signal(ifname, &r); */
-
-/*   if (r.mcs) */
-/*   { */
-/*     *buf = r.mcs; */
-/*     return 1; */
-/*   } */
-
-/*   return 0; */
-/* } */
-
 // From iwinfo.
 int nl80211_get_quality(int signal, int *buf)
 {
@@ -1780,7 +1761,6 @@ const struct iw_ops nl80211_exec = {
   .name           = "nl80211",
   .txpower        = nl80211_get_txpower,
   .bitrate        = nl80211_get_bitrate,
-  /* .mcs            = nl80211_get_mcs, */
   .signal         = nl80211_get_signal,
   .noise          = nl80211_get_noise,
   .ssids          = nl80211_get_ssids,
