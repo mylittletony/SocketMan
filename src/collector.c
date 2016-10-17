@@ -247,6 +247,9 @@ void format_scan(struct iw_scanlist_entry *s, json_object *jscan)
     json_object_object_add(jscan, "quality_max", jquality_max);
   }
 
+  json_object *jfreq = json_object_new_int(s->freq);
+  json_object_object_add(jscan, "frequency", jfreq);
+
   json_object *jage = json_object_new_int(s->age);
   json_object_object_add(jscan, "last_seen", jage);
 }

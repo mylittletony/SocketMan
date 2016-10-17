@@ -706,7 +706,6 @@ static int get_link_noise(struct nl_msg *msg, void *arg)
 
   if (sinfo[NL80211_SURVEY_INFO_IN_USE] && !*noise) {
     *noise = (int8_t)nla_get_u8(sinfo[NL80211_SURVEY_INFO_NOISE]);
-    /* printf("\tnoise:\t\t\t\t%d dBm\n", *noise); */
   }
   return NL_SKIP;
 
@@ -1206,6 +1205,9 @@ static int get_scan(struct nl_msg *msg, void *arg)
   if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
     nl80211_info_elements(bss, sl->s);
 
+  if (bss[NL80211_BSS_STATUS] && bss[NL80211_BSS_FREQUENCY])
+    sl->s->freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
+
   sl->s++;
   sl->len++;
 
@@ -1491,7 +1493,6 @@ int nl80211_get_txpower(const char *ifname, int *buff)
   struct nl80211_msg_conveyor *req;
   struct nl80211_interface_stats is;
 
-  /* is.channel = 0; */
   is.ssid = NULL;
   is.bssid[0] = 0;
   *buff = 0;

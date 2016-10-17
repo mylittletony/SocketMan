@@ -128,6 +128,7 @@ struct iw_scanlist_entry {
   uint8_t mac[6];
   int32_t channel;
   int32_t age;
+  int32_t freq;
   char ssid[ESSID_MAX_SIZE+1];
   struct crypto_entry crypto;
   uint8_t signal;
