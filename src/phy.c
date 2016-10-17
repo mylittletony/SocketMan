@@ -538,7 +538,7 @@ void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
   *buf = rate;
 }
 
-void parse_mcs(struct nlattr *bitrate_attr, int16_t *buf)
+void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
 {
   int mcs = 0;
   struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
@@ -985,6 +985,10 @@ static int get_stations(struct nl_msg *msg, void *arg)
     int16_t buf = 0;
     parse_bitrate(sinfo[NL80211_STA_INFO_RX_BITRATE], &buf);
     sl->s->rx_bitrate = buf;
+
+    int8_t buff = 0;
+    parse_mcs(sinfo[NL80211_STA_INFO_TX_BITRATE], &buff);
+    sl->s->mcs = buf;
   }
 
   if (sinfo[NL80211_STA_INFO_EXPECTED_THROUGHPUT]) {
@@ -1107,6 +1111,7 @@ static void nl80211_signal(const char *ifname, struct nl80211_rssi *r)
 
   r->rssi = 0;
   r->rate = 0;
+  r->mcs = 0;
 
   req = nl80211_msg(ifname, NL80211_CMD_GET_STATION, NLM_F_DUMP);
 
@@ -1528,7 +1533,6 @@ int nl80211_get_mcs(const char *ifname, int *buf)
   struct nl80211_rssi r;
   nl80211_signal(ifname, &r);
 
-  debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX %d", r.mcs);
   if (r.mcs)
   {
     *buf = r.mcs;

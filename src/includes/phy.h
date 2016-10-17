@@ -38,7 +38,7 @@ struct nl80211_msg_conveyor {
 
 struct nl80211_rssi {
   int16_t rate;
-  int8_t mcs;
+  /* int8_t mcs; */
   int8_t  rssi;
 };
 
@@ -82,6 +82,7 @@ struct nl80211_stationlist {
 struct iw_stationlist_entry {
   uint8_t mac[6];
   int16_t tx_bitrate;
+  int8_t mcs;
   int16_t rx_bitrate;
   int32_t inactive_time;
   unsigned long long rx_bytes_64;
@@ -140,7 +141,7 @@ struct iw_ops {
   int (*channel)(const char *, int *);
   int (*txpower)(const char *, int *);
   int (*bitrate)(const char *, int *);
-  int (*mcs)(const char *, int *);
+  /* int (*mcs)(const char *, int *); */
   int (*signal)(const char *, int *);
   int (*noise)(const char *, int *);
   int (*ssids)(char *, int *);

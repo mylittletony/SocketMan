@@ -45,7 +45,7 @@ void format_ssids(const struct iw_ops *iw,
     json_object *jssids, int len)
 {
 
-  int noise, signal = 0, quality, quality_max, bitrate, mcs;
+  int noise, signal = 0, quality, quality_max, bitrate;
   static char bssid[18] = { 0 };
   char ssid[ESSID_MAX_SIZE+1] = { 0 };
   char *interface = e->ifname;
@@ -78,11 +78,11 @@ void format_ssids(const struct iw_ops *iw,
     json_object_object_add(jssids, "bitrate", jbitrate);
   }
 
-  if (iw->mcs(interface, &mcs)) {
-    debug("XXXXXXXXXXYYYYYYYYYYYYYYYYYYYYY %d", mcs);
-    json_object *jmcs = json_object_new_int(mcs);
-    json_object_object_add(jssids, "mcs", jmcs);
-  }
+  /* if (iw->mcs(interface, &mcs)) { */
+  /*   debug("XXXXXXXXXXYYYYYYYYYYYYYYYYYYYYY %d", mcs); */
+  /*   json_object *jmcs = json_object_new_int(mcs); */
+  /*   json_object_object_add(jssids, "mcs", jmcs); */
+  /* } */
 
   if (iw->quality_max(&quality_max)) {
     json_object *jquality_max = json_object_new_int(quality_max);
@@ -215,6 +215,9 @@ void format_stations(const char *ssid,
 
   json_object *jexpected_tput = json_object_new_int(s->expected_tput);
   json_object_object_add(jstations, "expected_tput", jexpected_tput);
+
+  json_object *jmcs = json_object_new_int(s->mcs);
+  json_object_object_add(jstations, "mcs", jmcs);
 }
 
 void format_scan(struct iw_scanlist_entry *s, json_object *jscan)
