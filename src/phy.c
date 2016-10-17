@@ -1528,6 +1528,7 @@ int nl80211_get_mcs(const char *ifname, int *buf)
   struct nl80211_rssi r;
   nl80211_signal(ifname, &r);
 
+  debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX %d", r.mcs);
   if (r.mcs)
   {
     *buf = r.mcs;
