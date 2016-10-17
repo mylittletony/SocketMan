@@ -79,6 +79,7 @@ void format_ssids(const struct iw_ops *iw,
   }
 
   if (iw->mcs(interface, &mcs)) {
+    debug("XXXXXXXXXXYYYYYYYYYYYYYYYYYYYYY %d", mcs);
     json_object *jmcs = json_object_new_int(mcs);
     json_object_object_add(jssids, "mcs", jmcs);
   }
