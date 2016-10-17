@@ -141,6 +141,7 @@ struct iw_ops {
   int (*channel)(const char *, int *);
   int (*txpower)(const char *, int *);
   int (*bitrate)(const char *, int *);
+  int (*freq)(const char *, int *);
   int (*signal)(const char *, int *);
   int (*noise)(const char *, int *);
   int (*ssids)(char *, int *);

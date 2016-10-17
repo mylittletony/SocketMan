@@ -673,7 +673,43 @@ nla_put_failure:
   return NULL;
 }
 
-// This can also provide the tranny time
+static int get_link_freq(struct nl_msg *msg, void *arg)
+{
+  int32_t *freq = arg;
+  struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
+  struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+  struct nlattr *sinfo[NL80211_SURVEY_INFO_MAX + 1];
+  static struct nla_policy survey_policy[NL80211_SURVEY_INFO_MAX + 1] = {
+    [NL80211_SURVEY_INFO_FREQUENCY] = { .type = NLA_U32 },
+    [NL80211_SURVEY_INFO_NOISE] = { .type = NLA_U8 },
+  };
+
+  nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
+      genlmsg_attrlen(gnlh, 0), NULL);
+
+  if (!tb_msg[NL80211_ATTR_SURVEY_INFO]) {
+    fprintf(stderr, "survey data missing!\n");
+    return NL_SKIP;
+  }
+
+  if (nla_parse_nested(sinfo, NL80211_SURVEY_INFO_MAX,
+        tb_msg[NL80211_ATTR_SURVEY_INFO],
+        survey_policy)) {
+    fprintf(stderr, "failed to parse nested attributes!\n");
+    return NL_SKIP;
+  }
+
+  if (!sinfo[NL80211_SURVEY_INFO_FREQUENCY]) {
+    return NL_SKIP;
+  }
+
+  if (sinfo[NL80211_SURVEY_INFO_IN_USE] && !*freq) {
+    *freq = (int32_t)nla_get_u32(sinfo[NL80211_SURVEY_INFO_FREQUENCY]);
+  }
+  return NL_SKIP;
+
+}
+
 static int get_link_noise(struct nl_msg *msg, void *arg)
 {
   int8_t *noise = arg;
@@ -712,6 +748,28 @@ static int get_link_noise(struct nl_msg *msg, void *arg)
 }
 
 int nl80211_get_noise(const char *ifname, int *buf)
+{
+  int8_t noise;
+  struct nl80211_msg_conveyor *req;
+
+  req = nl80211_msg(ifname, NL80211_CMD_GET_SURVEY, NLM_F_DUMP);
+  if (req)
+  {
+    noise = 0;
+    nl80211_send(req, get_link_noise, &noise);
+    nl80211_free(req);
+
+    if (noise)
+    {
+      *buf = noise;
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+int nl80211_get_freq(const char *ifname, int *buf)
 {
   int8_t noise;
   struct nl80211_msg_conveyor *req;
@@ -1176,6 +1234,7 @@ static int get_scan(struct nl_msg *msg, void *arg)
 
   uint32_t freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
   sl->s->channel = ieee80211_frequency_to_channel(freq);
+  sl->s->freq = freq;
 
   if (bss[NL80211_BSS_CAPABILITY])
     caps = nla_get_u16(bss[NL80211_BSS_CAPABILITY]);
@@ -1204,10 +1263,6 @@ static int get_scan(struct nl_msg *msg, void *arg)
 
   if (bss[NL80211_BSS_INFORMATION_ELEMENTS])
     nl80211_info_elements(bss, sl->s);
-
-  if (bss[NL80211_BSS_FREQUENCY])
-    debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDD %d", nla_get_u32(bss[NL80211_BSS_FREQUENCY]));
-    sl->s->freq = nla_get_u32(bss[NL80211_BSS_FREQUENCY]);
 
   sl->s++;
   sl->len++;
@@ -1765,6 +1820,7 @@ const struct iw_ops nl80211_exec = {
   .bitrate        = nl80211_get_bitrate,
   .signal         = nl80211_get_signal,
   .noise          = nl80211_get_noise,
+  .freq           = nl80211_get_freq,
   .ssids          = nl80211_get_ssids,
   .quality        = nl80211_get_quality,
   .quality_max    = nl80211_get_quality_max,
