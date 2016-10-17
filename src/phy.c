@@ -516,6 +516,7 @@ static void nl80211_info_elements(struct nlattr **bss,
 void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
 {
   int rate = 0;
+  int mcs = 0;
   struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
   static struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = {
     [NL80211_RATE_INFO_BITRATE] = { .type = NLA_U16 },
@@ -527,8 +528,12 @@ void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
 
   if (nla_parse_nested(rinfo, NL80211_RATE_INFO_MAX,
         bitrate_attr, rate_policy)) {
-    /* snprintf(buf, buflen, "failed to parse nested rate attributes!"); */
     return;
+  }
+
+  if (rinfo[NL80211_RATE_INFO_MCS]) {
+    mcs = nla_get_u16(rinfo[NL80211_RATE_INFO_MCS]);
+    debug("ssssssssss %d", mcs);
   }
 
   if (rinfo[NL80211_RATE_INFO_BITRATE])
