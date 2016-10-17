@@ -1528,19 +1528,19 @@ int nl80211_get_bitrate(const char *ifname, int *buf)
   return 0;
 }
 
-int nl80211_get_mcs(const char *ifname, int *buf)
-{
-  struct nl80211_rssi r;
-  nl80211_signal(ifname, &r);
+/* int nl80211_get_mcs(const char *ifname, int *buf) */
+/* { */
+/*   struct nl80211_rssi r; */
+/*   nl80211_signal(ifname, &r); */
 
-  if (r.mcs)
-  {
-    *buf = r.mcs;
-    return 1;
-  }
+/*   if (r.mcs) */
+/*   { */
+/*     *buf = r.mcs; */
+/*     return 1; */
+/*   } */
 
-  return 0;
-}
+/*   return 0; */
+/* } */
 
 // From iwinfo.
 int nl80211_get_quality(int signal, int *buf)
@@ -1780,7 +1780,7 @@ const struct iw_ops nl80211_exec = {
   .name           = "nl80211",
   .txpower        = nl80211_get_txpower,
   .bitrate        = nl80211_get_bitrate,
-  .mcs            = nl80211_get_mcs,
+  /* .mcs            = nl80211_get_mcs, */
   .signal         = nl80211_get_signal,
   .noise          = nl80211_get_noise,
   .ssids          = nl80211_get_ssids,
