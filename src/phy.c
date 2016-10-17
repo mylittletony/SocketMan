@@ -771,19 +771,19 @@ int nl80211_get_noise(const char *ifname, int *buf)
 
 int nl80211_get_freq(const char *ifname, int *buf)
 {
-  int8_t noise;
+  int32_t freq;
   struct nl80211_msg_conveyor *req;
 
   req = nl80211_msg(ifname, NL80211_CMD_GET_SURVEY, NLM_F_DUMP);
   if (req)
   {
-    noise = 0;
-    nl80211_send(req, get_link_noise, &noise);
+    freq = 0;
+    nl80211_send(req, get_link_freq, &freq);
     nl80211_free(req);
 
-    if (noise)
+    if (freq)
     {
-      *buf = noise;
+      *buf = freq;
       return 1;
     }
   }
