@@ -564,6 +564,8 @@ void parse_mcs(struct nlattr *bitrate_attr, int16_t *buf)
     mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
   }
 
+  debug("ssssssssssssssssssss %d", mcs);
+
   *buf = mcs;
 }
 // Parse bitrate and parse MCS should be merged into one function
