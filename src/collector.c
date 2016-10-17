@@ -362,12 +362,12 @@ void run_interface_scan(json_object *jiface_array,
     struct radio_list *holdMe = NULL;
     struct radio_list *freeMe = ptr;
 
-    debug("777777777777777777777777777777777777777", "1");
+    /* debug("777777777777777777777777777777777777777", "1"); */
     while(ptr != NULL)
     {
-      debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "1");
+      /* debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "1"); */
       if (in_array(ptr->val, myArray, 2) == 0) {
-        debug("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", "1");
+        /* debug("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", "1"); */
         myArray[alen] = ptr->val;
         alen++;
         len_s = 0;

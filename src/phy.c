@@ -1111,7 +1111,7 @@ static void nl80211_signal(const char *ifname, struct nl80211_rssi *r)
 
   r->rssi = 0;
   r->rate = 0;
-  r->mcs = 0;
+  /* r->mcs = 0; */
 
   req = nl80211_msg(ifname, NL80211_CMD_GET_STATION, NLM_F_DUMP);
 
