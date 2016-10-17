@@ -540,9 +540,10 @@ void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
     mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
   }
 
+  debug("ssssssssss %d", mcs);
+
   /* if (rinfo[NL80211_RATE_INFO_MCS]) { */
   /*   mcs = nla_get_u8(nla_get_u16(rinfo[NL80211_RATE_INFO_MCS])); */
-  /*   debug("ssssssssss %d", mcs); */
   /* } */
 
   if (rinfo[NL80211_RATE_INFO_BITRATE])
