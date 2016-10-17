@@ -45,7 +45,7 @@ void format_ssids(const struct iw_ops *iw,
     json_object *jssids, int len)
 {
 
-  int noise, signal = 0, quality, quality_max, bitrate;
+  int noise, signal = 0, quality, quality_max, bitrate, txpower;
   static char bssid[18] = { 0 };
   char ssid[ESSID_MAX_SIZE+1] = { 0 };
   char *interface = e->ifname;
@@ -78,12 +78,6 @@ void format_ssids(const struct iw_ops *iw,
     json_object_object_add(jssids, "bitrate", jbitrate);
   }
 
-  /* if (iw->mcs(interface, &mcs)) { */
-  /*   debug("XXXXXXXXXXYYYYYYYYYYYYYYYYYYYYY %d", mcs); */
-  /*   json_object *jmcs = json_object_new_int(mcs); */
-  /*   json_object_object_add(jssids, "mcs", jmcs); */
-  /* } */
-
   if (iw->quality_max(&quality_max)) {
     json_object *jquality_max = json_object_new_int(quality_max);
     json_object_object_add(jssids, "quality_max", jquality_max);
@@ -100,10 +94,10 @@ void format_ssids(const struct iw_ops *iw,
   }
 
   // Problem on Debian!
-  /* if (iw->txpower(interface, &txpower)) { */
-  /*   json_object *jtxpower = json_object_new_int(txpower); */
-  /*   json_object_object_add(jssids, "txpower", jtxpower); */
-  /* } */
+  if (iw->txpower(interface, &txpower)) {
+    json_object *jtxpower = json_object_new_int(txpower);
+    json_object_object_add(jssids, "txpower", jtxpower);
+  }
 
   // Not complete
   /* if (iw->encryption(interface, encryption)) { */
