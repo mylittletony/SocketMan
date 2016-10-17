@@ -96,7 +96,7 @@ void format_ssids(const struct iw_ops *iw,
   // Problem on Debian!
   if (iw->txpower(interface, &txpower)) {
     json_object *jtxpower = json_object_new_int(txpower);
-    json_object_object_add(jssids, "txpower", jtxpower);
+    json_object_object_add(jssids, "tx_power", jtxpower);
   }
 
   // Not complete
