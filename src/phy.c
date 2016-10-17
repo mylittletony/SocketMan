@@ -512,10 +512,34 @@ static void nl80211_info_elements(struct nlattr **bss,
   return buf;
 }*/
 
-// This can get the MCS values also
+// Parse bitrate and parse MCS should be merged into one function
 void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
 {
   int rate = 0;
+  struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
+  static struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = {
+    [NL80211_RATE_INFO_BITRATE] = { .type = NLA_U16 },
+    [NL80211_RATE_INFO_BITRATE32] = { .type = NLA_U32 },
+    [NL80211_RATE_INFO_MCS] = { .type = NLA_U8 },
+    [NL80211_RATE_INFO_40_MHZ_WIDTH] = { .type = NLA_FLAG },
+    [NL80211_RATE_INFO_SHORT_GI] = { .type = NLA_FLAG },
+  };
+
+  if (nla_parse_nested(rinfo, NL80211_RATE_INFO_MAX,
+        bitrate_attr, rate_policy)) {
+    return;
+  }
+
+  if (rinfo[NL80211_RATE_INFO_BITRATE])
+    rate = nla_get_u16(rinfo[NL80211_RATE_INFO_BITRATE]);
+  if (rate > 0)
+    rate = rate / 10;
+
+  *buf = rate;
+}
+
+void parse_mcs(struct nlattr *bitrate_attr, int16_t *buf)
+{
   int mcs = 0;
   struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
   static struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = {
@@ -540,30 +564,9 @@ void parse_bitrate(struct nlattr *bitrate_attr, int16_t *buf)
     mcs = nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]);
   }
 
-  debug("ssssssssss %d", mcs);
-
-  /* if (rinfo[NL80211_RATE_INFO_MCS]) { */
-  /*   mcs = nla_get_u8(nla_get_u16(rinfo[NL80211_RATE_INFO_MCS])); */
-  /* } */
-
-  if (rinfo[NL80211_RATE_INFO_BITRATE])
-    rate = nla_get_u16(rinfo[NL80211_RATE_INFO_BITRATE]);
-  if (rate > 0)
-    rate = rate / 10;
-
-  *buf = rate;
+  *buf = mcs;
 }
-
-/*static struct nlattr ** nl80211_parse(struct nl_msg *msg)
-{
-  struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
-  static struct nlattr *attr[NL80211_ATTR_MAX + 1];
-
-  nla_parse(attr, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
-      genlmsg_attrlen(gnlh, 0), NULL);
-
-  return attr;
-}*/
+// Parse bitrate and parse MCS should be merged into one function
 
 int nl80211_init(void)
 {
@@ -1518,6 +1521,20 @@ int nl80211_get_bitrate(const char *ifname, int *buf)
   return 0;
 }
 
+int nl80211_get_mcs(const char *ifname, int *buf)
+{
+  struct nl80211_rssi r;
+  nl80211_signal(ifname, &r);
+
+  if (r.mcs)
+  {
+    *buf = r.mcs;
+    return 1;
+  }
+
+  return 0;
+}
+
 // From iwinfo.
 int nl80211_get_quality(int signal, int *buf)
 {
@@ -1756,6 +1773,7 @@ const struct iw_ops nl80211_exec = {
   .name           = "nl80211",
   .txpower        = nl80211_get_txpower,
   .bitrate        = nl80211_get_bitrate,
+  .mcs            = nl80211_get_mcs,
   .signal         = nl80211_get_signal,
   .noise          = nl80211_get_noise,
   .ssids          = nl80211_get_ssids,

@@ -45,8 +45,7 @@ void format_ssids(const struct iw_ops *iw,
     json_object *jssids, int len)
 {
 
-  int noise, signal = 0, quality, quality_max, bitrate;
-  //int txpower, channel;
+  int noise, signal = 0, quality, quality_max, bitrate, mcs;
   static char bssid[18] = { 0 };
   char ssid[ESSID_MAX_SIZE+1] = { 0 };
   char *interface = e->ifname;
@@ -77,6 +76,11 @@ void format_ssids(const struct iw_ops *iw,
   if (iw->bitrate(interface, &bitrate)) {
     json_object *jbitrate = json_object_new_int(bitrate);
     json_object_object_add(jssids, "bitrate", jbitrate);
+  }
+
+  if (iw->mcs(interface, &mcs)) {
+    json_object *jmcs = json_object_new_int(mcs);
+    json_object_object_add(jssids, "mcs", jmcs);
   }
 
   if (iw->quality_max(&quality_max)) {
