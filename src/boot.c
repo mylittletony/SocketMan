@@ -34,14 +34,22 @@ void parse_config(char *buffer)
 
   if (!is_error(json_config)) {
 
+    options.survey = 1;
+    options.scan = 1;
     enum json_type type;
+
     json_object_object_foreach(json_config, key, val) {
       type = json_object_get_type(val);
 
-      options.survey = 1;
-      options.scan = 1;
-
       switch (type) {
+        case json_type_null:
+        case json_type_array:
+        case json_type_object:
+        case json_type_double:
+        case json_type_string:
+        case json_type_boolean:
+          if (strcmp(key, "tls") == 0)
+            options.tls = 1;
         case json_type_int:
           if (strcmp(key, "debug") == 0)
             options.debug = 1;
@@ -67,20 +75,6 @@ void parse_config(char *buffer)
             options.qos = json_object_get_int(val);
           if (strcmp(key, "insecure") == 0)
             options.insecure = json_object_get_int(val);
-          break;
-        case json_type_null:
-          break;
-        case json_type_array:
-          break;
-        case json_type_boolean:
-          if (strcmp(key, "tls") == 0)
-            options.tls = 1;
-          break;
-        case json_type_object:
-          break;
-        case json_type_double:
-          break;
-        case json_type_string:
           if (strcmp(key, "username") == 0)
             strcpy(options.username, json_object_get_string(val));
           if (strcmp(key, "password") == 0)
@@ -115,7 +109,6 @@ void parse_config(char *buffer)
             strcpy(options.status_topic, "status/");
             strcat(options.status_topic, json_object_get_string(val));
           }
-          break;
       }
     }
     json_object_put(json_config);

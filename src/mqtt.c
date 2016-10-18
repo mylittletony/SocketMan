@@ -37,8 +37,8 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
     options.qos = 2;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-    if (strcmp(options.status_topic, "") != 0)
-      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 1, false);
+    /* if (strcmp(options.status_topic, "") != 0) */
+    /*   mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 1, false); */
   }
 }
 
@@ -145,13 +145,7 @@ int dial_mqtt()
     }
     mosquitto_tls_opts_set(mosq, 1, NULL, NULL);
     if (options.psk) {
-      // Not in use
-      /* mosquitto_tls_set(
-       * mosq, "/tmp/cacrt.pem",
-       * "/tmp/",
-       * "/etc/certs/crt.pem",
-       * "/etc/certs/key.pem",
-       * NULL); */
+      // NIU
     } else {
       mosquitto_tls_set(mosq, options.cacrt, NULL, NULL, NULL, NULL);
     }
