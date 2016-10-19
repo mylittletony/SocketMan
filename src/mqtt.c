@@ -37,8 +37,8 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
     options.qos = 2;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-    /* if (strcmp(options.status_topic, "") != 0) */
-    /*   mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 1, false); */
+    if (strcmp(options.status_topic, "") != 0)
+      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 1, false);
   }
 }
 
@@ -55,7 +55,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   process_message((const char*)message->payload, cmd, id);
   if (id[0] != '\0') {
     mosquitto_publish(mosq, 0, options.status_topic, strlen(id), id, 1, false);
-    debug("READ: %s", id);
+    debug("READ: %s. Topic: %s", id, options.status_topic);
   }
   if (cmd[0] != '\0')
     process_cmd(cmd, id);
