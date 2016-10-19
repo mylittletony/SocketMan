@@ -39,11 +39,21 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
     char topic[k+n+19];
     topic_id_generate(topic, options.topic, options.key);
 
-    options.qos = 2;
+    options.qos = 1;
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-    if (strcmp(options.status_topic, "") != 0)
-      mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 1, false);
+    if (strcmp(options.status_topic, "") != 0) {
+      json_object *jobj = json_object_new_object();
+      json_object *jattr = json_object_new_object();
+
+      json_object *jid = json_object_new_string("1");
+      json_object_object_add(jattr, "online", jid);
+      json_object_object_add(jobj, "report", jattr);
+      const char *resp = json_object_to_json_string(jobj);
+
+      mosquitto_publish(mosq, 0, options.status_topic, strlen(resp), resp, 1, false);
+      json_object_put(jobj);
+    }
   }
 }
 
@@ -276,8 +286,19 @@ int dial_mqtt()
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
-  if (strcmp(options.status_topic, "") != 0)
-    mosquitto_will_set(mosq, options.status_topic, 1, "0", 2, false);
+  if (strcmp(options.status_topic, "") != 0) {
+    json_object *jobj = json_object_new_object();
+    json_object *jattr = json_object_new_object();
+
+    json_object *jid = json_object_new_string("0");
+    json_object_object_add(jattr, "online", jid);
+    json_object_object_add(jobj, "report", jattr);
+
+    const char *resp = json_object_to_json_string(jobj);
+    json_object_put(jobj);
+
+    mosquitto_will_set(mosq, options.status_topic, strlen(resp), resp, 1, false);
+  }
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
   if (rc) {
