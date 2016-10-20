@@ -24,6 +24,7 @@ struct _options {
   int insecure;
   int qos;
   int heartbeat;
+  int rest;
   int reboot;
   int health_port;
   int monitor;

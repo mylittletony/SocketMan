@@ -12,6 +12,8 @@
 #include <message.h>
 #include "mqtt_utils.h"
 #include <compiler.h>
+#include <json-c/json.h>
+#include "notify.h"
 
 bool connected = false;
 time_t m0=0;
@@ -42,23 +44,110 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
   }
 }
 
+// Refactor whole function
 void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const struct mosquitto_message *message)
 {
-  if (message->payloadlen)
-    debug("Inbound message recieved");
+  if (!message->payloadlen) {
+    debug("Error decoding JSON, not processing payload.");
+    return;
+  }
+
+  time_t now = time(NULL);
+  debug("Message received at %lld", (long long)now);
 
   char id[100];
-  char cmd[10000];
+  char cmd[10240];
   id[0] = '\0';
   cmd[0] = '\0';
 
-  process_message((const char*)message->payload, cmd, id);
-  if (id[0] != '\0') {
-    mosquitto_publish(mosq, 0, options.status_topic, strlen(id), id, 1, false);
-    debug("READ: %s. Topic: %s", id, options.status_topic);
+  char *msg = message->payload;
+  /* process_message((const char*)message->payload, cmd, id); */
+
+  json_object *jobj = json_tokener_parse(msg);
+
+  if (is_error(jobj)) {
+    debug("Error decoding JSON, not processing payload.");
+    return;
   }
-  if (cmd[0] != '\0')
-    process_cmd(cmd, id);
+
+  enum json_type type;
+  json_object_object_foreach(jobj, key, val) {
+    type = json_object_get_type(val);
+    switch (type) {
+      case json_type_boolean:
+      case json_type_string:
+        if (strcmp(key, "cmd") == 0)
+          strcpy(cmd, json_object_get_string(val));
+        if (strcmp(key, "id") == 0)
+          strcpy(id, json_object_get_string(val));
+      default:
+        break;
+    }
+  }
+
+  json_object_put(jobj);
+
+  if (cmd[0] == '\0' || id[0] == '\0') {
+    debug("Payload missing CMD or ID, exiting.");
+    return;
+  }
+
+  // Lets process and deliver the message
+  json_object *jobjr = json_object_new_object();
+  json_object *jattr = json_object_new_object();
+
+  json_object *jid = json_object_new_string(id);
+  json_object_object_add(jattr, "id", jid);
+
+  // Message delivered
+
+  json_object_object_add(jattr, "delivered", json_object_new_boolean(1));
+  json_object_object_add(jobjr, "report", jattr);
+
+  const char *report = json_object_to_json_string(jobjr);
+  mosquitto_publish(mosq, 0, options.status_topic, strlen(report), report, 1, false);
+
+  json_object_put(jobjr);
+
+  // Message processing
+  FILE *fp;
+  int response = -1;
+  char buffer[51200];
+  buffer[0] = '\0';
+
+  fp = popen(cmd, "r");
+  if (fp != NULL) {
+    response = 0;
+    memset(buffer, '\0', sizeof(buffer));
+    fread(buffer, sizeof(char), 51200, fp);
+    pclose(fp);
+  }
+  if (options.debug)
+    debug("%s", buffer);
+
+  if (strlen(buffer) == 0) {
+    strcpy(buffer, "DNE");
+  }
+
+  if (options.rest) {
+    cmd_notify(response, id, buffer);
+    return;
+  }
+
+  json_object *jobjd = json_object_new_object();
+  json_object *jattrd = json_object_new_object();
+  json_object_object_add(jattrd, "id", json_object_new_string(id));
+  json_object_object_add(jattrd, "status", json_object_new_string("DONE"));
+  json_object_object_add(jattrd, "payload", json_object_new_string(buffer));
+  json_object_object_add(jobjd, "report", jattrd);
+  const char *r = json_object_to_json_string(jobjd);
+
+  mosquitto_publish(mosq, 0, options.status_topic, strlen(r), r, 1, false);
+
+  debug("Message published!");
+  json_object_put(jobjd);
+
+  return;
 }
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)

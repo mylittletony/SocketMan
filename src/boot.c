@@ -55,6 +55,8 @@ void parse_config(char *buffer)
             options.debug = 1;
           if (strcmp(key, "scan") == 0)
             options.scan = json_object_get_int(val);
+          if (strcmp(key, "rest") == 0)
+            options.rest = json_object_get_int(val);
           if (strcmp(key, "survey") == 0)
             options.survey = json_object_get_int(val);
           if (strcmp(key, "sleep") == 0)
