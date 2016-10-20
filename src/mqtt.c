@@ -15,6 +15,9 @@
 #include <json-c/json.h>
 #include "notify.h"
 
+#define M 10
+#define N 100
+
 bool connected = false;
 time_t m0=0;
 
@@ -42,6 +45,22 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
     if (strcmp(options.status_topic, "") != 0)
       mosquitto_publish(mosq, 0, options.status_topic, 1, "1", 1, false);
   }
+}
+
+static char *rand_string(char *str, char *prefix, size_t size)
+{
+  const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJK0123456789...";
+  if (size) {
+    strcpy(str, prefix);
+    --size;
+    int im, n;
+    for (n = strlen(prefix); n < N && im < M; ++n) {
+      int key = rand() % (int) (sizeof charset - 1);
+      str[n] = charset[key];
+    }
+    str[size] = '\0';
+  }
+  return str;
 }
 
 // Refactor whole function
@@ -87,10 +106,20 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   json_object_put(jobj);
 
-  if (cmd[0] == '\0' || id[0] == '\0') {
+  if (cmd[0] == '\0') {
     debug("Payload missing CMD or ID, exiting.");
     return;
   }
+
+  char topic[128];
+  strcpy(topic, options.status_topic);
+
+  if (id[0] == '\0') {
+    rand_string(id, "SM_", 44);
+    strcat(topic, "/messages");
+    debug("Missing ID. Auto-generating: %s. Topic: %s", id, topic);
+  }
+  // Needs check if running, check time, check live cmd
 
   // Lets process and deliver the message
   json_object *jobjr = json_object_new_object();
@@ -105,7 +134,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobjr, "report", jattr);
 
   const char *report = json_object_to_json_string(jobjr);
-  mosquitto_publish(mosq, 0, options.status_topic, strlen(report), report, 1, false);
+  mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
 
   json_object_put(jobjr);
 
@@ -142,7 +171,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobjd, "report", jattrd);
   const char *r = json_object_to_json_string(jobjd);
 
-  mosquitto_publish(mosq, 0, options.status_topic, strlen(r), r, 1, false);
+  mosquitto_publish(mosq, 0, topic, strlen(r), r, 1, false);
 
   debug("Message published!");
   json_object_put(jobjd);
