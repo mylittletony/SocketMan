@@ -35,18 +35,36 @@ void process_cmd(char *cmd, char *id)
 void process_message(const char *msg, char *cmd, char *id)
 {
   json_object *jobj = json_tokener_parse(msg);
+  enum json_type type, typem;
 
   if (!is_error(jobj)) {
-    enum json_type type;
     json_object_object_foreach(jobj, key, val) {
       type = json_object_get_type(val);
       switch (type) {
+        case json_type_object:
+          if (strcmp(key, "meta") == 0) {
+            json_object_object_foreach(val, keym, valm) {
+              typem = json_object_get_type(valm);
+              switch (typem) {
+                case json_type_null:
+                case json_type_boolean:
+                case json_type_double:
+                case json_type_int:
+                case json_type_array:
+                case json_type_object:
+                case json_type_string:
+                  if (strcmp(keym, "cmd") == 0) {
+                    strcpy(cmd, json_object_get_string(valm));
+                    /* break; */
+                  }
+              }
+            }
+          }
         case json_type_boolean:
         case json_type_string:
-          if (strcmp(key, "cmd") == 0)
-            strcpy(cmd, json_object_get_string(val));
-          if (strcmp(key, "id") == 0)
+          if (strcmp(key, "id") == 0) {
             strcpy(id, json_object_get_string(val));
+          }
         default:
           break;
       }

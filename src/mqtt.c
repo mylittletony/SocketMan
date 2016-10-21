@@ -43,12 +43,16 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
     if (strcmp(options.status_topic, "") != 0) {
-      json_object *jobj = json_object_new_object();
-      json_object *jattr = json_object_new_object();
 
-      json_object *jid = json_object_new_string("1");
-      json_object_object_add(jattr, "online", jid);
-      json_object_object_add(jobj, "report", jattr);
+      json_object *jobj = json_object_new_object();
+      json_object *jmeta = json_object_new_object();
+
+      json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+      json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+      json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
+      json_object_object_add(jmeta, "online", json_object_new_string("1"));
+      json_object_object_add(jobj, "meta", jmeta);
+
       const char *resp = json_object_to_json_string(jobj);
 
       mosquitto_publish(mosq, 0, options.status_topic, strlen(resp), resp, 1, false);
@@ -89,32 +93,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   id[0] = '\0';
   cmd[0] = '\0';
 
-  char *msg = message->payload;
-  /* process_message((const char*)message->payload, cmd, id); */
-
-  json_object *jobj = json_tokener_parse(msg);
-
-  if (is_error(jobj)) {
-    debug("Error decoding JSON, not processing payload.");
-    return;
-  }
-
-  enum json_type type;
-  json_object_object_foreach(jobj, key, val) {
-    type = json_object_get_type(val);
-    switch (type) {
-      case json_type_boolean:
-      case json_type_string:
-        if (strcmp(key, "cmd") == 0)
-          strcpy(cmd, json_object_get_string(val));
-        if (strcmp(key, "id") == 0)
-          strcpy(id, json_object_get_string(val));
-      default:
-        break;
-    }
-  }
-
-  json_object_put(jobj);
+  process_message((const char*)message->payload, cmd, id);
 
   if (cmd[0] == '\0') {
     debug("Payload missing CMD or ID, exiting.");
@@ -125,28 +104,28 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   strcpy(topic, options.status_topic);
 
   if (id[0] == '\0') {
-    rand_string(id, "SM_", 44);
+    rand_string(id, "sm_", 44);
     strcat(topic, "/messages");
     debug("Missing ID. Auto-generating: %s. Topic: %s", id, topic);
   }
   // Needs check if running, check time, check live cmd
 
   // Lets process and deliver the message
-  json_object *jobjr = json_object_new_object();
-  json_object *jattr = json_object_new_object();
-
-  json_object *jid = json_object_new_string(id);
-  json_object_object_add(jattr, "id", jid);
 
   // Message delivered
 
-  json_object_object_add(jattr, "delivered", json_object_new_boolean(1));
-  json_object_object_add(jobjr, "report", jattr);
+  json_object *jobj = json_object_new_object();
+  json_object *jmeta = json_object_new_object();
 
-  const char *report = json_object_to_json_string(jobjr);
+  json_object_object_add(jobj, "id", json_object_new_string(id));
+  json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+  json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+  json_object_object_add(jobj, "event_type", json_object_new_string("DELIVERED"));
+  json_object_object_add(jmeta, "delivered", json_object_new_boolean(1));
+  json_object_object_add(jobj, "meta", jmeta);
+  const char *report = json_object_to_json_string(jobj);
+
   mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
-
-  json_object_put(jobjr);
 
   // Message processing
   FILE *fp;
@@ -173,18 +152,18 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
-  json_object *jobjd = json_object_new_object();
-  json_object *jattrd = json_object_new_object();
-  json_object_object_add(jattrd, "id", json_object_new_string(id));
-  json_object_object_add(jattrd, "status", json_object_new_string("DONE"));
-  json_object_object_add(jattrd, "payload", json_object_new_string(buffer));
-  json_object_object_add(jobjd, "report", jattrd);
-  const char *r = json_object_to_json_string(jobjd);
+  jobj = json_object_new_object();
+  json_object_object_add(jobj, "id", json_object_new_string(id));
+  json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+  json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+  json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
+  json_object_object_add(jmeta, "payload", json_object_new_string(buffer));
+  json_object_object_add(jobj, "meta", jmeta);
+  report = json_object_to_json_string(jobj);
 
-  mosquitto_publish(mosq, 0, topic, strlen(r), r, 1, false);
-
+  mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
+  json_object_put(jobj);
   debug("Message published!");
-  json_object_put(jobjd);
 
   return;
 }
@@ -279,7 +258,6 @@ int dial_mqtt()
     }
   }
 
-  /* mosquitto_log_callback_set(mosq, my_log_callback); */
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
@@ -287,17 +265,19 @@ int dial_mqtt()
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
   if (strcmp(options.status_topic, "") != 0) {
+
     json_object *jobj = json_object_new_object();
-    json_object *jattr = json_object_new_object();
+    json_object *jmeta = json_object_new_object();
 
-    json_object *jid = json_object_new_string("0");
-    json_object_object_add(jattr, "online", jid);
-    json_object_object_add(jobj, "report", jattr);
+    json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+    json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
+    json_object_object_add(jmeta, "online", json_object_new_string("0"));
+    json_object_object_add(jobj, "meta", jmeta);
 
-    const char *resp = json_object_to_json_string(jobj);
+    const char *report = json_object_to_json_string(jobj);
     json_object_put(jobj);
 
-    mosquitto_will_set(mosq, options.status_topic, strlen(resp), resp, 1, false);
+    mosquitto_will_set(mosq, options.status_topic, strlen(report), report, 1, false);
   }
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
