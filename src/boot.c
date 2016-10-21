@@ -107,10 +107,6 @@ void parse_config(char *buffer)
             strcpy(options.mac_file, json_object_get_string(val));
           if (strcmp(key, "token") == 0)
             strcpy(options.token, json_object_get_string(val));
-          if (strcmp(key, "status_topic") == 0) {
-            strcpy(options.status_topic, "status/");
-            strcat(options.status_topic, json_object_get_string(val));
-          }
       }
     }
     json_object_put(json_config);
@@ -141,9 +137,6 @@ void parse_config(char *buffer)
 
   if (!options.qos)
     options.qos = 0;
-
-  strcat(options.status_topic, "/");
-  strcat(options.status_topic, options.mac);
 }
 
 void boot_cmd()

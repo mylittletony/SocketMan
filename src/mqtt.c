@@ -40,9 +40,12 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
     topic_id_generate(topic, options.topic, options.key);
 
     options.qos = 1;
+    char t[128];
+    strcat(t, options.topic);
+
     mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-    if (strcmp(options.status_topic, "") != 0) {
+    if (strcmp(options.topic, "") != 0) {
 
       json_object *jobj = json_object_new_object();
       json_object *jmeta = json_object_new_object();
@@ -55,7 +58,17 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
 
       const char *resp = json_object_to_json_string(jobj);
 
-      mosquitto_publish(mosq, 0, options.status_topic, strlen(resp), resp, 1, false);
+      // refactor and de-dup
+      char topic[128];
+      strcpy(topic, "status/");
+      strcat(topic, options.topic);
+      strcat(topic, "/");
+      strcat(topic, options.key);
+      strcat(topic, "/");
+      strcat(topic, options.mac);
+
+      debug("DDDDDDDDDDDDDDDDDDD: %s", topic);
+      mosquitto_publish(mosq, 0, topic, strlen(resp), resp, 1, false);
       json_object_put(jobj);
     }
   }
@@ -100,13 +113,18 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
-  char topic[128];
-  strcpy(topic, options.status_topic);
+  char del[128];
+  strcpy(del, "status/");
+  strcat(del, options.topic);
+  strcat(del, "/");
+  strcat(del, options.key);
+  strcat(del, "/");
+  strcat(del, options.mac);
 
   if (id[0] == '\0') {
     rand_string(id, "sm_", 44);
-    strcat(topic, "/messages");
-    debug("Missing ID. Auto-generating: %s. Topic: %s", id, topic);
+    /* strcat(del, "/messages"); */
+    debug("Missing ID. Auto-generating: %s. Topic: %s", id, del);
   }
   // Needs check if running, check time, check live cmd
 
@@ -125,7 +143,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "meta", jmeta);
   const char *report = json_object_to_json_string(jobj);
 
-  mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
+  mosquitto_publish(mosq, 0, del, strlen(report), report, 1, false);
 
   // Message processing
   FILE *fp;
@@ -161,7 +179,15 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "meta", jmeta);
   report = json_object_to_json_string(jobj);
 
-  mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
+  char pub[128];
+  strcpy(pub, "pub/");
+  strcat(pub, options.topic);
+  strcat(pub, "/");
+  strcat(pub, options.key);
+  strcat(pub, "/");
+  strcat(pub, options.mac);
+
+  mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
   json_object_put(jobj);
   debug("Message published!");
 
@@ -264,7 +290,7 @@ int dial_mqtt()
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
-  if (strcmp(options.status_topic, "") != 0) {
+  if (strcmp(options.topic, "") != 0) {
 
     json_object *jobj = json_object_new_object();
     json_object *jmeta = json_object_new_object();
@@ -277,7 +303,17 @@ int dial_mqtt()
     const char *report = json_object_to_json_string(jobj);
     json_object_put(jobj);
 
-    mosquitto_will_set(mosq, options.status_topic, strlen(report), report, 1, false);
+    // Refactor, de-dup after testing
+    char topic[128];
+    strcpy(topic, "status/");
+    strcat(topic, options.topic);
+    strcat(topic, "/");
+    strcat(topic, options.key);
+    strcat(topic, "/");
+    strcat(topic, options.mac);
+    /* strcat(topic, "/connect"); */
+
+    mosquitto_will_set(mosq, topic, strlen(report), report, 1, false);
   }
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);

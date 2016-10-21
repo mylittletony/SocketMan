@@ -4,7 +4,6 @@ struct _options {
   char username[20];
   char password[20];
   char topic[128];
-  char status_topic[128];
   char key[128];
   char config[128];
   char mqtt_host[128];

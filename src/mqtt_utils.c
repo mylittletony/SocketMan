@@ -22,7 +22,8 @@ int client_id_generate(char *id)
 
 void topic_id_generate(char * topic, const char *name, const char *key)
 {
-  strcpy(topic, name);
+  strcpy(topic, "sub/");
+  strcat(topic, name);
   strcat(topic, "/");
   strcat(topic, key);
   strcat(topic, "/");
