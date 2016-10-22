@@ -50,16 +50,20 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
       json_object *jobj = json_object_new_object();
       json_object *jmeta = json_object_new_object();
 
+      // refactor
       json_object_object_add(jobj, "app", json_object_new_string("socketman"));
       json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
       json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
       json_object_object_add(jmeta, "online", json_object_new_string("1"));
+      json_object_object_add(jmeta, "msg", json_object_new_string("Device online"));
       json_object_object_add(jobj, "meta", jmeta);
 
       const char *resp = json_object_to_json_string(jobj);
 
       // refactor and de-dup
       char topic[128];
+
+      // Status at the front is just for status / online / offline updates
       strcpy(topic, "status/");
       strcat(topic, options.topic);
       strcat(topic, "/");
@@ -67,7 +71,6 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
       strcat(topic, "/");
       strcat(topic, options.mac);
 
-      debug("DDDDDDDDDDDDDDDDDDD: %s", topic);
       mosquitto_publish(mosq, 0, topic, strlen(resp), resp, 1, false);
       json_object_put(jobj);
     }
@@ -113,18 +116,22 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
-  char del[128];
-  strcpy(del, "status/");
-  strcat(del, options.topic);
-  strcat(del, "/");
-  strcat(del, options.key);
-  strcat(del, "/");
-  strcat(del, options.mac);
+  // Refactor
+  char delivery[128];
+  strcpy(delivery, "pub/");
+  strcat(delivery, options.topic);
+  strcat(delivery, "/");
+  strcat(delivery, options.key);
+  strcat(delivery, "/");
+  strcat(delivery, options.mac);
 
+  char *suffix = NULL;
   if (id[0] == '\0') {
+    suffix = "/messages";
+    strcat(delivery, suffix);
     rand_string(id, "sm_", 44);
-    /* strcat(del, "/messages"); */
-    debug("Missing ID. Auto-generating: %s. Topic: %s", id, del);
+    // Append messages which prevents all the messages from being seen
+    debug("Missing ID. Auto-generating: %s. Topic: %s", id, delivery);
   }
   // Needs check if running, check time, check live cmd
 
@@ -135,15 +142,17 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object *jobj = json_object_new_object();
   json_object *jmeta = json_object_new_object();
 
+  // Refactor
   json_object_object_add(jobj, "id", json_object_new_string(id));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("DELIVERED"));
   json_object_object_add(jmeta, "delivered", json_object_new_boolean(1));
+  /* json_object_object_add(jmeta, "msg", json_object_new_string("Delivered")); */
   json_object_object_add(jobj, "meta", jmeta);
   const char *report = json_object_to_json_string(jobj);
 
-  mosquitto_publish(mosq, 0, del, strlen(report), report, 1, false);
+  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
 
   // Message processing
   FILE *fp;
@@ -170,22 +179,28 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
+  // Refactor
   jobj = json_object_new_object();
   json_object_object_add(jobj, "id", json_object_new_string(id));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
-  json_object_object_add(jmeta, "payload", json_object_new_string(buffer));
+  json_object_object_add(jmeta, "msg", json_object_new_string(buffer));
+  /* json_object_object_add(jmeta, "success", json_object_new_bool()); */
   json_object_object_add(jobj, "meta", jmeta);
   report = json_object_to_json_string(jobj);
 
   char pub[128];
-  strcpy(pub, "pub/");
+  strcpy(pub, "status/");
   strcat(pub, options.topic);
   strcat(pub, "/");
   strcat(pub, options.key);
   strcat(pub, "/");
   strcat(pub, options.mac);
+
+  if (suffix != NULL) {
+    strcat(pub, suffix);
+  }
 
   mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
   json_object_put(jobj);
@@ -296,8 +311,10 @@ int dial_mqtt()
     json_object *jmeta = json_object_new_object();
 
     json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+    json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
     json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
     json_object_object_add(jmeta, "online", json_object_new_string("0"));
+    json_object_object_add(jmeta, "msg", json_object_new_string("Went offline"));
     json_object_object_add(jobj, "meta", jmeta);
 
     const char *report = json_object_to_json_string(jobj);
