@@ -500,25 +500,16 @@ void collect_data(int online)
 
   debug("Collecting the device stats");
 
-  char rx[21], tx[21], wan_ip[21] = "";
+  char wan_ip[21] = "";
   json_object *jobj = json_object_new_object();
   json_object *jattr = json_object_new_object();
 
   struct defaultRoute dr = route();
 
-  int64_t txi = 0;
-  int64_t rxi = 0;
-
+  struct InterfaceStats istats;
   if (strcmp(dr.if_name, "") != 0) {
     interface_ip(dr.if_name, wan_ip, sizeof(wan_ip));
-    struct InterfaceStats istats = stats(dr.if_name);
-
-    txi = istats.tx;
-    rxi = istats.rx;
-
-    /* sprintf(tx, "%" PRIu64, istats.tx); */
-    /* sprintf(rx, "%" PRIu64, istats.rx); */
-    /* debug("DDDDDDDDDD: %d", istats.tx); */
+    istats = stats(dr.if_name);
   }
 
   char machine[100];
@@ -579,17 +570,11 @@ void collect_data(int online)
   json_object *jmac = json_object_new_string(options.mac);
   json_object_object_add(jattr, "mac", jmac);
 
-  json_object *jtx = json_object_new_double(txi);
+  json_object *jtx = json_object_new_double(istats.tx);
   json_object_object_add(jattr, "tx_bytes", jtx);
 
-  json_object *jrx = json_object_new_double(rxi);
+  json_object *jrx = json_object_new_double(istats.rx);
   json_object_object_add(jattr, "rx_bytes", jrx);
-
-/*   json_object *jtx = json_object_new_string(tx); */
-/*   json_object_object_add(jattr, "tx_bytes", jtx); */
-
-  /* json_object *jrx = json_object_new_string(rx); */
-  /* json_object_object_add(jattr, "rx_bytes", jrx); */
 
   json_object *juptime = json_object_new_int(info.uptime);
   json_object_object_add(jattr, "uptime", juptime);
