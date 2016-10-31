@@ -15,10 +15,6 @@ Full build instructions will follow. It currently runs on Debian, Ubuntu and Ope
 - Implement protocol buffers
 - Implement certificate refresh
 
-## Notes
-
-To obtain the IP and device name for a station, we currently read the DNSMASQ lease file. If it's not present, we can't get the IP, yet. We're working on something to bypass this.
-
 ## Config
 
 Place a JSON config file with all the required params:
@@ -85,3 +81,6 @@ The JSON is quite long so a snippet can be found here:
 
 https://gist.github.com/simonmorley/74f97ba9d267f5eb9eea5c43490ca337
 
+## Notes
+
+To obtain the IP and device name for a station, we currently read the DNSMASQ lease file. If it's not present, we can't get the IP, yet. We're working on something to bypass this.
