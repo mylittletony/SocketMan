@@ -19,6 +19,43 @@ Full build instructions will follow. It currently runs on Debian, Ubuntu and Ope
 
 To obtain the IP and device name for a station, we currently read the DNSMASQ lease file. If it's not present, we can't get the IP, yet. We're working on something to bypass this.
 
+## Config
+
+Place a JSON config file with all the required params:
+
+```
+{
+  "username": "hXwYkJrhgt",
+  "password": "ZaXMATRyQn",
+  "topic": "ZsSChvluYyGCNRbWHgDKAQbvBLeozVuq",
+  "key": "SObjvWxbQtcotVrQJWurPcvnPXmpqYue",
+  "api_url": "http://xxx.ngrok.io/v1/collector",
+  "stats_url": "http://xxx.ngrok.io/v1/collector",
+  "backup_url": "http://requestb.in/1n69hks1",
+  "mac": "88-DC-XX-XX-XX-XX",
+  "mqtt_host": "192.168.142.139",
+  "booiiiit_url": "123",
+  "booiit_cmd": "/tmp/test.sh",
+  "token": "75199254-5ab0-4fce-a8fc-e16b1978b103",
+  "port": 8443,
+  "sleep": 10,
+  "monitor": 5,
+  "scan": 1,
+  "survey": 0,
+  "tls": true,
+  "cacrt": "/tmp/cacrt.pem",
+  "debug": 1
+}
+```
+
+You can either get directly from the CT API or SM will provision itself on boot.
+
+Run SocketMan with:
+
+```
+socketman --config=/root/config.json
+```
+
 ## JSON Formats
 
 **Operations**
@@ -39,3 +76,12 @@ And here's what the JSON looks like.
     "output": "command output"
 }
 ```
+
+**Collector**
+
+The collector runs every N seconds. It reports stats on the boxes and pushes them back to Tony. If you're not using the REST API, it will publish back to Puffin.
+
+The JSON is quite long so a snippet can be found here:
+
+https://gist.github.com/simonmorley/74f97ba9d267f5eb9eea5c43490ca337
+
