@@ -118,7 +118,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Refactor
   char delivery[128];
-  strcpy(delivery, "sub/");
+  strcpy(delivery, "status/");
   strcat(delivery, options.topic);
   strcat(delivery, "/");
   strcat(delivery, options.key);
