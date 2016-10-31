@@ -173,7 +173,14 @@ void run_collector()
   debug("Starting Socketman.");
   pre_boot_cb();
   mqtt_connect();
-  monitor();
+
+  do
+  {
+    monitor();
+  }
+  while(options.initialized);
+
+  debug("Exiting main loop - go into the config block");
   return;
 }
 
@@ -191,6 +198,7 @@ void check_config()
     }
     free(buffer);
   } else {
+    // Why the sleep?
     sleep(1);
     options.initialized = 1;
   }

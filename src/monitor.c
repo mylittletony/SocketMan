@@ -38,7 +38,7 @@ void reset()
   delay = 5;
 }
 
-void run_monitor()
+void monitor()
 {
   int rc = 0;
   struct defaultRoute dr = route();
@@ -178,18 +178,4 @@ void heartbeat()
 
   debug("Sleeping for %d seconds.", options.monitor);
   sleep(options.monitor);
-}
-
-void monitor()
-{
-  // remove this when not testing collector
-  /* online = 1; */
-  /* collect_and_send_data(online); */
-  // remove this when not testing collector
-
-  do
-  {
-    run_monitor();
-  }
-  while(1);
 }

@@ -55,33 +55,27 @@ void append_url_token(char *url, char *buf)
   }
 }
 
-int do_curl(CURL *curl, char *url)
+long do_curl(CURL *curl, char *url)
 {
   long http_code = 0;
-  CURLcode res;
 
   curl_easy_setopt(curl, CURLOPT_URL, url);
-  res = curl_easy_perform(curl);
+  curl_easy_perform(curl);
 
-  if(res == CURLE_OK) {
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-    return http_code;
-
-    /* if (http_code == 200 || http_code == 201) */
-    /*   return 1; */
-  /* } */
-  /* return 0; */
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+  return http_code;
 }
 
-void post_backup(CURL *curl)
+int post_backup(CURL *curl)
 {
   if (strcmp(options.backup_stats_url, "") != 0) {
     char buff[255]; // should clear URL buff and use instead
     debug("Attempting to send to backup URL");
     append_url_token(options.backup_stats_url, buff);
-    do_curl(curl, buff);
+    return do_curl(curl, buff);
   }
   debug("No backup URL, moving on.");
+  return 0;
 }
 
 int post(json_object *json) {
@@ -112,28 +106,34 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
 
-    if (options.insecure)
+    if (options.insecure) {
       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-    int resp = do_curl(curl, url);
-
-    if (resp == 200 || resp == 201) {
-      debug("Could not connect to %s, trying backup.", url);
-      post_backup(curl);
-    } else if (resp == 401) {
-
-      // Restart SM and poll the end-point for a config
-
-    } else {
-      if (c.memory) {
-        process_response(c.memory);
-        free(c.memory);
-        c.memory = NULL;
-      }
     }
 
-    if (c.memory)
+    long resp = do_curl(curl, url);
+
+    if (resp != 200 || resp != 201 || resp != 401) {
+      debug("Could not connect to %s, trying backup.", url);
+      long tmp = post_backup(curl);
+      if (tmp != 0)
+        resp = tmp;
+    }
+
+    if ((resp == 200 || resp == 201) && c.memory) {
+      process_response(c.memory);
       free(c.memory);
+      c.memory = NULL;
+    }
+
+    // Exit monitor and poll for a config
+    if (resp == 401) {
+      debug("This device is not authorized.");
+      options.initialized = 0;
+    }
+
+    if (c.memory) {
+      free(c.memory);
+    }
 
     curl_easy_cleanup(curl);
     curl_global_cleanup();

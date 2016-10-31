@@ -40,6 +40,10 @@ int should_collect() {
   return 0;
 }
 
+int unauthorized() {
+  return 0;
+}
+
 void format_ssids(const struct iw_ops *iw,
     struct iw_ssid_entry *e,
     json_object *jssids, int len)
@@ -648,6 +652,9 @@ void post_data() {
 
 void collect_and_send_data(int online)
 {
-  if (should_collect())
+  if (should_collect()) {
     collect_data(online);
+  } else if (unauthorized()) {
+
+  }
 }

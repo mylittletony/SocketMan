@@ -7,6 +7,6 @@
 int post(json_object *json);
 void send_boot_message();
 void append_url_token(char *url, char *buf);
-int do_curl(CURL *curl, char *url);
+long do_curl(CURL *curl, char *url);
 
 #endif
