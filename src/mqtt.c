@@ -148,7 +148,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("DELIVERED"));
   json_object_object_add(jmeta, "delivered", json_object_new_boolean(1));
-  /* json_object_object_add(jmeta, "msg", json_object_new_string("Delivered")); */
   json_object_object_add(jobj, "meta", jmeta);
   const char *report = json_object_to_json_string(jobj);
 
@@ -174,12 +173,14 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     strcpy(buffer, "DNE");
   }
 
+  // Will publish the job back to CT via a RESTFULL call
   if (options.rest) {
     cmd_notify(response, id, buffer);
     return;
   }
 
   // Refactor
+  // Else, let's publish back via MQTT
   jobj = json_object_new_object();
   json_object_object_add(jobj, "id", json_object_new_string(id));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
@@ -191,7 +192,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   report = json_object_to_json_string(jobj);
 
   char pub[128];
-  strcpy(pub, "status/");
+  strcpy(pub, "pub/");
   strcat(pub, options.topic);
   strcat(pub, "/");
   strcat(pub, options.key);
