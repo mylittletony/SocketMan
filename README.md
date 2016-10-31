@@ -31,6 +31,8 @@ SocketMan can notify a RESTful API of the progress of an operation. Use the foll
 - REQUIRED: access_token -> public token for a device
 - TYPE: application/json
 
+And here's what the JSON looks like.
+
 ```
 {
     "success": true,
