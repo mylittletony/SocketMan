@@ -118,7 +118,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Refactor
   char delivery[128];
-  strcpy(delivery, "pub/");
+  strcpy(delivery, "sub/");
   strcat(delivery, options.topic);
   strcat(delivery, "/");
   strcat(delivery, options.key);
@@ -173,7 +173,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     strcpy(buffer, "DNE");
   }
 
-  // Will publish the job back to CT via a RESTFULL call
+  // Will publish the job back to CT via REST API
   if (options.rest) {
     cmd_notify(response, id, buffer);
     return;
