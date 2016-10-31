@@ -129,6 +129,7 @@ void parse_config(char *buffer)
   if (options.reboot < 600)
     options.reboot = 600;
 
+  // Used for the DNS check
   if (strcmp(options.health_url, "") == 0)
     strcpy(options.health_url, "health.cucumberwifi.io");
 
@@ -185,6 +186,7 @@ void check_config()
       parse_config(buffer);
       initialised();
     } else {
+      // Get the config
       debug("Config not found.");
     }
     free(buffer);

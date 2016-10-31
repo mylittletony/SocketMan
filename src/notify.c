@@ -13,10 +13,10 @@ void cmd_notify(int response, char *id, char *buf)
   json_object *jresp = json_object_new_boolean(r);
   json_object_object_add(jobj, "success", jresp);
 
-  if (id[0] != '\0') {
-    json_object *jid = json_object_new_string(id);
-    json_object_object_add(jobj, "id", jid);
-  }
+  /* if (id[0] != '\0') { */
+  /*   json_object *jid = json_object_new_string(id); */
+  /*   json_object_object_add(jobj, "id", jid); */
+  /* } */
 
   if (buf != NULL && *buf != '\0') {
     json_object *jbuf = json_object_new_string(buf);

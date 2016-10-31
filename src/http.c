@@ -65,10 +65,12 @@ int do_curl(CURL *curl, char *url)
 
   if(res == CURLE_OK) {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-    if (http_code == 200 || http_code == 201)
-      return 1;
-  }
-  return 0;
+    return http_code;
+
+    /* if (http_code == 200 || http_code == 201) */
+    /*   return 1; */
+  /* } */
+  /* return 0; */
 }
 
 void post_backup(CURL *curl)
@@ -113,9 +115,15 @@ int post(json_object *json) {
     if (options.insecure)
       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-    if(do_curl(curl, url) == 0) {
+    int resp = do_curl(curl, url);
+
+    if (resp == 200 || resp == 201) {
       debug("Could not connect to %s, trying backup.", url);
       post_backup(curl);
+    } else if (resp == 401) {
+
+      // Restart SM and poll the end-point for a config
+
     } else {
       if (c.memory) {
         process_response(c.memory);
@@ -141,15 +149,17 @@ int post(json_object *json) {
 void send_boot_message()
 {
   if (strcmp(options.boot_url, "") != 0) {
+
+    char url[255];
+    long http_code = 0;
+    struct curl_slist *headers = NULL;
+
     debug("Sending GET request to boot URL");
     CURL *curl;
     curl_global_init( CURL_GLOBAL_ALL );
 
-    char url[100];
     append_url_token(options.boot_url, url);
 
-    long http_code = 0;
-    struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
 
@@ -172,10 +182,21 @@ void send_boot_message()
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     res = curl_easy_perform(curl);
+
+    // The response codes are specific to CT and don't need to be used this way
+    // 200 - the device will process the output, handy for emergencies
+    // 201 - the servers responds with the config.json file
+    // 401 - unauthorized or not found, either way it won't boot NiU
+
     if(res == CURLE_OK) {
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-      if (http_code == 200 && c.memory)
+      if (http_code == 200 && c.memory) {
         process_response(c.memory);
+      } else if (http_code == 201) {
+
+      } else if (http_code == 401) {
+
+      }
     }
 
     curl_easy_cleanup(curl);
