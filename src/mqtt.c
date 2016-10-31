@@ -186,6 +186,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
+  json_object_object_add(jobj, "device_token", json_object_new_string(options.token));
   json_object_object_add(jmeta, "msg", json_object_new_string(buffer));
   /* json_object_object_add(jmeta, "success", json_object_new_bool()); */
   json_object_object_add(jobj, "meta", jmeta);
