@@ -27,16 +27,12 @@
 #include "boot.h"
 #include <string.h>
 #include <signal.h>
-#include "mqtt.h"
+/* #include "mqtt.h" */
 #include "platform.h"
 #include <sys/wait.h>
 #include <compiler.h>
-/* #include <curl/curl.h> */
-/* #include "mqtt.h" */
 
 int verbose_flag, cpid;
-/* volatile sig_atomic_t g_eflag = 0; */
-/* volatile sig_atomic_t g_hupflag = 1; */
 
 void handle_signal(int signal) {
   UNUSED(const char *signal_name);
@@ -58,12 +54,6 @@ void handle_signal(int signal) {
       fprintf(stderr, "Caught wrong signal: %d\n", signal);
       return;
   }
-
-  /* printf("Caught %s, sleeping for ~3 seconds\n" */
-  /*     "Try sending another SIGHUP / SIGINT / SIGALRM " */
-  /*     "(or more) meanwhile\n", signal_name); */
-
-  /* printf("Done handling %s\n\n", signal_name); */
 }
 
 void validate_options()

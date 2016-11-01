@@ -55,31 +55,27 @@ void append_url_token(char *url, char *buf)
   }
 }
 
-int do_curl(CURL *curl, char *url)
+long do_curl(CURL *curl, char *url)
 {
   long http_code = 0;
-  CURLcode res;
 
   curl_easy_setopt(curl, CURLOPT_URL, url);
-  res = curl_easy_perform(curl);
+  curl_easy_perform(curl);
 
-  if(res == CURLE_OK) {
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-    if (http_code == 200 || http_code == 201)
-      return 1;
-  }
-  return 0;
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+  return http_code;
 }
 
-void post_backup(CURL *curl)
+int post_backup(CURL *curl)
 {
   if (strcmp(options.backup_stats_url, "") != 0) {
     char buff[255]; // should clear URL buff and use instead
     debug("Attempting to send to backup URL");
     append_url_token(options.backup_stats_url, buff);
-    do_curl(curl, buff);
+    return do_curl(curl, buff);
   }
   debug("No backup URL, moving on.");
+  return 0;
 }
 
 int post(json_object *json) {
@@ -110,22 +106,34 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
 
-    if (options.insecure)
+    if (options.insecure) {
       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-    if(do_curl(curl, url) == 0) {
-      debug("Could not connect to %s, trying backup.", url);
-      post_backup(curl);
-    } else {
-      if (c.memory) {
-        process_response(c.memory);
-        free(c.memory);
-        c.memory = NULL;
-      }
     }
 
-    if (c.memory)
+    long resp = do_curl(curl, url);
+
+    if (resp != 200 && resp != 201 && resp != 401) {
+      debug("Could not connect to %s, trying backup.", url);
+      long tmp = post_backup(curl);
+      if (tmp != 0)
+        resp = tmp;
+    }
+
+    if ((resp == 200 || resp == 201) && c.size > 0) {
+      process_response(c.memory);
       free(c.memory);
+      c.memory = NULL;
+    }
+
+    // Exit monitor and poll for a config
+    if (resp == 401) {
+      debug("This device is not authorized.");
+      options.initialized = 0;
+    }
+
+    if (c.memory) {
+      free(c.memory);
+    }
 
     curl_easy_cleanup(curl);
     curl_global_cleanup();
@@ -138,18 +146,84 @@ int post(json_object *json) {
   }
 }
 
+int run_init(char *m, char *f, char *mac) {
+
+  int response = 0;
+  CURL *curl;
+  char url[255];
+
+  // How can we not hard-code this?? //
+  /* strcpy(url, "https://api.ctapp.io/api/v1/init"); */
+
+  strcpy(url, "http://6b9ac228.ngrok.io/api/v1/init?mac=");
+  strcat(url, mac);
+  strcat(url, "&machine=");
+  strcat(url, m);
+  strcat(url, "&firmware=");
+  strcat(url, f);
+
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  curl = curl_easy_init();
+  if (!curl)
+    return 0;
+
+  struct curl_slist *headers = NULL;
+  headers = curl_slist_append(headers, "Accept: application/json");
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+
+  if (options.insecure) {
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+  }
+
+  long resp = do_curl(curl, url);
+
+  // Exit monitor and poll for a config
+  if (resp != 201 || resp != 200) {
+    debug("Device not found. %s", url);
+  }
+
+  if ((resp == 200 || resp == 201) && c.size > 0) {
+    debug("Device found, extracting configs.........");
+    save_config(options.config, c.memory);
+    free(c.memory);
+    c.memory = NULL;
+    response = 1;
+  }
+
+  if (c.memory) {
+    free(c.memory);
+  }
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  curl_slist_free_all(headers);
+
+  return response;
+}
+
 void send_boot_message()
 {
   if (strcmp(options.boot_url, "") != 0) {
+    char url[255];
+    long http_code = 0;
+    struct curl_slist *headers = NULL;
+
     debug("Sending GET request to boot URL");
     CURL *curl;
     curl_global_init( CURL_GLOBAL_ALL );
 
-    char url[100];
     append_url_token(options.boot_url, url);
 
-    long http_code = 0;
-    struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
 
@@ -172,10 +246,21 @@ void send_boot_message()
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     res = curl_easy_perform(curl);
+
+    // The response codes are specific to CT and don't need to be used this way
+    // 200 - the device will process the output, handy for emergencies
+    // 201 - the servers responds with the config.json file
+    // 401 - unauthorized or not found, either way it won't boot NiU
+
     if(res == CURLE_OK) {
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-      if (http_code == 200 && c.memory)
+      if (http_code == 200 && c.size > 0) {
         process_response(c.memory);
+      } else if (http_code == 201) {
+
+      } else if (http_code == 401) {
+
+      }
     }
 
     curl_easy_cleanup(curl);
@@ -186,3 +271,81 @@ void send_boot_message()
     curl_slist_free_all(headers);
   }
 }
+
+void fetch_ca(char *buff) {
+
+  CURL *curl;
+  char *url = "http://s3.amazonaws.com/puffin-certs/md5.txt";
+
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  curl = curl_easy_init();
+  if (!curl)
+    return;
+
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
+
+  long resp = do_curl(curl, url);
+  if (resp != 200) {
+    debug("MD5 not found. %s", url);
+  }
+
+  if ((resp == 200) && c.size > 0) {
+    strcpy(buff, c.memory);
+  }
+
+  if (c.memory) {
+    free(c.memory);
+  }
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  /* curl_slist_free_all(headers); */
+  return;
+}
+
+void install_ca() {
+
+  CURL *curl;
+  char *url = "http://s3.amazonaws.com/puffin-certs/current.ca";
+
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  curl = curl_easy_init();
+  if (!curl)
+    return;
+
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
+
+  long resp = do_curl(curl, url);
+  if (resp != 201 || resp != 200) {
+    debug("Cert not found. %s", url);
+  }
+
+  if ((resp == 200) && c.size > 0) {
+    /* save_config(options.cacrt, c.memory); */
+  }
+
+  if (c.memory) {
+    free(c.memory);
+  }
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  return;
+}
+

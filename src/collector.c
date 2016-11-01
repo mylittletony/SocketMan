@@ -40,6 +40,10 @@ int should_collect() {
   return 0;
 }
 
+int unauthorized() {
+  return 0;
+}
+
 void format_ssids(const struct iw_ops *iw,
     struct iw_ssid_entry *e,
     json_object *jssids, int len)
@@ -500,18 +504,16 @@ void collect_data(int online)
 
   debug("Collecting the device stats");
 
-  char rx[21], tx[21], wan_ip[21] = "";
+  char wan_ip[21] = "";
   json_object *jobj = json_object_new_object();
   json_object *jattr = json_object_new_object();
 
   struct defaultRoute dr = route();
 
+  struct InterfaceStats istats;
   if (strcmp(dr.if_name, "") != 0) {
     interface_ip(dr.if_name, wan_ip, sizeof(wan_ip));
-
-    struct InterfaceStats istats = stats(dr.if_name);
-    sprintf(tx, "%" PRIu64, istats.tx);
-    sprintf(rx, "%" PRIu64, istats.rx);
+    istats = stats(dr.if_name);
   }
 
   char machine[100];
@@ -572,10 +574,10 @@ void collect_data(int online)
   json_object *jmac = json_object_new_string(options.mac);
   json_object_object_add(jattr, "mac", jmac);
 
-  json_object *jtx = json_object_new_string(tx);
+  json_object *jtx = json_object_new_double(istats.tx);
   json_object_object_add(jattr, "tx_bytes", jtx);
 
-  json_object *jrx = json_object_new_string(rx);
+  json_object *jrx = json_object_new_double(istats.rx);
   json_object_object_add(jattr, "rx_bytes", jrx);
 
   json_object *juptime = json_object_new_int(info.uptime);
@@ -631,7 +633,6 @@ void collect_data(int online)
   // Should try and post, even if not online //
   if (post(jobj)) {
     /* if success / online */
-    // Lookin' good
   } else {
     // Cache
   }
@@ -650,6 +651,9 @@ void post_data() {
 
 void collect_and_send_data(int online)
 {
-  if (should_collect())
+  if (should_collect()) {
     collect_data(online);
+  } else if (unauthorized()) {
+
+  }
 }

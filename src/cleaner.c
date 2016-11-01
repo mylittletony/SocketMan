@@ -18,7 +18,7 @@ void clear_caches()
 
 void run_cleanup(struct SystemInfo info)
 {
-  if (info.percent_used >= (float)0.95) {
+  if (info.percent_used >= (float)0.90) {
     int pu = (float)info.percent_used * 100;
     debug("MEMORY USAGE AT %d%% WIPING CACHES", pu);
     clear_caches();

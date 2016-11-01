@@ -22,11 +22,13 @@
 #include <json-c/json.h>
 #include "http.h"
 #include <sys/prctl.h>
+#include "init.h"
 
 int parent;
 
 void check_config();
 void boot();
+void install();
 
 void parse_config(char *buffer)
 {
@@ -113,6 +115,7 @@ void parse_config(char *buffer)
   }
   else {
     debug("Invalid json in file");
+    install();
   }
 
   // Check and set some defaults vals
@@ -129,6 +132,7 @@ void parse_config(char *buffer)
   if (options.reboot < 600)
     options.reboot = 600;
 
+  // Used for the DNS check
   if (strcmp(options.health_url, "") == 0)
     strcpy(options.health_url, "health.cucumberwifi.io");
 
@@ -156,6 +160,7 @@ void pre_boot_cb()
 {
   send_boot_message();
   boot_cmd();
+  check_certificates();
 }
 
 void initialised()
@@ -167,12 +172,32 @@ void initialised()
   }
 }
 
-void run_collector()
+void run_socketman()
 {
   debug("Starting Socketman.");
   pre_boot_cb();
-  mqtt_connect();
-  monitor();
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  do
+  {
+    monitor();
+  }
+  while(options.initialized);
+
+  debug("Exiting main loop - go into the config block");
+
+  install(); // <--------------------- test
+
   return;
 }
 
@@ -185,27 +210,33 @@ void check_config()
       parse_config(buffer);
       initialised();
     } else {
+      // Get the config
       debug("Config not found.");
     }
     free(buffer);
   } else {
+    // Why the sleep?
     sleep(1);
     options.initialized = 1;
   }
 }
 
-void sleepy() {
+void install() {
   do {
-    debug("Sleeping forever, I don't have a valid config.");
+    if (init() == 1) {
+      break;
+    }
+    debug("Something wrong with the MAC Address, sleeping 30");
     sleep(30);
   }
   while(1);
+  boot();
 }
 
 void boot()
 {
   check_config();
   if (options.initialized)
-    run_collector();
-  sleepy();
+    run_socketman();
+  install();
 }
