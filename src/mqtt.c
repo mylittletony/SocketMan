@@ -67,7 +67,6 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
       strcat(topic, "/");
       strcat(topic, options.mac);
 
-      debug("DDDDDDDDDDDDDDDDDDD: %s", topic);
       mosquitto_publish(mosq, 0, topic, strlen(resp), resp, 1, false);
       json_object_put(jobj);
     }
