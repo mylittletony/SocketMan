@@ -290,7 +290,7 @@ void fetch_ca(char *buff) {
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
   curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
 
   long resp = do_curl(curl, url);
   if (resp != 200) {
@@ -307,7 +307,6 @@ void fetch_ca(char *buff) {
 
   curl_easy_cleanup(curl);
   curl_global_cleanup();
-  /* curl_slist_free_all(headers); */
   return;
 }
 
@@ -332,12 +331,12 @@ void install_ca() {
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
 
   long resp = do_curl(curl, url);
-  if (resp != 201 || resp != 200) {
+  if (resp != 200) {
     debug("Cert not found. %s", url);
   }
 
   if ((resp == 200) && c.size > 0) {
-    /* save_config(options.cacrt, c.memory); */
+    save_config(options.cacrt, c.memory);
   }
 
   if (c.memory) {

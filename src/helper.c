@@ -179,58 +179,48 @@ void check_certificates()
   FILE *inFile = fopen (options.cacrt, "rb");
   MD5_CTX mdContext;
   int bytes;
-  unsigned char data[1024];
+  unsigned char data[512];
 
   if (inFile == NULL) {
     printf ("%s can't be opened.\n", options.cacrt);
     return;
   }
 
-  char md[MD5_DIGEST_LENGTH];
+  char md[33];
   md[0] = '\0';
 
   MD5_Init (&mdContext);
-  while ((bytes = fread (data, 1, 1024, inFile)) != 0)
+  while ((bytes = fread (data, 1, 512, inFile)) != 0)
     MD5_Update (&mdContext, data, bytes);
-  MD5_Final (c,&mdContext);
-  for(i = 0; i < MD5_DIGEST_LENGTH; i++) {
-    sprintf(&md[i*2], "%02x", (unsigned int)c[i]);
-  }
-  /* md[32] = '\0'; */
-  size_t ln = strlen(md);
-  if (md[ln] == '\n')
-    md[ln] = '\0';
 
-  debug("MD5 (%s): %s", options.cacrt, md);
+  MD5_Final (c, &mdContext);
+
+  for (i = 0; i < MD5_DIGEST_LENGTH; ++i) {
+    snprintf(&(md[i*2]), 16*2, "%02x", (unsigned int)c[i]);
+  }
+
   fclose (inFile);
+
+  debug("MD5 (%s): %s\n", options.cacrt, md);
 
   if (md[0] == '\0') {
     debug("Not checking MD5 against server...");
     return;
   }
 
-  char current[32];
+  char current[33];
   current[0] = '\0';
   fetch_ca(current);
 
-  ln = strlen(current);
-  /* if (current[ln] == '\n') */
-    current[ln] = '\0';
+  strtok(current, "\n");
 
-  debug("Got MD5: %s    -      THAT: %s. VAL: %d", current, md, strcmp(current, md));
-  if (current[0] != '\0' && strcmp(current, md) == 1) {
-    debug("They match!");
-    debug("They match!");
-    debug("They match!");
-    debug("They match!");
-    debug("They match!");
-    debug("They match!");
-    debug("They match!");
+  if (current[0] != '\0' && strcmp(current, md) == 0) {
     debug("They match!");
     debug("They match!");
     return;
   }
 
+  debug("NOT MATCHING GET THE NEW ONE!");
   debug("NOT MATCHING GET THE NEW ONE!");
   install_ca();
 
