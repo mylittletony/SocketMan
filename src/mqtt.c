@@ -318,11 +318,11 @@ int dial_mqtt()
     json_object *jmeta = json_object_new_object();
 
     json_object_object_add(jobj, "app", json_object_new_string("socketman"));
-    json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
-    json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
-    json_object_object_add(jmeta, "online", json_object_new_string("0"));
-    json_object_object_add(jmeta, "msg", json_object_new_string("Went offline"));
-    json_object_object_add(jobj, "meta", jmeta);
+    /* json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL))); */
+    /* json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT")); */
+    /* json_object_object_add(jmeta, "online", json_object_new_string("0")); */
+    /* json_object_object_add(jmeta, "msg", json_object_new_string("Went offline")); */
+    /* json_object_object_add(jobj, "meta", jmeta); */
 
     const char *report = json_object_to_json_string(jobj);
     json_object_put(jobj);
@@ -337,7 +337,7 @@ int dial_mqtt()
     strcat(topic, options.mac);
     /* strcat(topic, "/connect"); */
 
-    /* mosquitto_will_set(mosq, topic, strlen(report), report, 2, false); */
+    mosquitto_will_set(mosq, topic, strlen(report), report, 2, false);
   }
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
