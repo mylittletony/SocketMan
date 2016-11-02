@@ -319,8 +319,8 @@ int dial_mqtt()
 
     json_object_object_add(jobj, "app", json_object_new_string("socketman"));
     /* json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL))); */
-    /* json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT")); */
-    /* json_object_object_add(jmeta, "online", json_object_new_string("0")); */
+    json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
+    json_object_object_add(jmeta, "online", json_object_new_string("0"));
     /* json_object_object_add(jmeta, "msg", json_object_new_string("Went offline")); */
     /* json_object_object_add(jobj, "meta", jmeta); */
     const char *report = json_object_to_json_string(jobj);
