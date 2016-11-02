@@ -337,7 +337,7 @@ int dial_mqtt()
     strcat(topic, options.mac);
     /* strcat(topic, "/connect"); */
 
-    /* mosquitto_will_set(mosq, topic, strlen(report), report, 1, false); */
+    /* mosquitto_will_set(mosq, topic, strlen(report), report, 2, false); */
   }
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
