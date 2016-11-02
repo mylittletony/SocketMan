@@ -137,7 +137,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     // Append messages which prevents all the messages from being seen
     debug("Missing ID. Auto-generating: %s. Topic: %s", id, delivery);
   }
-  // Needs check if running, check time, check live cmd
+  // Needs check if running, check time, check live cmd.
 
   // Lets process and deliver the message
 
@@ -155,7 +155,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "meta", jmeta);
   const char *report = json_object_to_json_string(jobj);
 
-  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+  /* mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false); */
 
   // Message processing
   FILE *fp;
