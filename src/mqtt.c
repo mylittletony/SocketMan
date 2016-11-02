@@ -323,9 +323,7 @@ int dial_mqtt()
     /* json_object_object_add(jmeta, "online", json_object_new_string("0")); */
     /* json_object_object_add(jmeta, "msg", json_object_new_string("Went offline")); */
     /* json_object_object_add(jobj, "meta", jmeta); */
-
     const char *report = json_object_to_json_string(jobj);
-    json_object_put(jobj);
 
     // Refactor, de-dup after testing
     char topic[128];
@@ -337,7 +335,8 @@ int dial_mqtt()
     strcat(topic, options.mac);
     /* strcat(topic, "/connect"); */
 
-    mosquitto_will_set(mosq, topic, strlen(report), report, 2, false);
+    mosquitto_will_set(mosq, topic, strlen(report), report, 1, false);
+    json_object_put(jobj);
   }
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
