@@ -112,7 +112,7 @@ int post(json_object *json) {
 
     long resp = do_curl(curl, url);
 
-    if (resp != 200 || resp != 201 || resp != 401) {
+    if (resp != 200 && resp != 201 && resp != 401) {
       debug("Could not connect to %s, trying backup.", url);
       long tmp = post_backup(curl);
       if (tmp != 0)
