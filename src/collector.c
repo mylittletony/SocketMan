@@ -526,15 +526,15 @@ void collect_data(int online)
   {
     debug("Running WiFi Collection");
 
-    json_object *jiface_array = json_object_new_array();
-    json_object *jstations_array = json_object_new_array();
-    json_object *jscan_array = json_object_new_array();
+    /* json_object *jiface_array = json_object_new_array(); */
+    /* json_object *jstations_array = json_object_new_array(); */
+    /* json_object *jscan_array = json_object_new_array(); */
 
-    run_interface_scan(jiface_array, jstations_array, jscan_array);
+    /* run_interface_scan(jiface_array, jstations_array, jscan_array); */
 
-    json_object_object_add(jobj, "ssids", jiface_array);
-    json_object_object_add(jobj, "survey", jscan_array);
-    json_object_object_add(jobj, "stations", jstations_array);
+    /* json_object_object_add(jobj, "ssids", jiface_array); */
+    /* json_object_object_add(jobj, "survey", jscan_array); */
+    /* json_object_object_add(jobj, "stations", jstations_array); */
   }
 
 #ifdef __OPENWRT__
@@ -546,30 +546,30 @@ void collect_data(int online)
   json_object_object_add(jattr, "firmware", jfirmware);
 #endif
 
-  json_object *jserial = json_object_new_string("simon says");
-  json_object_object_add(jattr, "serial", jserial);
+  /* json_object *jserial = json_object_new_string("simon says"); */
+  /* json_object_object_add(jattr, "serial", jserial); */
 
-  if (strcmp(dr.if_name, "") != 0) {
-    json_object *jwan_name = json_object_new_string(dr.if_name);
-    json_object_object_add(jattr, "wan_name", jwan_name);
-  }
+  /* if (strcmp(dr.if_name, "") != 0) { */
+  /*   json_object *jwan_name = json_object_new_string(dr.if_name); */
+  /*   json_object_object_add(jattr, "wan_name", jwan_name); */
+  /* } */
 
-  if (strcmp(dr.ip, "") != 0) {
-    json_object *jgateway = json_object_new_string(dr.ip);
-    json_object_object_add(jattr, "wan_gateway", jgateway);
-  }
+  /* if (strcmp(dr.ip, "") != 0) { */
+  /*   json_object *jgateway = json_object_new_string(dr.ip); */
+  /*   json_object_object_add(jattr, "wan_gateway", jgateway); */
+  /* } */
 
-  if (strlen(wan_ip) > 0) {
-    json_object *jwanip = json_object_new_string(wan_ip);
-    json_object_object_add(jattr, "wan_ip", jwanip);
-  }
+  /* if (strlen(wan_ip) > 0) { */
+  /*   json_object *jwanip = json_object_new_string(wan_ip); */
+  /*   json_object_object_add(jattr, "wan_ip", jwanip); */
+  /* } */
 
-  if (machine[0] !='\0') {
-    // Save to the options to prevent future lookups
-    strcpy(options.machine, machine);
-    json_object *jmachine = json_object_new_string(machine);
-    json_object_object_add(jattr, "machine_type", jmachine);
-  }
+  /* if (machine[0] !='\0') { */
+  /*   // Save to the options to prevent future lookups */
+  /*   strcpy(options.machine, machine); */
+  /*   json_object *jmachine = json_object_new_string(machine); */
+  /*   json_object_object_add(jattr, "machine_type", jmachine); */
+  /* } */
 
 /*   json_object *jmac = json_object_new_string(options.mac); */
 /*   json_object_object_add(jattr, "mac", jmac); */
