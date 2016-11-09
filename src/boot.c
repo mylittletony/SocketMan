@@ -17,7 +17,7 @@
 #include <string.h>
 #include <signal.h>
 #include "helper.h"
-#include "mqtt.h"
+/* #include "mqtt.h" */
 #include "monitor.h"
 #include <json-c/json.h>
 #include "http.h"
@@ -171,8 +171,8 @@ void initialised()
 void run_collector()
 {
   debug("Starting Socketman.");
-  pre_boot_cb();
-  mqtt_connect();
+  /* pre_boot_cb(); */
+  /* mqtt_connect(); */
 
   do
   {

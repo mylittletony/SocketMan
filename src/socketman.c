@@ -27,7 +27,7 @@
 #include "boot.h"
 #include <string.h>
 #include <signal.h>
-#include "mqtt.h"
+/* #include "mqtt.h" */
 #include "platform.h"
 #include <sys/wait.h>
 #include <compiler.h>
