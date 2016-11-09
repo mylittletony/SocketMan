@@ -571,52 +571,52 @@ void collect_data(int online)
     json_object_object_add(jattr, "machine_type", jmachine);
   }
 
-  json_object *jmac = json_object_new_string(options.mac);
-  json_object_object_add(jattr, "mac", jmac);
+/*   json_object *jmac = json_object_new_string(options.mac); */
+/*   json_object_object_add(jattr, "mac", jmac); */
 
-  json_object *jtx = json_object_new_double(istats.tx);
-  json_object_object_add(jattr, "tx_bytes", jtx);
+/*   json_object *jtx = json_object_new_double(istats.tx); */
+/*   json_object_object_add(jattr, "tx_bytes", jtx); */
 
-  json_object *jrx = json_object_new_double(istats.rx);
-  json_object_object_add(jattr, "rx_bytes", jrx);
+/*   json_object *jrx = json_object_new_double(istats.rx); */
+/*   json_object_object_add(jattr, "rx_bytes", jrx); */
 
-  json_object *juptime = json_object_new_int(info.uptime);
-  json_object_object_add(jattr, "uptime", juptime);
+/*   json_object *juptime = json_object_new_int(info.uptime); */
+/*   json_object_object_add(jattr, "uptime", juptime); */
 
-  json_object *jload_1 = json_object_new_double(info.load_1);
-  json_object_object_add(jattr, "load_1", jload_1);
+/*   json_object *jload_1 = json_object_new_double(info.load_1); */
+/*   json_object_object_add(jattr, "load_1", jload_1); */
 
-  json_object *jload_5 = json_object_new_double(info.load_5);
-  json_object_object_add(jattr, "load_5", jload_5);
+/*   json_object *jload_5 = json_object_new_double(info.load_5); */
+/*   json_object_object_add(jattr, "load_5", jload_5); */
 
-  json_object *jload_15 = json_object_new_double(info.load_15);
-  json_object_object_add(jattr, "load_15", jload_15);
+/*   json_object *jload_15 = json_object_new_double(info.load_15); */
+/*   json_object_object_add(jattr, "load_15", jload_15); */
 
-  json_object *jtotalram = json_object_new_double(info.totalram);
-  json_object_object_add(jattr, "total_ram", jtotalram);
+/*   json_object *jtotalram = json_object_new_double(info.totalram); */
+/*   json_object_object_add(jattr, "total_ram", jtotalram); */
 
-  json_object *jfreeram = json_object_new_double(info.freeram);
-  json_object_object_add(jattr, "free_ram", jfreeram);
+/*   json_object *jfreeram = json_object_new_double(info.freeram); */
+/*   json_object_object_add(jattr, "free_ram", jfreeram); */
 
-  json_object *jprocs = json_object_new_int(info.procs);
-  json_object_object_add(jattr, "procs", jprocs);
+/*   json_object *jprocs = json_object_new_int(info.procs); */
+/*   json_object_object_add(jattr, "procs", jprocs); */
 
-  // Reason code ! //
-  bool bonline = online ? true : false;
-  json_object *jonline = json_object_new_boolean(bonline);
-  json_object_object_add(jattr, "online", jonline);
+/*   // Reason code ! // */
+/*   bool bonline = online ? true : false; */
+/*   json_object *jonline = json_object_new_boolean(bonline); */
+/*   json_object_object_add(jattr, "online", jonline); */
 
-  time_t now = time(NULL);
-  json_object *jcreated_at = json_object_new_int(now);
-  json_object_object_add(jattr, "created_at", jcreated_at);
+/*   time_t now = time(NULL); */
+/*   json_object *jcreated_at = json_object_new_int(now); */
+/*   json_object_object_add(jattr, "created_at", jcreated_at); */
 
-  json_object *jdhcp_array = json_object_new_array();
-  format_dhcp(jdhcp_array);
-  json_object_object_add(jobj, "dhcp", jdhcp_array);
+/*   json_object *jdhcp_array = json_object_new_array(); */
+/*   format_dhcp(jdhcp_array); */
+/*   json_object_object_add(jobj, "dhcp", jdhcp_array); */
 
-  json_object *jsplash_array = json_object_new_array();
-  format_splash(jsplash_array);
-  json_object_object_add(jobj, "splash", jsplash_array);
+/*   json_object *jsplash_array = json_object_new_array(); */
+/*   format_splash(jsplash_array); */
+/*   json_object_object_add(jobj, "splash", jsplash_array); */
 
   // MISSING!!!!!!!
   // INTERFACES
