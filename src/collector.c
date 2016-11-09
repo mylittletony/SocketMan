@@ -652,9 +652,9 @@ void post_data() {
 
 void collect_and_send_data(int online)
 {
-  /* if (should_collect()) { */
-  /*   collect_data(online); */
-  /* } else if (unauthorized()) { */
+  if (should_collect()) {
+    /* collect_data(online); */
+  } else if (unauthorized()) {
 
-  /* } */
+  }
 }
