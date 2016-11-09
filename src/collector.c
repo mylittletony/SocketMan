@@ -631,12 +631,12 @@ void collect_data(int online)
       ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
   // Should try and post, even if not online //
-  if (post(jobj)) {
-    /* if success / online */
-    // Lookin' good
-  } else {
-    // Cache
-  }
+  /* if (post(jobj)) { */
+  /*   /1* if success / online *1/ */
+  /*   // Lookin' good */
+  /* } else { */
+  /*   // Cache */
+  /* } */
 
   run_cleanup(info);
   json_object_put(jobj);
@@ -653,7 +653,7 @@ void post_data() {
 void collect_and_send_data(int online)
 {
   if (should_collect()) {
-    /* collect_data(online); */
+    collect_data(online);
   } else if (unauthorized()) {
 
   }
