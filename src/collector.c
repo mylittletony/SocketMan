@@ -510,17 +510,17 @@ void collect_data(int online)
 
   struct defaultRoute dr = route();
 
-  struct InterfaceStats istats;
-  if (strcmp(dr.if_name, "") != 0) {
-    interface_ip(dr.if_name, wan_ip, sizeof(wan_ip));
-    istats = stats(dr.if_name);
-  }
+  /* struct InterfaceStats istats; */
+  /* if (strcmp(dr.if_name, "") != 0) { */
+  /*   interface_ip(dr.if_name, wan_ip, sizeof(wan_ip)); */
+  /*   istats = stats(dr.if_name); */
+  /* } */
 
   char machine[100];
   machine[0] = '\0';
   machine_type(machine, sizeof(machine));
 
-  struct SystemInfo info = system_info();
+  /* struct SystemInfo info = system_info(); */
 
   if (options.scan == 1)
   {
@@ -623,22 +623,21 @@ void collect_data(int online)
   // CAPS
   // MQTT STATUS
 
-  json_object_object_add(jobj, "device", jattr);
+  /* json_object_object_add(jobj, "device", jattr); */
 
-  clock_gettime(CLOCK_MONOTONIC, &tend);
-  printf("Stats collection finished in %.5f seconds\n",
-      ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
-      ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
+  /* clock_gettime(CLOCK_MONOTONIC, &tend); */
+  /* printf("Stats collection finished in %.5f seconds\n", */
+  /*     ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - */
+  /*     ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec)); */
 
   // Should try and post, even if not online //
-  /* if (post(jobj)) { */
-  /*   /1* if success / online *1/ */
-  /*   // Lookin' good */
-  /* } else { */
-  /*   // Cache */
-  /* } */
+  if (post(jobj)) {
+    /* if success - looking good */
+  } else {
+    /* Cache */
+  }
 
-  run_cleanup(info);
+  /* run_cleanup(info); */
   json_object_put(jobj);
 }
 
