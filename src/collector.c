@@ -499,16 +499,16 @@ void format_dhcp(json_object *jdhcp_array)
 
 void collect_data(int online)
 {
-  struct timespec tstart={0,0}, tend={0,0};
-  clock_gettime(CLOCK_MONOTONIC, &tstart);
+  /* struct timespec tstart={0,0}, tend={0,0}; */
+  /* clock_gettime(CLOCK_MONOTONIC, &tstart); */
 
-  debug("Collecting the device stats");
+  /* debug("Collecting the device stats"); */
 
-  char wan_ip[21] = "";
-  json_object *jobj = json_object_new_object();
-  json_object *jattr = json_object_new_object();
+  /* char wan_ip[21] = ""; */
+  /* json_object *jobj = json_object_new_object(); */
+  /* json_object *jattr = json_object_new_object(); */
 
-  struct defaultRoute dr = route();
+  /* struct defaultRoute dr = route(); */
 
   /* struct InterfaceStats istats; */
   /* if (strcmp(dr.if_name, "") != 0) { */
@@ -516,9 +516,9 @@ void collect_data(int online)
   /*   istats = stats(dr.if_name); */
   /* } */
 
-  char machine[100];
-  machine[0] = '\0';
-  machine_type(machine, sizeof(machine));
+  /* char machine[100]; */
+  /* machine[0] = '\0'; */
+  /* machine_type(machine, sizeof(machine)); */
 
   /* struct SystemInfo info = system_info(); */
 
@@ -538,12 +538,12 @@ void collect_data(int online)
   }
 
 #ifdef __OPENWRT__
-  char firmware[20];
-  readlineToBuffer("/etc/openwrt_version", firmware);
+  /* char firmware[20]; */
+  /* readlineToBuffer("/etc/openwrt_version", firmware); */
 
-  // Should we save to options ? //
-  json_object *jfirmware = json_object_new_string(firmware);
-  json_object_object_add(jattr, "firmware", jfirmware);
+  /* // Should we save to options ? // */
+  /* json_object *jfirmware = json_object_new_string(firmware); */
+  /* json_object_object_add(jattr, "firmware", jfirmware); */
 #endif
 
   /* json_object *jserial = json_object_new_string("simon says"); */
@@ -631,14 +631,14 @@ void collect_data(int online)
   /*     ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec)); */
 
   // Should try and post, even if not online //
-  if (post(jobj)) {
-    /* if success - looking good */
-  } else {
-    /* Cache */
-  }
+  /* if (post(jobj)) { */
+  /*   /1* if success - looking good *1/ */
+  /* } else { */
+  /*   /1* Cache *1/ */
+  /* } */
 
   /* run_cleanup(info); */
-  json_object_put(jobj);
+  /* json_object_put(jobj); */
 }
 
 void cache_data() {
