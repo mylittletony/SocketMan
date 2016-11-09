@@ -67,7 +67,7 @@ void go_offline(int reason) {
   debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason);
 
   attempt_recovery();
-  collect_and_send_data(online);
+  /* collect_and_send_data(online); */
   restart_or_reboot();
 }
 
