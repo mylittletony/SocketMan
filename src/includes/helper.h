@@ -6,3 +6,4 @@ void readlineToBuffer();
 int file_present(char *file);
 int in_array(int val, int *arr, int size);
 int valid_mac(char *mac);
+void check_certificates();

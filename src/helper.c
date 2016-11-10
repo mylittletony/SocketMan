@@ -172,3 +172,8 @@ int in_array(int val, int *arr, int size){
   }
   return 0;
 }
+
+void check_certificates()
+{
+  debug("Checking certs");
+}

@@ -160,6 +160,7 @@ void pre_boot_cb()
 {
   send_boot_message();
   boot_cmd();
+  check_certificates();
 }
 
 void initialised()
@@ -171,7 +172,7 @@ void initialised()
   }
 }
 
-void run_collector()
+void run_socketman()
 {
   debug("Starting Socketman.");
   pre_boot_cb();
@@ -194,6 +195,9 @@ void run_collector()
   while(options.initialized);
 
   debug("Exiting main loop - go into the config block");
+
+  install(); // <--------------------- test
+
   return;
 }
 
@@ -218,18 +222,21 @@ void check_config()
 }
 
 void install() {
-  init();
-  /* do { */
-  /*   debug("Sleeping forever, I don't have a valid config."); */
-  /*   /1* sleep(30); *1/ */
-  /* } */
-  /* while(1); */
+  do {
+    if (init() == 1) {
+      break;
+    }
+    debug("Something wrong with the MAC Address, sleeping 30");
+    sleep(30);
+  }
+  while(1);
+  boot();
 }
 
 void boot()
 {
   check_config();
   if (options.initialized)
-    run_collector();
+    run_socketman();
   install();
 }

@@ -155,7 +155,7 @@ int run_init(char *m, char *f, char *mac) {
   // How can we not hard-code this?? //
   /* strcpy(url, "https://api.ctapp.io/api/v1/init"); */
 
-  strcpy(url, "http://6b9ac22.ngrok.io/api/v1/init?mac=");
+  strcpy(url, "http://6b9ac228.ngrok.io/api/v1/init?mac=");
   strcat(url, mac);
   strcat(url, "&machine=");
   strcat(url, m);
@@ -188,11 +188,12 @@ int run_init(char *m, char *f, char *mac) {
   long resp = do_curl(curl, url);
 
   // Exit monitor and poll for a config
-  if (resp != 201 && resp != 200) {
+  if (resp != 201 || resp != 200) {
     debug("Device not found. %s", url);
   }
 
   if ((resp == 200 || resp == 201) && c.size > 0) {
+    debug("Device found, extracting configs.........");
     save_config(c.memory);
     free(c.memory);
     c.memory = NULL;
