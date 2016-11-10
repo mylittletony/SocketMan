@@ -289,7 +289,7 @@ int dial_mqtt()
     return 1;
   }
 
-  if (options.tls) {
+  if (options.tls == true) {
     debug("Connecting via encrypted channel");
     if (strcmp(options.cacrt, "") == 0) {
       debug("[ERROR] Missing ca file");
