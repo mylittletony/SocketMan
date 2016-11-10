@@ -103,9 +103,9 @@ void process_response(char *msg)
   }
 }
 
-void save_config(char *msg)
+void save_config(char *file, char *msg)
 {
-  FILE *f = fopen(options.config, "w");
+  FILE *f = fopen(file, "w");
   if (f == NULL)
   {
     printf("Error opening file!\n");

@@ -8,7 +8,7 @@ int init()
   char mac[17];
   mac[0]= '\0';
 
-  read_mac(mac);
+  readlineToBuffer("/etc/mac", mac);
 
   if (mac[0] == '\0') {
     debug("No mac found in file %s", "/etc/mac");

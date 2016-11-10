@@ -194,7 +194,7 @@ int run_init(char *m, char *f, char *mac) {
 
   if ((resp == 200 || resp == 201) && c.size > 0) {
     debug("Device found, extracting configs.........");
-    save_config(c.memory);
+    save_config(options.config, c.memory);
     free(c.memory);
     c.memory = NULL;
     response = 1;
@@ -271,3 +271,81 @@ void send_boot_message()
     curl_slist_free_all(headers);
   }
 }
+
+void fetch_ca(char *buff) {
+
+  CURL *curl;
+  char *url = "http://s3.amazonaws.com/puffin-certs/md5.txt";
+
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  curl = curl_easy_init();
+  if (!curl)
+    return;
+
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
+
+  long resp = do_curl(curl, url);
+  if (resp != 200) {
+    debug("MD5 not found. %s", url);
+  }
+
+  if ((resp == 200) && c.size > 0) {
+    strcpy(buff, c.memory);
+  }
+
+  if (c.memory) {
+    free(c.memory);
+  }
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  /* curl_slist_free_all(headers); */
+  return;
+}
+
+void install_ca() {
+
+  CURL *curl;
+  char *url = "http://s3.amazonaws.com/puffin-certs/current.ca";
+
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  curl = curl_easy_init();
+  if (!curl)
+    return;
+
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
+
+  long resp = do_curl(curl, url);
+  if (resp != 201 || resp != 200) {
+    debug("Cert not found. %s", url);
+  }
+
+  if ((resp == 200) && c.size > 0) {
+    /* save_config(options.cacrt, c.memory); */
+  }
+
+  if (c.memory) {
+    free(c.memory);
+  }
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  return;
+}
+
