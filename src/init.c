@@ -15,6 +15,8 @@ int init()
     return 0;
   }
 
+  // Should get WAN MAC //
+
   if (valid_mac(mac) == 0) {
     debug("Invalid MAC address %s", mac);
     return 0;

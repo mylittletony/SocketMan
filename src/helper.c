@@ -183,7 +183,7 @@ void check_certificates()
 
   if (inFile == NULL) {
     printf ("%s can't be opened.\n", options.cacrt);
-    return;
+    goto update;
   }
 
   char md[33];
@@ -205,7 +205,7 @@ void check_certificates()
 
   if (md[0] == '\0') {
     debug("Not checking MD5 against server...");
-    return;
+    goto update;
   }
 
   char current[33];
@@ -215,13 +215,15 @@ void check_certificates()
   strtok(current, "\n");
 
   if (current[0] != '\0' && strcmp(current, md) == 0) {
-    debug("They match!");
-    debug("They match!");
+    debug("CA matches current, not updating!");
     return;
   }
 
-  debug("NOT MATCHING GET THE NEW ONE!");
-  debug("NOT MATCHING GET THE NEW ONE!");
+  debug("CA not matching, updating");
+  goto update;
+
+update:
+  debug("Installing new CA");
   install_ca();
 
   return;
