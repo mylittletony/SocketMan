@@ -176,18 +176,7 @@ void run_socketman()
 {
   debug("Starting Socketman.");
   pre_boot_cb();
-  // Get the ca from cert checker
-  /* mqtt_connect(); */
-  // Get the ca from cert checker
-  /* mqtt_connect(); */
-  // Get the ca from cert checker
-  /* mqtt_connect(); */
-  // Get the ca from cert checker
-  /* mqtt_connect(); */
-  // Get the ca from cert checker
-  /* mqtt_connect(); */
-  // Get the ca from cert checker
-  /* mqtt_connect(); */
+  mqtt_connect();
   do
   {
     monitor();
