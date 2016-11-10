@@ -541,7 +541,6 @@ void collect_data(int online)
   char firmware[20];
   readlineToBuffer("/etc/openwrt_version", firmware);
 
-  // Should we save to options ? //
   json_object *jfirmware = json_object_new_string(firmware);
   json_object_object_add(jattr, "firmware", jfirmware);
 #endif
@@ -600,6 +599,9 @@ void collect_data(int online)
 
   json_object *jprocs = json_object_new_int(info.procs);
   json_object_object_add(jattr, "procs", jprocs);
+
+  json_object *jv = json_object_new_string("4");
+  json_object_object_add(jattr, "v", jv);
 
   // Reason code ! //
   bool bonline = online ? true : false;

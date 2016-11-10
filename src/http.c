@@ -113,7 +113,7 @@ int post(json_object *json) {
     long resp = do_curl(curl, url);
 
     if (resp != 200 && resp != 201 && resp != 401) {
-      debug("Could not connect to %s, trying backup.", url);
+      debug("Could not connect to %s (%d), trying backup.", options.stats_url, resp);
       long tmp = post_backup(curl);
       if (tmp != 0)
         resp = tmp;
@@ -189,7 +189,7 @@ int run_init(char *m, char *f, char *mac) {
 
   // Exit monitor and poll for a config
   if (resp != 201 || resp != 200) {
-    debug("Device not found. %s", url);
+    debug("Could not initialize, device not found (%d).", resp);
   }
 
   if ((resp == 200 || resp == 201) && c.size > 0) {
