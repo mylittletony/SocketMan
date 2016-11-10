@@ -9,7 +9,8 @@
 
 #define NCHAR 64
 
-char *strrev(char *str) {
+char *strrev(char *str)
+{
   char *p1, *p2;
 
   if (! str || ! *str)
@@ -23,7 +24,70 @@ char *strrev(char *str) {
   return str;
 }
 
-char *read_config() {
+void read_mac(char *mac)
+{
+  FILE *fp;
+  long lSize;
+  char *buffer = NULL;
+  char *file = "/etc/mac";
+
+  fp = fopen (file, "r");
+  if( !fp ) {
+    debug("No config file found at %s", file);
+    return;
+  }
+
+  debug("Reading config from %s", file);
+  if( fseek( fp , 0L , SEEK_END) == 0 ) {
+    lSize = ftell( fp );
+    rewind( fp );
+
+    if(lSize >= 0) {
+      buffer = calloc( 1, lSize+1 );
+      if( !buffer ) {
+        fclose(fp);
+        fputs("memory alloc fails",stderr);
+        return;
+      }
+
+      if( 1!=fread( buffer , lSize, 1 , fp) ) {
+        fclose(fp);
+        free(buffer);
+        buffer = NULL;
+        fputs("entire read fails",stderr);
+        return;
+      }
+    }
+    size_t ln = strlen(buffer)-1;
+    if (buffer[ln] == '\n')
+      buffer[ln] = '\0';
+
+    strcpy(mac, buffer);
+    free(buffer);
+  }
+  fclose(fp);
+}
+
+int valid_mac(char *mac)
+{
+  int i = 0;
+  if (strlen(mac) != 17)
+    return 0;
+
+  if(mac[17] != '\0')
+    return 0;
+
+  for(i = 0; i < 17; i++) {
+    if(i % 3 != 2 && !isxdigit(mac[i]))
+      return 0;
+    if(i % 3 == 2 && (mac[i] != '-'))
+      return 0;
+  }
+  return 1;
+}
+
+char *read_config()
+{
   FILE *fp;
   long lSize;
   char *buffer = NULL;

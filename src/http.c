@@ -119,7 +119,7 @@ int post(json_object *json) {
         resp = tmp;
     }
 
-    if ((resp == 200 || resp == 201) && c.memory) {
+    if ((resp == 200 || resp == 201) && c.size > 0) {
       process_response(c.memory);
       free(c.memory);
       c.memory = NULL;
@@ -146,10 +146,73 @@ int post(json_object *json) {
   }
 }
 
+int run_init(char *m, char *f, char *mac) {
+
+  int response = 0;
+  CURL *curl;
+  char url[255];
+
+  // How can we not hard-code this?? //
+  /* strcpy(url, "https://api.ctapp.io/api/v1/init"); */
+
+  strcpy(url, "http://6b9ac22.ngrok.io/api/v1/init?mac=");
+  strcat(url, mac);
+  strcat(url, "&machine=");
+  strcat(url, m);
+  strcat(url, "&firmware=");
+  strcat(url, f);
+
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  curl = curl_easy_init();
+  if (!curl)
+    return 0;
+
+  struct curl_slist *headers = NULL;
+  headers = curl_slist_append(headers, "Accept: application/json");
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+
+  if (options.insecure) {
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+  }
+
+  long resp = do_curl(curl, url);
+
+  // Exit monitor and poll for a config
+  if (resp != 201 && resp != 200) {
+    debug("Device not found. %s", url);
+  }
+
+  if ((resp == 200 || resp == 201) && c.size > 0) {
+    save_config(c.memory);
+    free(c.memory);
+    c.memory = NULL;
+    response = 1;
+  }
+
+  if (c.memory) {
+    free(c.memory);
+  }
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  curl_slist_free_all(headers);
+
+  return response;
+}
+
 void send_boot_message()
 {
   if (strcmp(options.boot_url, "") != 0) {
-
     char url[255];
     long http_code = 0;
     struct curl_slist *headers = NULL;
@@ -190,7 +253,7 @@ void send_boot_message()
 
     if(res == CURLE_OK) {
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-      if (http_code == 200 && c.memory) {
+      if (http_code == 200 && c.size > 0) {
         process_response(c.memory);
       } else if (http_code == 201) {
 

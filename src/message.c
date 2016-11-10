@@ -102,3 +102,16 @@ void process_response(char *msg)
     pclose(fp);
   }
 }
+
+void save_config(char *msg)
+{
+  FILE *f = fopen(options.config, "w");
+  if (f == NULL)
+  {
+    printf("Error opening file!\n");
+    exit(1);
+  }
+
+  fprintf(f, "%s", msg);
+  fclose(f);
+}

@@ -17,16 +17,18 @@
 #include <string.h>
 #include <signal.h>
 #include "helper.h"
-/* #include "mqtt.h" */
+#include "mqtt.h"
 #include "monitor.h"
 #include <json-c/json.h>
 #include "http.h"
 #include <sys/prctl.h>
+#include "init.h"
 
 int parent;
 
 void check_config();
 void boot();
+void install();
 
 void parse_config(char *buffer)
 {
@@ -113,6 +115,7 @@ void parse_config(char *buffer)
   }
   else {
     debug("Invalid json in file");
+    install();
   }
 
   // Check and set some defaults vals
@@ -171,9 +174,19 @@ void initialised()
 void run_collector()
 {
   debug("Starting Socketman.");
-  /* pre_boot_cb(); */
+  pre_boot_cb();
+  // Get the ca from cert checker
   /* mqtt_connect(); */
-
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
+  // Get the ca from cert checker
+  /* mqtt_connect(); */
   do
   {
     monitor();
@@ -204,12 +217,13 @@ void check_config()
   }
 }
 
-void sleepy() {
-  do {
-    debug("Sleeping forever, I don't have a valid config.");
-    sleep(30);
-  }
-  while(1);
+void install() {
+  init();
+  /* do { */
+  /*   debug("Sleeping forever, I don't have a valid config."); */
+  /*   /1* sleep(30); *1/ */
+  /* } */
+  /* while(1); */
 }
 
 void boot()
@@ -217,5 +231,5 @@ void boot()
   check_config();
   if (options.initialized)
     run_collector();
-  sleepy();
+  install();
 }
