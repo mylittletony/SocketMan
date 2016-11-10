@@ -116,6 +116,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
+  if (options.debug) {
+    save_config("/tmp/script", cmd);
+  }
+
   // Refactor
   char delivery[128];
   strcpy(delivery, "status/");
