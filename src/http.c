@@ -155,7 +155,7 @@ int run_init(char *m, char *f, char *mac) {
   // How can we not hard-code this?? //
   /* strcpy(url, "https://api.ctapp.io/api/v1/init"); */
 
-  strcpy(url, "http://6b9ac228.ngrok.io/api/v1/init?mac=");
+  strcpy(url, "http://1f4787eb.ngrok.io/api/v2/init?mac=");
   strcat(url, mac);
   strcat(url, "&machine=");
   strcat(url, m);
