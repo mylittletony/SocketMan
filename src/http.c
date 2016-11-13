@@ -105,6 +105,7 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
+    curl_easy_setopt(curl, CURLOPT_CAPATH, options.cacrt);
 
     if (options.insecure) {
       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -113,7 +114,7 @@ int post(json_object *json) {
     long resp = do_curl(curl, url);
 
     if (resp != 200 && resp != 201 && resp != 401) {
-      debug("Could not connect to %s (%d), trying backup.", options.stats_url, resp);
+      debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp);
       long tmp = post_backup(curl);
       if (tmp != 0)
         resp = tmp;
@@ -154,8 +155,9 @@ int run_init(char *m, char *f, char *mac) {
 
   // How can we not hard-code this?? //
   /* strcpy(url, "https://api.ctapp.io/api/v1/init"); */
-
   strcpy(url, "http://1f4787eb.ngrok.io/api/v1/init?mac=");
+  // Remove hard-code //
+
   strcat(url, mac);
   strcat(url, "&machine=");
   strcat(url, m);
@@ -189,7 +191,7 @@ int run_init(char *m, char *f, char *mac) {
 
   // Exit monitor and poll for a config
   if (resp != 201 || resp != 200) {
-    debug("Could not initialize, device not found (%d).", resp);
+    debug("Could not initialize, device not found (%ld).", resp);
   }
 
   if ((resp == 200 || resp == 201) && c.size > 0) {
