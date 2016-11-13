@@ -105,7 +105,7 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
-    curl_easy_setopt(curl, CURLOPT_CAPATH, "/tmp/");
+    curl_easy_setopt(curl, CURLOPT_CAPATH, "/tmp/cacert.pem");
 
     if (options.insecure) {
       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
