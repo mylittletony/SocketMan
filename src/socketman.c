@@ -158,7 +158,7 @@ int main( int argc,char **argv)
     };
 
     int option_index = 0;
-    c = getopt_long_only(argc,argv,"h:u:p:e:x:s:P:qt:k:H:a:f:m:f:k:T:C",long_options, &option_index);
+    c = getopt_long_only(argc,argv,"b:h:u:p:e:x:s:P:qt:k:H:a:f:m:f:k:T:C",long_options, &option_index);
 
     if (c == -1)
       break;
@@ -172,6 +172,10 @@ int main( int argc,char **argv)
         if (optarg)
           printf (" with arg %s", optarg);
         printf ("\n");
+        break;
+
+      case 'b':
+        strcpy(options.init, optarg);
         break;
 
       case 'u':

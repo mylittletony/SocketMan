@@ -147,22 +147,25 @@ int post(json_object *json) {
   }
 }
 
-int run_init(char *m, char *f, char *mac) {
+int run_init(char *f, char *m, char *mac) {
 
   int response = 0;
   CURL *curl;
   char url[255];
 
-  // How can we not hard-code this?? //
-  /* strcpy(url, "https://api.ctapp.io/api/v1/init"); */
-  strcpy(url, "http://1f4787eb.ngrok.io/api/v1/init?mac=");
-  // Remove hard-code //
+  if (strcmp(options.init, "") == 0) {
+    strcpy(url, "https://api.ctapp.io/api/v1/init");
+  } else {
+    strcpy(url, options.init);
+  }
+  debug("Initializing against %s", url);
 
+  strcat(url, "?mac=");
   strcat(url, mac);
   strcat(url, "&machine=");
-  strcat(url, m);
+  strcat(url, curl_easy_escape(curl, m, 0));
   strcat(url, "&firmware=");
-  strcat(url, f);
+  strcat(url, curl_easy_escape(curl, f, 0));
 
   curl_global_init( CURL_GLOBAL_ALL );
 

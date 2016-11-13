@@ -2,11 +2,18 @@
 #include "dbg.h"
 #include "helper.h"
 #include "http.h"
+#include "system.h"
 
 int init()
 {
   char mac[17];
   mac[0]= '\0';
+
+  char firmware[100];
+  firmware[0]= '\0';
+
+  char machine[100];
+  machine[0]= '\0';
 
   readlineToBuffer("/etc/mac", mac);
 
@@ -22,8 +29,19 @@ int init()
     return 0;
   }
 
+  machine_type(machine, sizeof(machine));
+
+#ifdef __OPENWRT__
+  readlineToBuffer("/etc/openwrt_version", firmware);
+#endif
+
+  if (firmware[0] == '\0') {
+    strcpy(firmware, "DNE");
+  }
+
+  debug("F: %s, M: %s", firmware, machine);
   do {
-    if (run_init("f", "m", mac) == 1) {
+    if (run_init(firmware, machine, mac) == 1) {
       break;
     }
     sleep(15);

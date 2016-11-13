@@ -16,6 +16,7 @@ struct _options {
   char mac[18];
   char cacrt[18];
   char mac_file[128];
+  char init[128];
   char *id;
   int timeout;
   int port;
