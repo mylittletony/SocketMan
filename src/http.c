@@ -105,11 +105,8 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "/tmp/cacert.pem");
-
-    if (options.insecure) {
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    }
+    curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     long resp = do_curl(curl, url);
 
@@ -185,6 +182,8 @@ int run_init(char *f, char *m, char *mac) {
   curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
   if (options.insecure) {
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -248,6 +247,7 @@ void send_boot_message()
     curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+    curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     res = curl_easy_perform(curl);
@@ -296,6 +296,8 @@ void fetch_ca(char *buff) {
   curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
   long resp = do_curl(curl, url);
   if (resp != 200) {
@@ -318,7 +320,7 @@ void fetch_ca(char *buff) {
 void install_ca() {
 
   CURL *curl;
-  char *url = "http://s3.amazonaws.com/puffin-certs/current.ca";
+  char *url = "https://s3.amazonaws.com/puffin-certs/current.ca";
 
   curl_global_init( CURL_GLOBAL_ALL );
 
@@ -334,6 +336,8 @@ void install_ca() {
   curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
   long resp = do_curl(curl, url);
   if (resp != 200) {
@@ -352,4 +356,3 @@ void install_ca() {
   curl_global_cleanup();
   return;
 }
-
