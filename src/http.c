@@ -118,6 +118,7 @@ int post(json_object *json) {
     }
 
     if ((resp == 200 || resp == 201) && c.size > 0) {
+      debug("Stats successfully sent (%ld)", resp);
       process_response(c.memory);
       free(c.memory);
       c.memory = NULL;
