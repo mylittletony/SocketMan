@@ -159,13 +159,13 @@ struct defaultRoute route()
   nlMsg->nlmsg_pid = getpid();
 
   if (send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0) {
-    debug("Write To Socket Failed...\n");
+    debug("Write To Socket Failed...");
     close(sock);
     return dr;
   }
 
   if ((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0) {
-    debug("Read From Socket Failed...\n");
+    debug("Read From Socket Failed...");
     return dr;
   }
 

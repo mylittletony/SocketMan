@@ -300,6 +300,7 @@ int dial_mqtt()
       debug("[ERROR] Missing ca file");
     }
     mosquitto_tls_opts_set(mosq, 1, "tlsv1.2", NULL);
+    /* mosquitto_tls_opts_set(mosq, 1, "tlsv1.2", "HIGH"); */
     mosquitto_tls_set(mosq, options.cacrt, NULL, NULL, NULL, NULL);
   }
 

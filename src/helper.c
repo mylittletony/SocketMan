@@ -201,7 +201,7 @@ void check_certificates()
 
   fclose (inFile);
 
-  debug("MD5 (%s): %s\n", options.cacrt, md);
+  debug("MD5 (%s): %s", options.cacrt, md);
 
   if (md[0] == '\0') {
     debug("Not checking MD5 against server...");
