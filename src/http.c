@@ -321,7 +321,7 @@ void fetch_ca(char *buff) {
 void install_ca() {
 
   CURL *curl;
-  char *url = "https://s3.amazonaws.com/puffin-certs/current.ca";
+  char *url = "http://s3.amazonaws.com/puffin-certs/current.ca";
 
   curl_global_init( CURL_GLOBAL_ALL );
 
@@ -338,7 +338,6 @@ void install_ca() {
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1L);
   curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
-  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
   long resp = do_curl(curl, url);
   if (resp != 200) {
@@ -346,6 +345,7 @@ void install_ca() {
   }
 
   if ((resp == 200) && c.size > 0) {
+    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     save_config(options.cacrt, c.memory);
   }
 

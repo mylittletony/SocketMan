@@ -242,7 +242,7 @@ void *reconnect(UNUSED(void *x))
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
   connected = false;
-  debug("MQTT Lost connected to %s", options.mqtt_host);
+  debug("MQTT Lost connection to %s", options.mqtt_host);
 }
 
 void mqtt_connect() {
@@ -270,6 +270,7 @@ void mqtt_connect() {
 
 int dial_mqtt()
 {
+  mosquitto_lib_init();
   debug("Connecting to MQTT...");
   char id[27];
 
@@ -298,12 +299,8 @@ int dial_mqtt()
     if (strcmp(options.cacrt, "") == 0) {
       debug("[ERROR] Missing ca file");
     }
-    mosquitto_tls_opts_set(mosq, 1, NULL, NULL);
-    if (options.psk) {
-      // NIU
-    } else {
-      mosquitto_tls_set(mosq, options.cacrt, NULL, NULL, NULL, NULL);
-    }
+    mosquitto_tls_opts_set(mosq, 1, "tlsv1.2", NULL);
+    mosquitto_tls_set(mosq, options.cacrt, NULL, NULL, NULL, NULL);
   }
 
   mosquitto_connect_callback_set(mosq, my_connect_callback);
