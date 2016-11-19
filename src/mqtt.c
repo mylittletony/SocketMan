@@ -20,6 +20,7 @@
 
 bool connected = false;
 time_t m0=0;
+char id[27];
 
 int dial_mqtt();
 
@@ -31,6 +32,8 @@ void read_message()
 void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int result)
 {
   if(!result) {
+    /* debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
+    /* sleep(5); */
     connected = true;
 
     int k,n;
@@ -55,7 +58,8 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
       json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
       json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
       json_object_object_add(jmeta, "online", json_object_new_string("1"));
-      json_object_object_add(jmeta, "msg", json_object_new_string("Device online"));
+      /* json_object_object_add(jmeta, "msg", json_object_new_string("Device online")); */
+      json_object_object_add(jmeta, "client_id", json_object_new_string(id));
       json_object_object_add(jobj, "meta", jmeta);
 
       const char *resp = json_object_to_json_string(jobj);
@@ -122,7 +126,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Refactor
   char delivery[128];
-  strcpy(delivery, "status/");
+  /* strcpy(delivery, "status/"); */
+  strcpy(delivery, "delivery/");
   strcat(delivery, options.topic);
   strcat(delivery, "/");
   strcat(delivery, options.key);
@@ -184,7 +189,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Refactor
-  // Else, let's publish back via MQTT
+  // Else, let's publish back
   jobj = json_object_new_object();
   json_object_object_add(jobj, "id", json_object_new_string(id));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
@@ -220,7 +225,6 @@ void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata
 {
   int i;
   debug("Subscribed (mid: %d): %d", mid, granted_qos[0]);
-
   for(i=1; i<qos_count; i++) {
     debug("QOS: %d", granted_qos[i]);
   }
@@ -230,7 +234,8 @@ void *reconnect(UNUSED(void *x))
 {
   while(!connected) {
     debug("Unable to connect to %s. Sleeping 15", options.mqtt_host);
-    sleep(15);
+    sleep(5);
+    // Do the port thing here SM....
     if (!dial_mqtt()) {
       debug("Reconnected to %s, yay!", options.mqtt_host);
       break;
@@ -242,8 +247,8 @@ void *reconnect(UNUSED(void *x))
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
   connected = false;
-  debug("MQTT Lost connection to %s", options.mqtt_host);
-  sleep(5);
+  debug("Lost connection with broker: %s", options.mqtt_host);
+  sleep(10);
 }
 
 void mqtt_connect() {
@@ -257,11 +262,6 @@ void mqtt_connect() {
         fprintf(stderr, "Error creating thread\n");
         return;
       }
-
-      /* if(pthread_join(conn_thread, NULL)) { */
-      /*   fprintf(stderr, "Error joining thread\n"); */
-      /*   return; */
-      /* } */
     };
   } else {
     debug("No MQTT host, skipping connect.");
@@ -272,12 +272,11 @@ void mqtt_connect() {
 int dial_mqtt()
 {
   mosquitto_lib_init();
-  debug("Connecting to MQTT...");
-  char id[27];
+  debug("Connecting to broker...");
 
   client_id_generate(id);
 
-  int keepalive = 60;
+  int keepalive = 30;
   bool clean_session = true;
   struct mosquitto *mosq = NULL;
 
@@ -301,7 +300,6 @@ int dial_mqtt()
       debug("[ERROR] Missing ca file");
     }
     mosquitto_tls_opts_set(mosq, 1, NULL, NULL);
-    /* mosquitto_tls_opts_set(mosq, 1, "tlsv1.2", "HIGH"); */
     mosquitto_tls_set(mosq, options.cacrt, NULL, NULL, NULL, NULL);
   }
 
@@ -320,7 +318,8 @@ int dial_mqtt()
     json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
     json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
     json_object_object_add(jmeta, "online", json_object_new_string("0"));
-    json_object_object_add(jmeta, "msg", json_object_new_string("Went offline"));
+    /* json_object_object_add(jmeta, "msg", json_object_new_string("Went offline")); */
+    json_object_object_add(jmeta, "client_id", json_object_new_string(id));
     json_object_object_add(jobj, "meta", jmeta);
 
     const char *report = json_object_to_json_string(jobj);
