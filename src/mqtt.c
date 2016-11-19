@@ -243,6 +243,7 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 {
   connected = false;
   debug("MQTT Lost connection to %s", options.mqtt_host);
+  sleep(5);
 }
 
 void mqtt_connect() {

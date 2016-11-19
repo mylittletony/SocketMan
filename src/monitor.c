@@ -176,7 +176,7 @@ void heartbeat()
   backup_config();
   collect_and_send_data(1);
 
-  if (options.initialized == 1) {
+  if (options.initialized) {
     debug("Sleeping for %d seconds.", options.monitor);
     sleep(options.monitor);
   }
