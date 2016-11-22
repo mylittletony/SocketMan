@@ -152,7 +152,7 @@ int run_init(char *f, char *m, char *mac) {
   char url[255];
 
   if (strcmp(options.init, "") == 0) {
-    strcpy(url, "https://api.ctapp.io/api/v1/init");
+    strcpy(url, "https://api.ctapp.io/api/v2/init");
   } else {
     strcpy(url, options.init);
   }
