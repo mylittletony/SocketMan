@@ -345,7 +345,6 @@ void install_ca() {
   }
 
   if ((resp == 200) && c.size > 0) {
-    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     save_config(options.cacrt, c.memory);
   }
 

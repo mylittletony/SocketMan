@@ -6,10 +6,10 @@
 
 int init()
 {
-  char mac[17];
+  char mac[20];
   mac[0]= '\0';
 
-  char firmware[100];
+  char firmware[50];
   firmware[0]= '\0';
 
   char machine[100];
@@ -39,7 +39,7 @@ int init()
     strcpy(firmware, "DNE");
   }
 
-  debug("F: %s, M: %s", firmware, machine);
+  debug("F: %s, M: %s MAC: %s", firmware, machine, mac);
   do {
     if (run_init(firmware, machine, mac) == 1) {
       break;
