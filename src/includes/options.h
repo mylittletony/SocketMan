@@ -19,6 +19,7 @@ struct _options {
   char init[128];
   char *id;
   int timeout;
+  int compress;
   int port;
   int debug;
   int insecure;

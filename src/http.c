@@ -15,6 +15,21 @@
 #include "message.h"
 #include "utils.h"
 
+#include <stdio.h>
+#include "zlib.h"
+
+#ifdef STDC
+#  include <string.h>
+#  include <stdlib.h>
+#endif
+
+/* #define CHECK_ERR(err, msg) { \ */
+/*   if (err != Z_OK) { \ */
+/*     fprintf(stderr, "%s error: %d\n", msg, err); \ */
+/*     exit(1); \ */
+/*   } \ */
+/* } */
+
 struct CurlResponse {
   char *memory;
   size_t size;
@@ -78,11 +93,34 @@ int post_backup(CURL *curl)
   return 0;
 }
 
+uLong dictId; /* Adler32 value of the dictionary */
+
+void test_compress      OF((Byte *compr, uLong comprLen,
+                                  Byte *uncompr, uLong uncomprLen));
+void test_gzio          OF((const char *fname,
+                                  Byte *uncompr, uLong uncomprLen));
+void test_deflate       OF((Byte *compr, uLong comprLen));
+void test_inflate       OF((Byte *compr, uLong comprLen,
+                                  Byte *uncompr, uLong uncomprLen));
+void test_large_deflate OF((Byte *compr, uLong comprLen,
+                                  Byte *uncompr, uLong uncomprLen));
+void test_large_inflate OF((Byte *compr, uLong comprLen,
+                                  Byte *uncompr, uLong uncomprLen));
+void test_flush         OF((Byte *compr, uLong *comprLen));
+void test_sync          OF((Byte *compr, uLong comprLen,
+                                  Byte *uncompr, uLong uncomprLen));
+void test_dict_deflate  OF((Byte *compr, uLong comprLen));
+void test_dict_inflate  OF((Byte *compr, uLong comprLen,
+                                  Byte *uncompr, uLong uncomprLen));
+
 int post(json_object *json) {
 
   if (strcmp(options.stats_url, "") != 0) {
     CURL *curl;
     char url[255];
+    Byte *compr;
+    uLong comprLen = 10000*sizeof(int);
+
     append_url_token(options.stats_url, url);
 
     curl_global_init( CURL_GLOBAL_ALL );
@@ -92,8 +130,10 @@ int post(json_object *json) {
       return 0;
 
     struct curl_slist *headers = NULL;
+
     headers = curl_slist_append(headers, "Accept: application/json");
     headers = curl_slist_append(headers, "Content-Type: application/json");
+
     struct CurlResponse c;
     init_chunk(&c);
 
@@ -101,12 +141,33 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+    /* curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST"); */
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
     curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+    if (options.compress >= 0) {
+      compr = (Byte*)calloc((uInt)comprLen, 1);
+      if (compr == Z_NULL) {
+        printf("out of memory\n");
+        return 0;
+      }
+
+      int err;
+      uLong len = (uLong)strlen("json_object_to_json_string(json)")+1;
+
+      err = compress(compr, &comprLen, (const Bytef*)"json_object_to_json_string(json)", len);
+      if (err != Z_OK)
+        return 0;
+
+      headers = curl_slist_append(headers, "Content-Encoding: zlib");
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, compr);
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, comprLen);
+    } else {
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
+    }
+
 
     long resp = do_curl(curl, url);
 
@@ -137,6 +198,7 @@ int post(json_object *json) {
     curl_easy_cleanup(curl);
     curl_global_cleanup();
     curl_slist_free_all(headers);
+    free(compr);
 
     return 1;
   } else {

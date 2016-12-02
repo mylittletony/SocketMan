@@ -7,7 +7,7 @@ CFLAGS= -g -O2 -Wall -Wextra -Isrc -I$(IDIR) $(INCLUDES) $(CUCUMBER)
 ODIR=obj
 LDIR =../lib
 
-LIBS=-lm -lssl -lcrypto -lrt -lpthread -lcurl -ljson-c -lmosquitto -lnl-3 -lnl-route-3 -lnl-genl-3
+LIBS=-lm -lssl -lcrypto -lrt -lpthread -lcurl -ljson-c -lmosquitto -lnl-3 -lnl-route-3 -lnl-genl-3 -lz
 
 TARGET=socketman
 SO_TARGET=$(patsubst %.a,%.so,$(TARGET))
