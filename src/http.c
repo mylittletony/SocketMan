@@ -23,13 +23,6 @@
 #  include <stdlib.h>
 #endif
 
-/* #define CHECK_ERR(err, msg) { \ */
-/*   if (err != Z_OK) { \ */
-/*     fprintf(stderr, "%s error: %d\n", msg, err); \ */
-/*     exit(1); \ */
-/*   } \ */
-/* } */
-
 struct CurlResponse {
   char *memory;
   size_t size;
@@ -92,26 +85,6 @@ int post_backup(CURL *curl)
   debug("No backup URL, moving on.");
   return 0;
 }
-
-uLong dictId; /* Adler32 value of the dictionary */
-
-void test_compress      OF((Byte *compr, uLong comprLen,
-                                  Byte *uncompr, uLong uncomprLen));
-void test_gzio          OF((const char *fname,
-                                  Byte *uncompr, uLong uncomprLen));
-void test_deflate       OF((Byte *compr, uLong comprLen));
-void test_inflate       OF((Byte *compr, uLong comprLen,
-                                  Byte *uncompr, uLong uncomprLen));
-void test_large_deflate OF((Byte *compr, uLong comprLen,
-                                  Byte *uncompr, uLong uncomprLen));
-void test_large_inflate OF((Byte *compr, uLong comprLen,
-                                  Byte *uncompr, uLong uncomprLen));
-void test_flush         OF((Byte *compr, uLong *comprLen));
-void test_sync          OF((Byte *compr, uLong comprLen,
-                                  Byte *uncompr, uLong uncomprLen));
-void test_dict_deflate  OF((Byte *compr, uLong comprLen));
-void test_dict_inflate  OF((Byte *compr, uLong comprLen,
-                                  Byte *uncompr, uLong uncomprLen));
 
 int post(json_object *json) {
 
