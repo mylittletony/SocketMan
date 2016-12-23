@@ -88,7 +88,7 @@ int post_backup(CURL *curl)
 
 int post(json_object *json) {
 
-  if (strcmp(options.stats_url, "") != 0) {
+  if (0) { //(strcmp(options.stats_url, "") != 0) {
     CURL *curl;
     char url[255];
     Byte *compr;
@@ -132,8 +132,10 @@ int post(json_object *json) {
       uLong len = (uLong)strlen(json_object_to_json_string(json))+1;
 
       err = compress(compr, &comprLen, (const Bytef*)json_object_to_json_string(json), len);
-      if (err != Z_OK)
+      if (err != Z_OK) {
+        debug("Error compressing data");
         return 0;
+      }
 
       headers = curl_slist_append(headers, "Content-Encoding: zlib");
       curl_easy_setopt(curl, CURLOPT_POSTFIELDS, compr);
