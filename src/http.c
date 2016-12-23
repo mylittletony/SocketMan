@@ -140,8 +140,6 @@ int post(json_object *json) {
       headers = curl_slist_append(headers, "Content-Encoding: zlib");
       curl_easy_setopt(curl, CURLOPT_POSTFIELDS, compr);
       curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, comprLen);
-      free(compr);
-
     } else {
       curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
     }
@@ -175,6 +173,11 @@ int post(json_object *json) {
     curl_easy_cleanup(curl);
     curl_global_cleanup();
     curl_slist_free_all(headers);
+    if (options.nocompress != 1) {
+      if (compr) {
+        free(compr);
+      }
+    }
 
     return 1;
   } else {
