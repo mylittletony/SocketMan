@@ -144,14 +144,14 @@ int post(json_object *json) {
       curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
     }
 
-    /* long resp = do_curl(curl, url); */
+    long resp = do_curl(curl, url);
 
-    /* if (resp != 200 && resp != 201 && resp != 401) { */
-    /*   debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp); */
-    /*   long tmp = post_backup(curl); */
-    /*   if (tmp != 0) */
-    /*     resp = tmp; */
-    /* } */
+    if (resp != 200 && resp != 201 && resp != 401) {
+      debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp);
+      long tmp = post_backup(curl);
+      if (tmp != 0)
+        resp = tmp;
+    }
 
     /* if ((resp == 200 || resp == 201) && c.size > 0) { */
     /*   debug("Stats successfully sent (%ld)", resp); */
