@@ -148,8 +148,8 @@ void parse_config(char *buffer)
   if (!options.qos)
     options.qos = 0;
 
-  if (!options.compress)
-    options.compress = 1;
+  /* if (!options.compress) */
+  /*   options.compress = 1; */
 }
 
 void boot_cmd()
