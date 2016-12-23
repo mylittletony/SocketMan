@@ -160,11 +160,11 @@ int post(json_object *json) {
       c.memory = NULL;
     }
 
-    /* // Exit monitor and poll for a config */
-    /* if (resp == 401) { */
-    /*   debug("This device is not authorized."); */
-    /*   options.initialized = 0; */
-    /* } */
+    // Exit monitor and poll for a config
+    if (resp == 401) {
+      debug("This device is not authorized.");
+      options.initialized = 0;
+    }
 
     /* if (c.memory) { */
     /*   free(c.memory); */
