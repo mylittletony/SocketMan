@@ -170,10 +170,10 @@ int post(json_object *json) {
       free(c.memory);
     }
 
-    /* curl_easy_cleanup(curl); */
-    /* curl_global_cleanup(); */
-    /* curl_slist_free_all(headers); */
-    /* free(compr); */
+    curl_easy_cleanup(curl);
+    curl_global_cleanup();
+    curl_slist_free_all(headers);
+    free(compr);
 
     return 1;
   } else {
