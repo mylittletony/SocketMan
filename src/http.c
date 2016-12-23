@@ -88,7 +88,7 @@ int post_backup(CURL *curl)
 
 int post(json_object *json) {
 
-  if (0) { //(strcmp(options.stats_url, "") != 0) {
+  if (strcmp(options.stats_url, "") != 0) {
     CURL *curl;
     char url[255];
     Byte *compr;
@@ -144,36 +144,36 @@ int post(json_object *json) {
       curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
     }
 
-    long resp = do_curl(curl, url);
+    /* long resp = do_curl(curl, url); */
 
-    if (resp != 200 && resp != 201 && resp != 401) {
-      debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp);
-      long tmp = post_backup(curl);
-      if (tmp != 0)
-        resp = tmp;
-    }
+    /* if (resp != 200 && resp != 201 && resp != 401) { */
+    /*   debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp); */
+    /*   long tmp = post_backup(curl); */
+    /*   if (tmp != 0) */
+    /*     resp = tmp; */
+    /* } */
 
-    if ((resp == 200 || resp == 201) && c.size > 0) {
-      debug("Stats successfully sent (%ld)", resp);
-      process_response(c.memory);
-      free(c.memory);
-      c.memory = NULL;
-    }
+    /* if ((resp == 200 || resp == 201) && c.size > 0) { */
+    /*   debug("Stats successfully sent (%ld)", resp); */
+    /*   process_response(c.memory); */
+    /*   free(c.memory); */
+    /*   c.memory = NULL; */
+    /* } */
 
-    // Exit monitor and poll for a config
-    if (resp == 401) {
-      debug("This device is not authorized.");
-      options.initialized = 0;
-    }
+    /* // Exit monitor and poll for a config */
+    /* if (resp == 401) { */
+    /*   debug("This device is not authorized."); */
+    /*   options.initialized = 0; */
+    /* } */
 
-    if (c.memory) {
-      free(c.memory);
-    }
+    /* if (c.memory) { */
+    /*   free(c.memory); */
+    /* } */
 
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
-    curl_slist_free_all(headers);
-    free(compr);
+    /* curl_easy_cleanup(curl); */
+    /* curl_global_cleanup(); */
+    /* curl_slist_free_all(headers); */
+    /* free(compr); */
 
     return 1;
   } else {
