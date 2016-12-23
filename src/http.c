@@ -129,9 +129,9 @@ int post(json_object *json) {
 
       debug("Compressing the payload...");
       int err;
-      uLong len = (uLong)strlen("json_object_to_json_string(json)")+1;
+      uLong len = (uLong)strlen(json_object_to_json_string(json))+1;
 
-      err = compress(compr, &comprLen, (const Bytef*)"json_object_to_json_string(json)", len);
+      err = compress(compr, &comprLen, (const Bytef*)json_object_to_json_string(json), len);
       if (err != Z_OK)
         return 0;
 
