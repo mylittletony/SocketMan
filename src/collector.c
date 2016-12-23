@@ -565,6 +565,7 @@ void collect_data(int online)
 
   if (machine[0] !='\0') {
     // Save to the options to prevent future lookups
+    debug("MACHINE TYPE: %s", machine);
     strcpy(options.machine, machine);
     json_object *jmachine = json_object_new_string(machine);
     json_object_object_add(jattr, "machine_type", jmachine);

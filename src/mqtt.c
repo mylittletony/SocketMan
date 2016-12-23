@@ -126,7 +126,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Refactor
   char delivery[128];
-  /* strcpy(delivery, "status/"); */
   strcpy(delivery, "delivery/");
   strcat(delivery, options.topic);
   strcat(delivery, "/");
@@ -143,10 +142,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     debug("Missing ID. Auto-generating: %s. Topic: %s", id, delivery);
   }
   // Needs check if running, check time, check live cmd.
-
-  // Lets process and deliver the message
-
-  // Message delivered
 
   json_object *jobj = json_object_new_object();
   json_object *jmeta = json_object_new_object();
