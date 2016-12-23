@@ -166,9 +166,9 @@ int post(json_object *json) {
       options.initialized = 0;
     }
 
-    /* if (c.memory) { */
-    /*   free(c.memory); */
-    /* } */
+    if (c.memory) {
+      free(c.memory);
+    }
 
     /* curl_easy_cleanup(curl); */
     /* curl_global_cleanup(); */
