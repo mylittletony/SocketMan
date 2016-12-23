@@ -153,12 +153,12 @@ int post(json_object *json) {
         resp = tmp;
     }
 
-    /* if ((resp == 200 || resp == 201) && c.size > 0) { */
-    /*   debug("Stats successfully sent (%ld)", resp); */
-    /*   process_response(c.memory); */
-    /*   free(c.memory); */
-    /*   c.memory = NULL; */
-    /* } */
+    if ((resp == 200 || resp == 201) && c.size > 0) {
+      debug("Stats successfully sent (%ld)", resp);
+      process_response(c.memory);
+      free(c.memory);
+      c.memory = NULL;
+    }
 
     /* // Exit monitor and poll for a config */
     /* if (resp == 401) { */
