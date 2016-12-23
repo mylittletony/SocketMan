@@ -120,7 +120,7 @@ int post(json_object *json) {
     curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-    if (0) { //(options.compress >= 0) {
+    if (options.nocompress != 1) {
       compr = (Byte*)calloc((uInt)comprLen, 1);
       if (compr == Z_NULL) {
         printf("out of memory\n");

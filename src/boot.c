@@ -59,8 +59,8 @@ void parse_config(char *buffer)
         case json_type_int:
           if (strcmp(key, "debug") == 0)
             options.debug = 1;
-          if (strcmp(key, "compress") == 0)
-            options.compress = json_object_get_int(val);
+          if (strcmp(key, "no-compress") == 0)
+            options.nocompress = json_object_get_int(val);
           if (strcmp(key, "scan") == 0)
             options.scan = json_object_get_int(val);
           if (strcmp(key, "rest") == 0)
@@ -147,9 +147,6 @@ void parse_config(char *buffer)
 
   if (!options.qos)
     options.qos = 0;
-
-  if (!options.compress)
-    options.compress = 1;
 }
 
 void boot_cmd()
