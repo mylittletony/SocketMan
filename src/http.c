@@ -88,102 +88,111 @@ int post_backup(CURL *curl)
 
 int post(json_object *json) {
 
-  if (strcmp(options.stats_url, "") != 0) {
-    CURL *curl;
-    char url[255];
-    Byte *compr;
-    uLong comprLen = 10000*sizeof(int);
-
-    append_url_token(options.stats_url, url);
-
-    curl_global_init( CURL_GLOBAL_ALL );
-
-    curl = curl_easy_init();
-    if (!curl)
-      return 0;
-
-    struct curl_slist *headers = NULL;
-
-    headers = curl_slist_append(headers, "Accept: application/json");
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-
-    struct CurlResponse c;
-    init_chunk(&c);
-
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-    /* curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST"); */
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-    if (options.nocompress != 1) {
-      compr = (Byte*)calloc((uInt)comprLen, 1);
-      if (compr == Z_NULL) {
-        printf("out of memory\n");
-        return 0;
-      }
-
-      debug("Compressing the payload...");
-      int err;
-      uLong len = (uLong)strlen(json_object_to_json_string(json))+1;
-
-      err = compress(compr, &comprLen, (const Bytef*)json_object_to_json_string(json), len);
-      if (err != Z_OK) {
-        debug("Error compressing data");
-        return 0;
-      }
-
-      headers = curl_slist_append(headers, "Content-Encoding: zlib");
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, compr);
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, comprLen);
-    } else {
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
-    }
-
-    long resp = do_curl(curl, url);
-
-    if (resp != 200 && resp != 201 && resp != 401) {
-      debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp);
-      long tmp = post_backup(curl);
-      if (tmp != 0)
-        resp = tmp;
-    }
-
-    if ((resp == 200 || resp == 201) && c.size > 0) {
-      debug("Stats successfully sent (%ld)", resp);
-      process_response(c.memory);
-      free(c.memory);
-      c.memory = NULL;
-    }
-
-    // Exit monitor and poll for a config
-    if (resp == 401) {
-      debug("This device is not authorized.");
-      options.initialized = 0;
-    }
-
-    if (c.memory) {
-      free(c.memory);
-    }
-
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
-    curl_slist_free_all(headers);
-    if (options.nocompress != 1) {
-      if (compr) {
-        free(compr);
-      }
-    }
-
-    return 1;
-  } else {
-    debug("Not sending data, invalid URL");
+  /* if (strcmp(options.stats_url, "") != 0) { */
+  if (strcmp(options.stats_url, "") == 0) {
     return 0;
   }
+
+  CURL *curl;
+  char url[255];
+  Byte *compr;
+  uLong comprLen = 10000*sizeof(int);
+
+  append_url_token(options.stats_url, url);
+
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  curl = curl_easy_init();
+  if (!curl)
+    return 0;
+
+  struct curl_slist *headers = NULL;
+
+  headers = curl_slist_append(headers, "Accept: application/json");
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  /* curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST"); */
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+  if (options.nocompress == 1)
+  {
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
+  } else
+  {
+    compr = (Byte*)calloc((uInt)comprLen, 1);
+    if (compr == Z_NULL) {
+      printf("out of memory\n");
+      return 0;
+    }
+
+    debug("Compressing the payload...");
+    int err;
+    uLong len = (uLong)strlen(json_object_to_json_string(json))+1;
+
+    err = compress(compr, &comprLen, (const Bytef*)json_object_to_json_string(json), len);
+    if (err != Z_OK) {
+      debug("Error compressing data");
+      return 0;
+    }
+
+    headers = curl_slist_append(headers, "Content-Encoding: zlib");
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, compr);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, comprLen);
+  }
+
+  long resp = do_curl(curl, url);
+
+  if (resp == 0) {
+    goto offline;
+  }
+
+  if (resp != 200 && resp != 201 && resp != 401) {
+    debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp);
+    long tmp = post_backup(curl);
+    if (tmp != 0)
+      resp = tmp;
+  }
+
+  if ((resp == 200 || resp == 201) && c.size > 0) {
+    debug("Stats successfully sent (%ld)", resp);
+    process_response(c.memory);
+    free(c.memory);
+    c.memory = NULL;
+  }
+
+  // Exit monitor and poll for a config
+  if (resp == 401) {
+    debug("This device is not authorized.");
+    options.initialized = 0;
+  }
+
+  if (c.memory) {
+    free(c.memory);
+  }
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  curl_slist_free_all(headers);
+  /* if (options.nocompress != 1) { */
+  if (compr) {
+    free(compr);
+  }
+  return 1;
+
+offline:
+  debug("Device offline");
+
+  return 1;
 }
 
 int run_init(char *f, char *m, char *mac) {
