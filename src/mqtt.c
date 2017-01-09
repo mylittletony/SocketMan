@@ -115,6 +115,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   id[0] = '\0';
   cmd[0] = '\0';
 
+  debug("SSSSSSSSS: %ld", sizeof(message->payload));
   process_message((const char*)message->payload, cmd, id);
 
   if (cmd[0] == '\0') {
