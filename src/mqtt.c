@@ -31,53 +31,54 @@ void read_message()
 
 void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int result)
 {
-  if(!result) {
-    /* debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
-    /* sleep(5); */
-    connected = true;
+  // Why?
+  if(result) {
+    return;
+  }
 
-    int k,n;
-    k = strlen(options.key);
-    n = strlen(options.topic);
-    char topic[k+n+19];
-    topic_id_generate(topic, options.topic, options.key);
+  connected = true;
 
-    options.qos = 1;
-    char t[128];
-    strcat(t, options.topic);
+  int k,n;
+  k = strlen(options.key);
+  n = strlen(options.topic);
+  char topic[k+n+19];
+  topic_id_generate(topic, options.topic, options.key);
 
-    mosquitto_subscribe(mosq, NULL, topic, options.qos);
+  options.qos = 1;
+  char t[128];
+  strcat(t, options.topic);
 
-    if (strcmp(options.topic, "") != 0) {
+  mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-      json_object *jobj = json_object_new_object();
-      json_object *jmeta = json_object_new_object();
+  if (strcmp(options.topic, "") != 0) {
 
-      // refactor
-      json_object_object_add(jobj, "app", json_object_new_string("socketman"));
-      json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
-      json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
-      json_object_object_add(jmeta, "online", json_object_new_string("1"));
-      /* json_object_object_add(jmeta, "msg", json_object_new_string("Device online")); */
-      json_object_object_add(jmeta, "client_id", json_object_new_string(id));
-      json_object_object_add(jobj, "meta", jmeta);
+    json_object *jobj = json_object_new_object();
+    json_object *jmeta = json_object_new_object();
 
-      const char *resp = json_object_to_json_string(jobj);
+    // refactor
+    json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+    json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+    json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
+    json_object_object_add(jmeta, "online", json_object_new_string("1"));
+    /* json_object_object_add(jmeta, "msg", json_object_new_string("Device online")); */
+    json_object_object_add(jmeta, "client_id", json_object_new_string(id));
+    json_object_object_add(jobj, "meta", jmeta);
 
-      // refactor and de-dup
-      char topic[128];
+    const char *resp = json_object_to_json_string(jobj);
 
-      // Status at the front is just for status / online / offline updates
-      strcpy(topic, "status/");
-      strcat(topic, options.topic);
-      strcat(topic, "/");
-      strcat(topic, options.key);
-      strcat(topic, "/");
-      strcat(topic, options.mac);
+    // refactor and de-dup
+    char topic[128];
 
-      mosquitto_publish(mosq, 0, topic, strlen(resp), resp, 1, false);
-      json_object_put(jobj);
-    }
+    // Status at the front is just for status / online / offline updates
+    strcpy(topic, "status/");
+    strcat(topic, options.topic);
+    strcat(topic, "/");
+    strcat(topic, options.key);
+    strcat(topic, "/");
+    strcat(topic, options.mac);
+
+    mosquitto_publish(mosq, 0, topic, strlen(resp), resp, 1, false);
+    json_object_put(jobj);
   }
 }
 

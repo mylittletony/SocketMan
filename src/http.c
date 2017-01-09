@@ -14,6 +14,7 @@
 #include "http.h"
 #include "message.h"
 #include "utils.h"
+#include "cache.h"
 
 #include <stdio.h>
 #include "zlib.h"
@@ -99,6 +100,7 @@ int post(json_object *json)
   char url[255];
   Byte *compr;
   uLong comprLen = 10000*sizeof(int);
+  const char *postData = json_object_to_json_string(json);
 
   append_url_token(options.stats_url, url);
 
@@ -116,32 +118,30 @@ int post(json_object *json)
   struct CurlResponse c;
   init_chunk(&c);
 
-  /* curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); */
-  /* curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c); */
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-  /* curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST"); */
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
   curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-  if (options.nocompress == 1)
-  {
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_object_to_json_string(json));
-  } else
-  {
+  if (options.nocompress == 1) {
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+  } else {
+
+    debug("Compressing the payload...");
     compr = (Byte*)calloc((uInt)comprLen, 1);
     if (compr == Z_NULL) {
       printf("out of memory\n");
       return 0;
     }
 
-    debug("Compressing the payload...");
     int err;
-    uLong len = (uLong)strlen(json_object_to_json_string(json))+1;
+    uLong len = (uLong)strlen(postData)+1;
 
-    err = compress(compr, &comprLen, (const Bytef*)json_object_to_json_string(json), len);
+    err = compress(compr, &comprLen, (const Bytef*)postData, len);
     if (err != Z_OK) {
       debug("Error compressing data");
       return 0;
@@ -154,158 +154,47 @@ int post(json_object *json)
 
   long resp = do_curl(curl, url);
 
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
-  debug("Device xxxxxxxxxxxxxxxxxxxxxxxxxxxxx %d", resp == 0);
+  if (resp == 0) {
+    goto offline;
+  }
 
-  if (resp == 0)
-    goto what;
+  if (resp != 200 && resp != 201 && resp != 401) {
+    debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp);
+    long tmp = post_backup(curl);
+    if (tmp != 0) {
+      resp = tmp;
+    }
+  }
 
-  /* if (resp != 200 && resp != 201 && resp != 401) { */
-  /*   debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp); */
-  /*   long tmp = post_backup(curl); */
-  /*   if (tmp != 0) */
-  /*     resp = tmp; */
-  /* } */
+  if ((resp == 200 || resp == 201) && c.size > 0) {
+    debug("Stats successfully sent (%ld)", resp);
+    process_response(c.memory);
+    free(c.memory);
+    c.memory = NULL;
+  }
 
-  /* if ((resp == 200 || resp == 201) && c.size > 0) { */
-  /*   debug("Stats successfully sent (%ld)", resp); */
-  /*   process_response(c.memory); */
-  /*   free(c.memory); */
-  /*   c.memory = NULL; */
-  /* } */
+  // Exit monitor and poll for a config
+  if (resp == 401) {
+    debug("This device is not authorized.");
+    options.initialized = 0;
+  }
 
-  /* // Exit monitor and poll for a config */
-  /* if (resp == 401) { */
-  /*   debug("This device is not authorized."); */
-  /*   options.initialized = 0; */
-  /* } */
+  goto cleanup;
 
+offline:
+  cache(postData);
+  goto cleanup;
+
+cleanup:
   if (c.memory) {
     free(c.memory);
   }
-
   curl_easy_cleanup(curl);
   curl_global_cleanup();
   curl_slist_free_all(headers);
   if (options.nocompress != 1 && compr) {
     free(compr);
   }
-  return 1;
-
-what:
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-  debug("Device offline");
-
   return 1;
 }
 

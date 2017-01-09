@@ -129,37 +129,36 @@ int file_present(char *file)
 
 void readlineToBuffer(char *file, char *buffer) {
 
-  if( access(file, F_OK ) != -1 ) {
-    FILE *sinfile;
-    char *sbuffer = NULL;
-    long snumbytes;
-    sinfile = fopen(file, "r");
-    if(sinfile != NULL) {
-      if(fseek(sinfile, 0L, SEEK_END)==0) {
-        snumbytes = ftell(sinfile);
-
-        if(fseek(sinfile,0L,SEEK_SET)==0) {
-          if(snumbytes >= 0)
-            sbuffer = (char*)calloc(snumbytes+1,sizeof(char));
-
-          if(sbuffer != NULL) {
-            fread(sbuffer,sizeof(char),snumbytes,sinfile);
-            char *ret = strpbrk(sbuffer, "\n");
-            if(ret) {
-              strcpy(buffer, strtok(sbuffer,"\n"));
-            } else {
-              strcpy(buffer, sbuffer);
-            }
-            free(sbuffer);
-          }
-        }
-      }
-      fclose(sinfile);
-    }
+  if( access(file, F_OK ) == -1 ) {
+    strcpy(buffer, "DNE");
     return;
   }
 
-  strcpy(buffer, "DNE");
+  FILE *sinfile;
+  char *sbuffer = NULL;
+  long snumbytes;
+  sinfile = fopen(file, "r");
+  if(sinfile != NULL) {
+    if(fseek(sinfile, 0L, SEEK_END)==0) {
+      snumbytes = ftell(sinfile);
+      if(fseek(sinfile,0L,SEEK_SET)==0) {
+        if(snumbytes >= 0)
+          sbuffer = (char*)calloc(snumbytes+1,sizeof(char));
+
+        if(sbuffer != NULL) {
+          fread(sbuffer,sizeof(char),snumbytes,sinfile);
+          char *ret = strpbrk(sbuffer, "\n");
+          if(ret) {
+            strcpy(buffer, strtok(sbuffer,"\n"));
+          } else {
+            strcpy(buffer, sbuffer);
+          }
+          free(sbuffer);
+        }
+      }
+    }
+    fclose(sinfile);
+  }
   return;
 }
 
@@ -174,6 +173,7 @@ int in_array(int val, int *arr, int size){
 
 void check_certificates()
 {
+
   unsigned char c[MD5_DIGEST_LENGTH];
   int i;
   FILE *inFile = fopen (options.cacrt, "rb");
@@ -214,17 +214,24 @@ void check_certificates()
 
   strtok(current, "\n");
 
+  // Missing CA or not connected to Internet
+  if (current[0] == '\0') {
+    debug("CA empty, continuing without updating.");
+    return;
+  }
+
+  // CA matches our one!
   if (current[0] != '\0' && strcmp(current, md) == 0) {
     debug("CA matches current, not updating!");
     return;
   }
 
+  // CA doesn't match, we shall update it
   debug("CA not matching, updating");
   goto update;
 
 update:
   debug("Installing new CA");
   install_ca();
-
   return;
 }

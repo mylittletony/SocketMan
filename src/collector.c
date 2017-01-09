@@ -15,6 +15,7 @@
 #include "utils.h"
 #include <ctype.h>
 #include "http.h"
+#include "cache.h"
 
 time_t last_collect = 0;
 int collected;
@@ -370,12 +371,9 @@ void run_interface_scan(json_object *jiface_array,
     struct radio_list *holdMe = NULL;
     struct radio_list *freeMe = ptr;
 
-    /* debug("777777777777777777777777777777777777777", "1"); */
     while(ptr != NULL)
     {
-      /* debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "1"); */
       if (in_array(ptr->val, myArray, 2) == 0) {
-        /* debug("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", "1"); */
         myArray[alen] = ptr->val;
         alen++;
         len_s = 0;
@@ -635,6 +633,7 @@ void collect_data(int online)
 
   // Should try and post, even if not online //
   if (post(jobj)) {
+    send_cache();
     /* if success / online */
   } else {
     // Cache
@@ -642,10 +641,6 @@ void collect_data(int online)
 
   run_cleanup(info);
   json_object_put(jobj);
-}
-
-void cache_data() {
-  debug("save the datas!");
 }
 
 void post_data() {
@@ -657,6 +652,6 @@ void collect_and_send_data(int online)
   if (should_collect()) {
     collect_data(online);
   } else if (unauthorized()) {
-
+    // Finish or delete !!
   }
 }
