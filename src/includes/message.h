@@ -1,4 +1,4 @@
-void process_message(const char *msg, char *cmd, char *id);
+void process_message(const char *msg, char *cmd, char *id, char *type);
 void *save_config(char *file, char *msg);
 void *save_cert(char *msg);
 char *parse_message(const char *msg);

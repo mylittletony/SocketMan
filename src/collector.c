@@ -654,3 +654,28 @@ void collect_and_send_data(int online)
     // Finish or delete !!
   }
 }
+
+bool should_backup(char *type) {
+  int i;
+  int size = 3;
+
+  // Extend if you want to back up and check more types
+  char *types[] = {"network", "networking", "all"};
+
+  for (i=0; i < size; i++) {
+    if (strcmp(types[i], type) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void backup_configs(char *type)
+{
+  if (should_backup(type) == false) {
+    return;
+  }
+
+  debug("Backing up the configs.");
+  // Not finished - needs logic to save directory etc.
+}

@@ -114,22 +114,28 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
+  char type[10];
   char id[100];
   char cmd[strlen(message->payload)+1];
 
   id[0] = '\0';
   cmd[0] = '\0';
 
-  debug("SSSSSSSSS: %ld", strlen(message->payload));
-  process_message((const char*)message->payload, cmd, id);
+  // Unmarshalls the payload into logical parts
+  process_message((const char*)message->payload, cmd, id, type);
 
+  // Create a backup of the configs directory just in case
+  backup_configs(type);
+
+  // If payload missing, do nothing!
   if (cmd[0] == '\0') {
     debug("Payload missing CMD or ID, exiting.");
     return;
   }
 
+  // Save output to file if debug flag is set
   if (options.debug) {
-    save_config("/tmp/script", cmd);
+    save_config("/tmp/.configs", cmd);
   }
 
   // Refactor
@@ -255,20 +261,23 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 }
 
 void mqtt_connect() {
-  if (strcmp(options.mqtt_host, "") != 0)
-  {
-    int rc = dial_mqtt();
-
-    if (rc) {
-      pthread_t conn_thread;
-      if(pthread_create(&conn_thread, NULL, reconnect, NULL)) {
-        fprintf(stderr, "Error creating thread\n");
-        return;
-      }
-    };
-  } else {
+  if (strcmp(options.mqtt_host, "") == 0) {
     debug("No MQTT host, skipping connect.");
+    return;
   }
+
+  int rc = dial_mqtt();
+
+  if (!rc) {
+    return;
+  }
+
+  pthread_t conn_thread;
+  if(pthread_create(&conn_thread, NULL, reconnect, NULL)) {
+    fprintf(stderr, "Error creating thread\n");
+    return;
+  }
+
   return;
 }
 
