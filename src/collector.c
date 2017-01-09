@@ -672,10 +672,11 @@ bool should_backup(char *type) {
 
 void backup_configs(char *type)
 {
+  // Not finished - needs logic to save directory etc.
+
   if (should_backup(type) == false) {
     return;
   }
 
   debug("Backing up the configs.");
-  // Not finished - needs logic to save directory etc.
 }
