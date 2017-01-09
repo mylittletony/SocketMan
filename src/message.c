@@ -53,11 +53,10 @@ void process_message(const char *msg, char *cmd, char *id)
                 case json_type_array:
                 case json_type_object:
                 case json_type_string:
-                  if (strcmp(keym, "msg") == 0) {
+                  if (strcmp(keym, "msg") == 0)
                     strcpy(cmd, json_object_get_string(valm));
-                    debug("A: %ld", strlen(cmd));
-                    /* break; */
-                  }
+                  if (strcmp(keym, "type") == 0)
+                    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxx %s", keym);
               }
             }
           }
