@@ -50,36 +50,37 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
 
   mosquitto_subscribe(mosq, NULL, topic, options.qos);
 
-  if (strcmp(options.topic, "") != 0) {
-
-    json_object *jobj = json_object_new_object();
-    json_object *jmeta = json_object_new_object();
-
-    // refactor
-    json_object_object_add(jobj, "app", json_object_new_string("socketman"));
-    json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
-    json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
-    json_object_object_add(jmeta, "online", json_object_new_string("1"));
-    /* json_object_object_add(jmeta, "msg", json_object_new_string("Device online")); */
-    json_object_object_add(jmeta, "client_id", json_object_new_string(id));
-    json_object_object_add(jobj, "meta", jmeta);
-
-    const char *resp = json_object_to_json_string(jobj);
-
-    // refactor and de-dup
-    char topic[128];
-
-    // Status at the front is just for status / online / offline updates
-    strcpy(topic, "status/");
-    strcat(topic, options.topic);
-    strcat(topic, "/");
-    strcat(topic, options.key);
-    strcat(topic, "/");
-    strcat(topic, options.mac);
-
-    mosquitto_publish(mosq, 0, topic, strlen(resp), resp, 1, false);
-    json_object_put(jobj);
+  if (strcmp(options.topic, "") == 0) {
+    return;
   }
+
+  json_object *jobj = json_object_new_object();
+  json_object *jmeta = json_object_new_object();
+
+  // refactor
+  json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+  json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+  json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
+  json_object_object_add(jmeta, "online", json_object_new_string("1"));
+  /* json_object_object_add(jmeta, "msg", json_object_new_string("Device online")); */
+  json_object_object_add(jmeta, "client_id", json_object_new_string(id));
+  json_object_object_add(jobj, "meta", jmeta);
+
+  const char *resp = json_object_to_json_string(jobj);
+
+  // refactor and de-dup
+  char topic_a[128];
+
+  // Status at the front is just for status / online / offline updates
+  strcpy(topic_a, "status/");
+  strcat(topic_a, options.topic);
+  strcat(topic_a, "/");
+  strcat(topic_a, options.key);
+  strcat(topic_a, "/");
+  strcat(topic_a, options.mac);
+
+  mosquitto_publish(mosq, 0, topic_a, strlen(resp), resp, 1, false);
+  json_object_put(jobj);
 }
 
 static char *rand_string(char *str, char *prefix, size_t size)
@@ -110,7 +111,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   debug("Message received at %lld", (long long)now);
 
   char id[100];
-  char cmd[10240];
+  char cmd[1024];
   id[0] = '\0';
   cmd[0] = '\0';
 
