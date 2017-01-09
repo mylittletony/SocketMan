@@ -111,7 +111,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   debug("Message received at %lld", (long long)now);
 
   char id[100];
-  char cmd[102400];
+  char cmd[10240];
   id[0] = '\0';
   cmd[0] = '\0';
 
