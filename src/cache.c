@@ -8,9 +8,11 @@
 #include <unistd.h>
 #include "zlib.h"
 #include <assert.h>
+#include <http.h>
 
 #define CHUNK 16384
 #define CACHE_FILE "/etc/sm-cache/cache"
+#define CACHE_ARCHIVE "/tmp/.archive"
 
 int compress_cache()
 {
@@ -28,7 +30,7 @@ int compress_cache()
     return ret;
 
   FILE *source = fopen(CACHE_FILE, "rb");
-  FILE *dest = fopen("/tmp/cache.comp", "wb");
+  FILE *dest = fopen(CACHE_ARCHIVE, "wb");
   if (!source || !dest) return -1;
 
   do {
@@ -101,8 +103,12 @@ void send_cache()
   }
 
   int ret = compress_cache();
-  if (ret != Z_OK)
-    debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+  if (ret != Z_OK) {
+    debug("Could not compress the file, returning.");
+    return;
+  }
+
+  post_cache(CACHE_ARCHIVE);
 
   return;
 }

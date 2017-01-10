@@ -631,12 +631,12 @@ void collect_data(int online)
       ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
   // Should try and post, even if not online //
-  if (post(jobj)) {
-    send_cache();
-    /* if success / online */
-  } else {
-    // Cache
-  }
+  /* if (post(jobj)) { */
+  send_cache();
+  /*   /1* if success / online *1/ */
+  /* } else { */
+  /*   // Cache */
+  /* } */
 
   run_cleanup(info);
   json_object_put(jobj);

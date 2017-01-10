@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 
 int post(json_object *json);
+int post_cache(char *file);
 int run_init(char *f, char *m, char * mac);
 void send_boot_message();
 void append_url_token(char *url, char *buf);
