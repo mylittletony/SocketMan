@@ -225,29 +225,39 @@ int post_cache(char *file)
 
   struct curl_slist *headers = NULL;
 
-  headers = curl_slist_append(headers, "Accept: application/json");
-  headers = curl_slist_append(headers, "Content-Type: application/json");
+  /* headers = curl_slist_append(headers, "Accept: application/json"); */
+  /* headers = curl_slist_append(headers, "Content-Type: application/json"); */
+  /* headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded"); */
 
   /* struct CurlResponse c; */
   /* init_chunk(&c); */
 
   /* curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); */
   /* curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c); */
-  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
-  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+  /* curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers); */
+  /* curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""); */
+  /* curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot"); */
+  /* curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L); */
+  /* curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem"); */
+  /* curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE); */
 
-  file = "/tmp/test.gz";
+  /* file = "/tmp/test.gz"; */
+  /* file = "/tmp/test"; */
   /* file = "/etc/sm-cache/cache"; */
-  /* file = "/tmp/.archive"; */
+  file = "/tmp/.archive";
 
-  curl_formadd(&post, &last, CURLFORM_COPYNAME, "data",
+  /* curl_formadd(&post, */
+  /*     &last, */
+  /*     CURLFORM_COPYNAME, "serial", */
+  /*     CURLFORM_COPYCONTENTS, "xxxxxxxxxxxxxxxxxxxxxxxxxx", */
+  /*     CURLFORM_END); */
+
+  curl_formadd(&post, &last, CURLFORM_COPYNAME, "xxx",
       CURLFORM_FILE, file, CURLFORM_END);
 
   curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+
+  /* curl_easy_setopt(curl, CURLOPT_HTTPPOST, post); */
 
   /* if (options.nocompress == 1) { */
   /*   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData); */

@@ -10,9 +10,25 @@
 #include <assert.h>
 #include <http.h>
 
-#define CHUNK 16384
+//#define CHUNK 16384
 #define CACHE_FILE "/etc/sm-cache/cache"
 #define CACHE_ARCHIVE "/tmp/.archive"
+
+#define CHUNK 0x4000
+
+#define CALL_ZLIB(x) {                                                  \
+  int status;                                                     \
+  status = x;                                                     \
+  if (status < 0) {                                               \
+    fprintf (stderr,                                            \
+        "%s:%d: %s returned a bad status of %d.\n",        \
+        __FILE__, __LINE__, #x, status);                   \
+    exit (EXIT_FAILURE);                                        \
+  }                                                               \
+}
+
+#define windowBits 15
+#define GZIP_ENCODING 16
 
 int compress_cache()
 {
@@ -25,7 +41,12 @@ int compress_cache()
   strm.zalloc = Z_NULL;
   strm.zfree = Z_NULL;
   strm.opaque = Z_NULL;
+  /* ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION); */
   ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
+  /* gret = deflateInit2(&strm, Z_DEFAULT_COMPRESSION); */
+
+  ret = deflateInit2 (&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, GZIP_ENCODING, 8, Z_DEFAULT_STRATEGY);
+
   if (ret != Z_OK)
     return ret;
 
