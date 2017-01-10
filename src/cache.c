@@ -48,6 +48,7 @@ int compress_cache()
   ret = deflateInit2 (&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, GZIP_ENCODING, 8, Z_DEFAULT_STRATEGY);
 
   if (ret != Z_OK)
+    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     return ret;
 
   FILE *source = fopen(CACHE_FILE, "rb");
@@ -117,19 +118,47 @@ void cache(const char *postData)
   fclose(out);
 }
 
+static void strm_init (z_stream * strm)
+{
+  strm->zalloc = Z_NULL;
+  strm->zfree  = Z_NULL;
+  strm->opaque = Z_NULL;
+  CALL_ZLIB (deflateInit2 (strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED,
+        windowBits | GZIP_ENCODING, 8,
+        Z_DEFAULT_STRATEGY));
+}
+
 void send_cache()
 {
   if( access( CACHE_FILE, F_OK ) == -1 ) {
     return;
   }
 
-  int ret = compress_cache();
-  if (ret != Z_OK) {
-    debug("Could not compress the file, returning.");
-    return;
+  char *message = "test";
+  unsigned char out[CHUNK];
+  z_stream strm;
+  strm_init (& strm);
+  strm.next_in = (unsigned char *) message;
+  strm.avail_in = strlen (message);
+  do {
+    int have;
+    strm.avail_out = CHUNK;
+    strm.next_out = out;
+    CALL_ZLIB (deflate (& strm, Z_FINISH));
+    have = CHUNK - strm.avail_out;
+    fwrite (out, sizeof (char), have, stdout);
   }
+  while (strm.avail_out == 0);
+  deflateEnd (& strm);
 
-  post_cache(CACHE_ARCHIVE);
+
+/*   int ret = compress_cache(); */
+/*   if (ret != Z_OK) { */
+/*     debug("Could not compress the file, returning."); */
+/*     return; */
+/*   } */
+
+  /* post_cache(CACHE_ARCHIVE); */
 
   return;
 }
