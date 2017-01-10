@@ -10,85 +10,18 @@
 #include <assert.h>
 #include <http.h>
 
-//#define CHUNK 16384
 #define CACHE_FILE "/etc/sm-cache/cache"
-#define CACHE_ARCHIVE "/tmp/.archive"
-
+#define CACHE_ARCHIVE "/tmp/data.gz"
 #define CHUNK 0x4000
-
-#define CALL_ZLIB(x) {                                                  \
-  int status;                                                     \
-  status = x;                                                     \
-  if (status < 0) {                                               \
-    fprintf (stderr,                                            \
-        "%s:%d: %s returned a bad status of %d.\n",        \
-        __FILE__, __LINE__, #x, status);                   \
-    exit (EXIT_FAILURE);                                        \
-  }                                                               \
-}
-
 #define windowBits 15
 #define GZIP_ENCODING 16
 
-int compress_cache()
-{
-  int ret, flush;
-  unsigned have;
-  z_stream strm;
-  unsigned char in[CHUNK];
-  unsigned char out[CHUNK];
-
-  strm.zalloc = Z_NULL;
-  strm.zfree = Z_NULL;
-  strm.opaque = Z_NULL;
-  /* ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION); */
-  ret = deflateInit(&strm, Z_DEFAULT_COMPRESSION);
-  /* gret = deflateInit2(&strm, Z_DEFAULT_COMPRESSION); */
-
-  ret = deflateInit2 (&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, GZIP_ENCODING, 8, Z_DEFAULT_STRATEGY);
-
-  if (ret != Z_OK)
-    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    return ret;
-
-  FILE *source = fopen(CACHE_FILE, "rb");
-  FILE *dest = fopen(CACHE_ARCHIVE, "wb");
-  if (!source || !dest) return -1;
-
-  do {
-    strm.avail_in = fread(in, 1, CHUNK, source);
-    if (ferror(source)) {
-      (void)deflateEnd(&strm);
-      return Z_ERRNO;
-    }
-    flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
-    strm.next_in = in;
-
-    do {
-      strm.avail_out = CHUNK;
-      strm.next_out = out;
-      ret = deflate(&strm, flush);
-      assert(ret != Z_STREAM_ERROR);
-      have = CHUNK - strm.avail_out;
-      if (fwrite(out, 1, have, dest) != have || ferror(dest)) {
-        (void)deflateEnd(&strm);
-        return Z_ERRNO;
-      }
-    } while (strm.avail_out == 0);
-    assert(strm.avail_in == 0);
-
-  } while (flush != Z_FINISH);
-  assert(ret == Z_STREAM_END);
-
-  (void)deflateEnd(&strm);
-  return Z_OK;
-}
+int compress_cache();
 
 void cache(const char *postData)
 {
 
   struct stat st = {0};
-  /* char *f = */
 
   if (stat("/etc/sm-cache", &st) == -1) {
     mkdir("/etc/sm-cache", 0755);
@@ -118,14 +51,15 @@ void cache(const char *postData)
   fclose(out);
 }
 
-static void strm_init (z_stream * strm)
+int strm_init (z_stream * strm)
 {
   strm->zalloc = Z_NULL;
   strm->zfree  = Z_NULL;
   strm->opaque = Z_NULL;
-  CALL_ZLIB (deflateInit2 (strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED,
+  int ret = deflateInit2 (strm, Z_BEST_COMPRESSION, Z_DEFLATED,
         windowBits | GZIP_ENCODING, 8,
-        Z_DEFAULT_STRATEGY));
+        Z_DEFAULT_STRATEGY);
+  return ret;
 }
 
 void send_cache()
@@ -134,32 +68,51 @@ void send_cache()
     return;
   }
 
-  char *message = "test";
-  unsigned char out[CHUNK];
-  z_stream strm;
-  strm_init (& strm);
-  strm.next_in = (unsigned char *) message;
-  strm.avail_in = strlen (message);
-  do {
-    int have;
-    strm.avail_out = CHUNK;
-    strm.next_out = out;
-    CALL_ZLIB (deflate (& strm, Z_FINISH));
-    have = CHUNK - strm.avail_out;
-    fwrite (out, sizeof (char), have, stdout);
+  int ret = compress_cache();
+
+  if (ret < Z_OK) {
+    debug("Could not compress the file, returning.");
+    return;
   }
-  while (strm.avail_out == 0);
-  deflateEnd (& strm);
 
-
-/*   int ret = compress_cache(); */
-/*   if (ret != Z_OK) { */
-/*     debug("Could not compress the file, returning."); */
-/*     return; */
-/*   } */
-
-  /* post_cache(CACHE_ARCHIVE); */
+  post_cache(CACHE_ARCHIVE);
 
   return;
 }
 
+int compress_cache()
+{
+  int ret = Z_OK;
+  z_stream strm;
+
+  Byte *ibuf, *obuf;
+  FILE *ifp = fopen(CACHE_FILE, "r");
+  FILE *ofp = fopen(CACHE_ARCHIVE, "w");
+
+  ibuf = (Byte *)calloc(CHUNK, sizeof(Byte));
+  obuf = (Byte *)calloc(CHUNK, sizeof(Byte));
+  fread(ibuf, CHUNK, 1, ifp);
+
+  strm.zalloc = Z_NULL;
+  strm.zfree = Z_NULL;
+  strm.opaque = Z_NULL;
+
+  ret = strm_init (& strm);
+  if (ret != Z_OK)
+    return ret;
+
+  strm.next_in = ibuf;
+  strm.avail_in = CHUNK;
+  strm.next_out = obuf;
+  strm.avail_out = CHUNK;
+
+  ret = deflate(&strm, Z_FINISH);
+
+  fwrite(obuf, strm.total_out, 1, ofp);
+
+  deflateEnd(&strm);
+  fclose(ofp);
+  fclose(ifp);
+
+  return ret;
+}

@@ -201,19 +201,15 @@ cleanup:
 int post_cache(char *file)
 {
 
-  /* if (strcmp(options.stats_url, "") == 0) { */
-  /*   return 0; */
-  /* } */
+  if (strcmp(options.stats_url, "") == 0) {
+    return 0;
+  }
 
   struct curl_httppost* post = NULL;
   struct curl_httppost* last = NULL;
-  /* char namebuffer[] = "name buffer"; */
 
   CURL *curl;
   char url[255];
-  /* Byte *compr; */
-  /* uLong comprLen = 10000*sizeof(int); */
-  /* const char *postData = json_object_to_json_string(json); */
 
   append_url_token(options.stats_url, url);
 
@@ -225,115 +221,43 @@ int post_cache(char *file)
 
   struct curl_slist *headers = NULL;
 
-  /* headers = curl_slist_append(headers, "Accept: application/json"); */
-  /* headers = curl_slist_append(headers, "Content-Type: application/json"); */
-  /* headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded"); */
+  headers = curl_slist_append(headers, "Content-Encoding: gzip");
 
-  /* struct CurlResponse c; */
-  /* init_chunk(&c); */
+  struct CurlResponse c;
+  init_chunk(&c);
 
   /* curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); */
   /* curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c); */
-  /* curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers); */
-  /* curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""); */
-  /* curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot"); */
-  /* curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L); */
-  /* curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem"); */
-  /* curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE); */
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-  /* file = "/tmp/test.gz"; */
-  /* file = "/tmp/test"; */
-  /* file = "/etc/sm-cache/cache"; */
-  file = "/tmp/.archive";
+  file = "/tmp/data.gz";
 
-  /* curl_formadd(&post, */
-  /*     &last, */
-  /*     CURLFORM_COPYNAME, "serial", */
-  /*     CURLFORM_COPYCONTENTS, "xxxxxxxxxxxxxxxxxxxxxxxxxx", */
-  /*     CURLFORM_END); */
-
-  curl_formadd(&post, &last, CURLFORM_COPYNAME, "xxx",
+  curl_formadd(&post, &last, CURLFORM_COPYNAME, "data",
       CURLFORM_FILE, file, CURLFORM_END);
 
   curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
 
-  /* curl_easy_setopt(curl, CURLOPT_HTTPPOST, post); */
-
-  /* if (options.nocompress == 1) { */
-  /*   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData); */
-  /* } else { */
-
-  /*   debug("Compressing the payload..."); */
-  /*   compr = (Byte*)calloc((uInt)comprLen, 1); */
-  /*   if (compr == Z_NULL) { */
-  /*     printf("out of memory\n"); */
-  /*     return 0; */
-  /*   } */
-
-  /*   int err; */
-  /*   uLong len = (uLong)strlen(postData)+1; */
-
-  /*   err = compress(compr, &comprLen, (const Bytef*)postData, len); */
-  /*   if (err != Z_OK) { */
-  /*     debug("Error compressing data"); */
-  /*     return 0; */
-  /*   } */
-
-  /*   headers = curl_slist_append(headers, "Content-Encoding: zlib"); */
-  /*   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, compr); */
-  /*   curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, comprLen); */
-  /* } */
-
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx %s", file);
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-
   long resp = do_curl(curl, url);
-  /* if () { */
-
-  /* } */
+  debug("Data sent (%ld)", resp);
 
   if (resp == 0) {
-    /* goto offline; */
+    goto cleanup;
   }
 
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxx %ld", resp);
-  /* if (resp != 200 && resp != 201 && resp != 401) { */
-  /*   debug("Could not connect to %s (%ld), trying backup.", options.stats_url, resp); */
-  /*   long tmp = post_backup(curl); */
-  /*   if (tmp != 0) { */
-  /*     resp = tmp; */
-  /*   } */
-  /* } */
-
-  /* if ((resp == 200 || resp == 201) && c.size > 0) { */
-  /*   debug("Stats successfully sent (%ld)", resp); */
-  /*   process_response(c.memory); */
-  /*   free(c.memory); */
-  /*   c.memory = NULL; */
-  /* } */
-
-  /* // Exit monitor and poll for a config */
-  /* if (resp == 401) { */
-  /*   debug("This device is not authorized."); */
-  /*   options.initialized = 0; */
-  /* } */
+  // Delete the file, no matter what. This saves from
+  // sending over and over and over and over and over
+  // in the event the backend responds with a non-20x
+  debug("Stats successfully sent (%ld)", resp);
+  int del = unlink(file);
+  if(del != 0) {
+    printf("File can not be deleted!");
+  }
 
   goto cleanup;
-
-/* offline: */
-  /* cache(postData); */
-  /* goto cleanup; */
 
 cleanup:
   curl_easy_cleanup(curl);
