@@ -81,7 +81,8 @@ void send_cached()
     printf("Archive could not be deleted!");
   }
 
-  if (run > 0) {
+  // run == the returned value from the api
+  if (run == 0) {
     return;
   }
 

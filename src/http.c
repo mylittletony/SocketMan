@@ -198,16 +198,13 @@ int post_cache()
   struct CurlResponse c;
   init_chunk(&c);
 
-  /* curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); */
-  /* curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c); */
-
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
   curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-  /* file = "/tmp/data.gz"; */
 
   curl_formadd(&post, &last, CURLFORM_COPYNAME, "data",
       CURLFORM_FILE, options.archive, CURLFORM_END);
@@ -248,7 +245,7 @@ cleanup:
   curl_easy_cleanup(curl);
   curl_global_cleanup();
   curl_slist_free_all(headers);
-  return 0;
+  return resp;
 }
 
 int run_init(char *f, char *m, char *mac) {
