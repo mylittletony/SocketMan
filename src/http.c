@@ -242,14 +242,6 @@ int post_cache()
     debug("This device is not authorized.");
     options.initialized = 0;
   }
-  // Delete the file, no matter what. This saves from
-  // sending over and over and over and over and over
-  // in the event the backend responds with a non-20x
-  /* debug("Stats successfully sent (%ld)", resp); */
-  /* int del = unlink(file); */
-  /* if(del != 0) { */
-  /*   printf("File can not be deleted!"); */
-  /* } */
 
   goto cleanup;
 
