@@ -17,9 +17,11 @@ struct _options {
   char cacrt[18];
   char mac_file[128];
   char init[128];
+  char cache[28];
+  char archive[28];
   char *id;
   int timeout;
-  int nocompress;
+  int nocache;
   int port;
   int debug;
   int insecure;

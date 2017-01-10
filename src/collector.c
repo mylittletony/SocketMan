@@ -29,7 +29,8 @@ struct radio_list
   struct radio_list *next;
 };
 
-int should_collect() {
+// Only send the data once per heartbeat cycle
+int should_send() {
   time_t now = time(NULL);
   int diff = now - last_collect;
   if (last_collect == 0 || diff >= options.heartbeat) {
@@ -543,9 +544,6 @@ void collect_data(int online)
   json_object_object_add(jattr, "firmware", jfirmware);
 #endif
 
-  json_object *jserial = json_object_new_string("simon says");
-  json_object_object_add(jattr, "serial", jserial);
-
   if (strcmp(dr.if_name, "") != 0) {
     json_object *jwan_name = json_object_new_string(dr.if_name);
     json_object_object_add(jattr, "wan_name", jwan_name);
@@ -618,7 +616,7 @@ void collect_data(int online)
   format_splash(jsplash_array);
   json_object_object_add(jobj, "splash", jsplash_array);
 
-  // MISSING!!!!!!!
+  // MISSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // INTERFACES
   // CAPS
   // MQTT STATUS
@@ -630,28 +628,37 @@ void collect_data(int online)
       ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
       ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
-  // Should try and post, even if not online //
-  /* if (post(jobj)) { */
-  send_cache();
-  /*   /1* if success / online *1/ */
-  /* } else { */
-  /*   // Cache */
-  /* } */
+  // Cache the results even if we have no-cache enabled at the mo
+  const char *jdata = json_object_to_json_string(jobj);
+  cache(jdata);
 
+  // Even if the box is offline, try and send the cache
+  // in case it's actually online again since collection.
+
+  if (should_send() == 0) {
+    goto cleanup;
+  }
+
+  // Send the data if we don't want compression and offline record
+  // Or, cache the data and send. Nice. Use nocache in testing only
+  if (options.nocache) {
+    post_json(jdata);
+  } else {
+    send_cached();
+  }
+  goto cleanup;
+
+cleanup:
   run_cleanup(info);
   json_object_put(jobj);
 }
 
-void post_data() {
-  debug("sending the datas!");
-}
-
 void collect_and_send_data(int online)
 {
-  if (should_collect()) {
-    collect_data(online);
-  } else if (unauthorized()) {
-    // Finish or delete !!
+  collect_data(online);
+
+  // Finish or delete !! Always returns 0
+  if (unauthorized()) {
   }
 }
 

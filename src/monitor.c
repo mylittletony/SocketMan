@@ -67,6 +67,8 @@ void go_offline(int reason) {
   debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason);
 
   attempt_recovery();
+
+  // Offline collection
   collect_and_send_data(online);
   restart_or_reboot();
 }
@@ -159,11 +161,13 @@ void recover_connection() {
 
 void backup_config()
 {
+  // TODO Needs to NOT backup each time
   if (copy_file(NETWORK_FILE, NETWORK_BAK)) {
     debug("Backing up %s config to %s ", NETWORK_FILE, NETWORK_BAK);
     return;
   }
   debug("Could not backup the network config!");
+  return;
 }
 
 void heartbeat()
@@ -174,8 +178,11 @@ void heartbeat()
     recover_connection();
   }
   backup_config();
+
+  // We're always online in here, that's why we send 1 to collect and send
   collect_and_send_data(1);
 
+  // Will exit fast if the device isn't initialized. Helps fast init.
   if (options.initialized) {
     debug("Sleeping for %d seconds.", options.monitor);
     sleep(options.monitor);

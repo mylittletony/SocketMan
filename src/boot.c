@@ -59,8 +59,8 @@ void parse_config(char *buffer)
         case json_type_int:
           if (strcmp(key, "debug") == 0)
             options.debug = 1;
-          if (strcmp(key, "no-compress") == 0)
-            options.nocompress = json_object_get_int(val);
+          if (strcmp(key, "no-cache") == 0)
+            options.nocache = json_object_get_int(val);
           if (strcmp(key, "scan") == 0)
             options.scan = json_object_get_int(val);
           if (strcmp(key, "rest") == 0)
@@ -103,6 +103,8 @@ void parse_config(char *buffer)
             strcpy(options.stats_url, json_object_get_string(val));
           if (strcmp(key, "backup_stats_url") == 0)
             strcpy(options.backup_stats_url, json_object_get_string(val));
+          if (strcmp(key, "cache") == 0)
+            strcpy(options.cache, json_object_get_string(val));
           if (strcmp(key, "health_url") == 0)
             strcpy(options.health_url, json_object_get_string(val));
           if (strcmp(key, "boot_url") == 0)
@@ -142,6 +144,13 @@ void parse_config(char *buffer)
   if (strcmp(options.health_url, "") == 0)
     strcpy(options.health_url, "health.cucumberwifi.io");
 
+  if (strcmp(options.cache, "") == 0)
+    strcpy(options.cache, "/etc/sm-data");
+
+  // Not in the options yet
+  if (strcmp(options.archive, "") == 0)
+    strcpy(options.archive, "/tmp/archive.gz");
+
   if (!options.health_port)
     options.health_port = 53;
 
@@ -151,15 +160,17 @@ void parse_config(char *buffer)
 
 void boot_cmd()
 {
-  if (strcmp(options.boot_cmd, "0") != 0) {
-    FILE * fp = popen(options.boot_cmd, "r");
-    if ( fp == 0 ) {
-      fprintf(stderr, "Could not execute cmd\n");
-      return;
-    }
-    debug("Running boot CMD");
-    pclose(fp);
+  if (strcmp(options.boot_cmd, "0") == 0) {
+    return;
   }
+
+  FILE * fp = popen(options.boot_cmd, "r");
+  if ( fp == 0 ) {
+    fprintf(stderr, "Could not execute cmd\n");
+    return;
+  }
+  debug("Running boot CMD");
+  pclose(fp);
 }
 
 void pre_boot_cb()
@@ -191,7 +202,8 @@ void run_socketman()
 
   debug("Exiting main loop - go into the config block");
 
-  install(); // <--------------------- test
+  // Inits the device from CT
+  install();
 
   return;
 }

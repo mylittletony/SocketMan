@@ -1,7 +1,4 @@
-/* #include <stdlib.h> */
-/* #include <stddef.h> */
-/* #include <stdio.h> */
-/* #include <string.h> */
+#include <options.h>
 #include "dbg.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -10,25 +7,24 @@
 #include <assert.h>
 #include <http.h>
 
-#define CACHE_FILE "/etc/sm-cache/cache"
-#define CACHE_ARCHIVE "/tmp/data.gz"
-#define CHUNK 0x4000
+// GZIP compression
 #define windowBits 15
 #define GZIP_ENCODING 16
+#define CHUNK 0x4000
 
 int compress_cache();
 
 void cache(const char *postData)
 {
 
-  struct stat st = {0};
+  // Should create the folder for the cache if it doesn't exist?
+  /* struct stat st = {0}; */
+  /* if (stat("/etc/sm-cache", &st) == -1) { */
+  /*   mkdir("/etc/sm-cache", 0755); */
+  /* } */
 
-  if (stat("/etc/sm-cache", &st) == -1) {
-    mkdir("/etc/sm-cache", 0755);
-  }
-
-  debug("save the datas! %s", postData);
-  FILE *out = fopen(CACHE_FILE, "a");
+  debug("Caching the datas!");
+  FILE *out = fopen(options.cache, "a");
 
   if(out == NULL) {
     perror("Error opening file.");
@@ -38,7 +34,7 @@ void cache(const char *postData)
   unsigned long sz = (unsigned long)ftell(out);
   fseek(out, 0, SEEK_SET);
 
-  debug("FILE SIZE: %ld", sz);
+  /* debug("FILE SIZE: %ld", sz); */
 
   if (sz > 100000) {
     debug("Cache is getting large, not writing...");
@@ -62,9 +58,11 @@ int strm_init (z_stream * strm)
   return ret;
 }
 
-void send_cache()
+void send_cached()
 {
-  if( access( CACHE_FILE, F_OK ) == -1 ) {
+
+  if( access( options.cache, F_OK ) == -1 ) {
+    debug("No cache file, not sending...");
     return;
   }
 
@@ -75,7 +73,24 @@ void send_cache()
     return;
   }
 
-  post_cache(CACHE_ARCHIVE);
+  int run = post_cache(options.archive);
+
+  // Remove the archive whatever the result
+  int del = unlink(options.archive);
+  if (del != 0) {
+    printf("Archive could not be deleted!");
+  }
+
+  if (run > 0) {
+    return;
+  }
+
+  // delete the archive every run but leave the cache
+  // in place just in case it fails
+  del = unlink(options.cache);
+  if(del != 0) {
+    printf("File can not be deleted!");
+  }
 
   return;
 }
@@ -86,8 +101,8 @@ int compress_cache()
   z_stream strm;
 
   Byte *ibuf, *obuf;
-  FILE *ifp = fopen(CACHE_FILE, "r");
-  FILE *ofp = fopen(CACHE_ARCHIVE, "w");
+  FILE *ifp = fopen(options.cache, "r");
+  FILE *ofp = fopen(options.archive, "w");
 
   ibuf = (Byte *)calloc(CHUNK, sizeof(Byte));
   obuf = (Byte *)calloc(CHUNK, sizeof(Byte));
