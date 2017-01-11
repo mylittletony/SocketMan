@@ -23,4 +23,3 @@
 #elif defined __posix
     // POSIX
 #endif
-

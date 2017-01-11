@@ -22,6 +22,7 @@
 #include "helper.h"
 #include <syslog.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "options.h"
 #include "collector.h"
 #include "boot.h"
@@ -260,6 +261,9 @@ int main( int argc,char **argv)
 
   validate_options();
 
+  const char* s = getenv("VERSION");
+
+  debug("ssssssss %s", s);
   if (strcmp(OS, "OPENWRT") == 0)
     debug("I am an OpenWRT box, yay!");
 
