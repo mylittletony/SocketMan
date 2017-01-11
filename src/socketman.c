@@ -263,7 +263,7 @@ int main( int argc,char **argv)
 
   /* const char* s = getenv("VERSION"); */
 
-  debug("ssssssss %s", VERSION);
+  debug("ssssssss %s", CT_VERSION);
   if (strcmp(OS, "OPENWRT") == 0)
     debug("I am an OpenWRT box, yay!");
 
