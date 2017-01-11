@@ -261,9 +261,9 @@ int main( int argc,char **argv)
 
   validate_options();
 
-  const char* s = getenv("VERSION");
+  /* const char* s = getenv("VERSION"); */
 
-  debug("ssssssss %s", s);
+  debug("ssssssss %s", VERSION);
   if (strcmp(OS, "OPENWRT") == 0)
     debug("I am an OpenWRT box, yay!");
 
