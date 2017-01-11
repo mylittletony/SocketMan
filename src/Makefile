@@ -1,7 +1,6 @@
 # CC=gcc
 IDIR = "./includes"
 INCLUDES = "-I/usr/include/libnl3"
-#CFLAGS=-g -O2 -Wall -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS) -I$(IDIR) -I$(INCLUDES)
 CFLAGS= -g -O2 -Wall -Wextra -Isrc -I$(IDIR) $(INCLUDES) $(CT_ARCH) -DCT_VERSION='"$(CT_VERSION)"'
 
 ODIR=obj
@@ -17,10 +16,6 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 SOURCES=$(wildcard *.c src/**/*.c src/*.c)
 OBJECTS=$(patsubst %.c,$(ODIR)/%.o,$(SOURCES))
-
-# $(TARGET): build $(OBJECTS)
-# 	ar rcs $@ $(OBJECTS)
-# 	ranlib $@
 
 $(ODIR)/%.o: %.c $(DEPS)
 	@mkdir -p obj

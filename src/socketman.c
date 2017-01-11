@@ -235,10 +235,6 @@ int main( int argc,char **argv)
         strcpy(options.key, optarg);
         break;
 
-        /* case 'q': */
-        /*   qos = atoi(optarg); */
-        /*   break; */
-
       case 'C':
         strcpy(options.config, optarg);
         break;
