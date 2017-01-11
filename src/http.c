@@ -62,10 +62,10 @@ void append_url_token(char *url, char *buf)
     strcat(buf, "&mac=");
     strcat(buf, options.mac);
   }
-#ifdef __CT_VERSION__
+  if (strcmp(CT_VERSION, "") != 0) {
     strcat(buf, "&v=");
-    strcat(buf, options.mac);
-#endif
+    strcat(buf, CT_VERSION);
+  }
 }
 
 long do_curl(CURL *curl, char *url)
