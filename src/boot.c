@@ -129,16 +129,20 @@ void parse_config(char *buffer)
   // Check and set some defaults vals
 
   // How often to check the network connection
-  if (options.monitor < 5)
-    options.monitor = 30;
+  if (options.monitor <= 15) {
+    debug("Setting monitor flag to 15 seconds, not %d", options.monitor);
+    options.monitor = 15;
+  };
 
   // How often to collect and send data
   if (options.heartbeat < options.monitor)
     options.heartbeat = options.monitor * 2;
 
   // Reboot after N seconds offline
-  if (options.reboot < 600)
-    options.reboot = 600;
+  if (options.reboot < 300) {
+    debug("Setting reboot flag to 300 seconds, not %d", options.reboot);
+    options.reboot = 300;
+  }
 
   // Used for the DNS check
   if (strcmp(options.health_url, "") == 0)
