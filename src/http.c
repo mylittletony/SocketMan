@@ -198,8 +198,8 @@ int post_cache()
   struct CurlResponse c;
   init_chunk(&c);
 
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  /* curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); */
+  /* curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c); */
 
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
@@ -217,7 +217,6 @@ int post_cache()
   long resp = do_curl(curl, url);
   debug("Data sent (%ld)", resp);
 
-  // Don't delete the file, just in case
   if (resp == 0) {
     goto cleanup;
   }
