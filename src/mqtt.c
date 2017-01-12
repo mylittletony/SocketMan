@@ -242,6 +242,9 @@ void *reconnect(UNUSED(void *x))
     debug("Unable to connect to %s. Sleeping 15", options.mqtt_host);
     sleep(5);
     // Do the port thing here SM....
+    // check connectivity
+    // if online, change port
+    // Notify tony of port change
     if (!dial_mqtt()) {
       debug("Reconnected to %s, yay!", options.mqtt_host);
       break;
