@@ -166,6 +166,18 @@ The JSON is quite long so a snippet can be found here:
 
 https://gist.github.com/simonmorley/74f97ba9d267f5eb9eea5c43490ca337
 
+## Building SocketMan
+
+An opkg will be available as soon. In the short-term, you can build SocketMan manually. Consult the examples directory.
+
+## Support
+
+Commercial support is available via Cucumber Tony, please contact the team via your dashboard (https://dashboard.ctapp.io).
+
+Community support is available via the Cucumber discussions:
+
+https://discuss.cucumberwifi.io/c/socketman-openwrt-broker
+
 ## Notes
 
 To obtain the IP and device name for a station, we currently read the DNSMASQ lease file. If it's not present, we can't get the IP, yet. We're working on something to bypass this.
