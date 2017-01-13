@@ -8,7 +8,6 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=SocketMan
 PKG_SOURCE_PROTO:=git
-CT_VERSION=xxxx
 PKG_SOURCE_VERSION:=xxxxxxxxxxxxxxxxx
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)
 PKG_SOURCE_URL:=https://github.com/cucumber-tony/SocketMan.git
