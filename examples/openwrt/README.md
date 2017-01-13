@@ -50,22 +50,22 @@ Collected errors:
  *      curl *  libcurl *       libopenssl *    libmosquitto *
  * opkg_install_cmd: Cannot install package socketman.
  ```
- 
+
  You're missing some dependencies!
- 
+
  ```
  opkg update && \
  opkg install curl libopenssl
  ```
- 
+
  Then try to install things again.
- 
+
  ### Dependencies
- 
+
  - curl
- - json-c 
- - mosquitto 
- - lnl-3 
- - lnl-route-3 
- - lnl-genl-3 
+ - json-c
+ - mosquitto
+ - lnl-3
+ - lnl-route-3
+ - lnl-genl-3
  - lz

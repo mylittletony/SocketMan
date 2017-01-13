@@ -2,13 +2,13 @@
 
 A light-weight daemon, written purely in c, that runs on most OpenWRT, LEDE and other \*nix devices. SocketMan is used at Cucumber Tony to control their global estate of access points and routers.
 
-The project is still being devoloped. A full beta release will be made avaialable soon.
+The project is still being developed. A full beta release will be made available soon.
 
 It performs the following functions:
 
 - It monitors network connectivity.
-- Collects, caches and sends device stats to your chosen API. 
-- Connects via MQTT to your broker and processes inbound jobs. 
+- Collects, caches and sends device stats to your chosen API.
+- Connects via MQTT to your broker and processes inbound jobs.
 - Recovers from network failure.
 
 ## Config
@@ -49,7 +49,7 @@ socketman --config=/etc/config.json
 
 ## Config Options
 
-The many options available to you via the config.json file. 
+The many options available to you via the config.json file.
 
 - username, string. MQTT username
 - password, string. MQTT password
@@ -79,6 +79,14 @@ The many options available to you via the config.json file.
 - boot_cmd, string. Default empty. Run a script on boot.
 - mac_file, string. Default /etc/mac. The file containing your default WAN MAC.
 
+## Initializing the devices
+
+By default, the devices will initialise themselves against the Cucumber API. If you want to change this behaviour, you can run with the -b flag followed by your init. server URL. For example:
+
+```
+socketman --config=/etc/config.json -b https://api.acme-corp.com/init
+```
+
 ## Sending jobs to devices
 
 Ignore this if using with Cucumber. This applies only if you're using your own MQTT broker.
@@ -96,7 +104,7 @@ SocketMan creates a secure tunnel via MQTT to an MQTT broker. The job must be of
 }
 ```
 
-Store the command you want to run in the meta.msg key. An ID is required and used to identifiy the job upon success or fail.
+Store the command you want to run in the meta.msg key. An ID is required and used to identify the job upon success or fail.
 
 The type key is special. If you send a job with type 'network', SocketMan will perform a network connectivity test before and after the job run. In the event of failure, SM will recover.
 
@@ -112,9 +120,9 @@ Where your-topic, your-key and your-mac are defined in the config.json:
 sub/my-topic/my-key/11:22:33:44:55:66
 ```
 
-If you have enabled rest via the options, SocketMan will notify your API whether the job was a success or not. It will also include the output of the command if required. 
+If you have enabled rest via the options, SocketMan will notify your API whether the job was a success or not. It will also include the output of the command if required.
 
-With rest disbled (the default), SocketMan will publish a job back to your MQTT broker instead. This will be published to the following topic:
+With rest disabled (the default), SocketMan will publish a job back to your MQTT broker instead. This will be published to the following topic:
 
 ```
 topic := "pub/" + your-topic + "/" + your-key + "/" + your-mac
@@ -160,7 +168,7 @@ And here's what the JSON looks like.
 
 ### Collector
 
-The collector runs every 15 seconds. It caches the data and POSTs to your API as GZIPPED file. The file contains the JSON collection data shown below. Each entry is appeneded as a new line.
+The collector runs every 15 seconds. It caches the data and POSTs to your API as GZIPPED file. The file contains the JSON collection data shown below. Each entry is appended as a new line.
 
 The JSON is quite long so a snippet can be found here:
 
