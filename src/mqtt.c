@@ -124,8 +124,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Unmarshalls the payload into logical parts
   process_message((const char*)message->payload, cmd, id, type);
 
-  // Create a backup of the configs directory just in case
-  backup_configs(type);
+  // Runs special commands, based on the type of request
+  run_special(type);
 
   // If payload missing, do nothing!
   if (cmd[0] == '\0') {
@@ -134,9 +134,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Save output to file if debug flag is set
-  if (options.debug) {
+  if (options.debug)
     save_config("/tmp/.configs", cmd);
-  }
 
   // Refactor
   char delivery[128];

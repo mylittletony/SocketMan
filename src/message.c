@@ -2,6 +2,7 @@
 #include "notify.h"
 #include "dbg.h"
 #include "options.h"
+#include "collector.h"
 
 // ? too much ?
 #define BUFF_SIZE 100000
@@ -113,4 +114,16 @@ void save_config(char *file, char *msg)
 
   fprintf(f, "%s", msg);
   fclose(f);
+}
+
+void run_special(char *type)
+{
+  if (strcmp(type, "ping") == 0) {
+    debug("Running the ping test brother!");
+    // Run ping
+    return;
+  }
+
+  backup_configs(type);
+  return;
 }
