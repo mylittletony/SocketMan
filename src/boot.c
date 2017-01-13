@@ -71,12 +71,12 @@ void parse_config(char *buffer)
             options.sleep = json_object_get_int(val);
           if (strcmp(key, "port") == 0)
             options.port = json_object_get_int(val);
-          if (strcmp(key, "timeout") == 0)
-            options.timeout = json_object_get_int(val);
+          /* if (strcmp(key, "timeout") == 0) */
+          /*   options.timeout = json_object_get_int(val); */
           if (strcmp(key, "monitor") == 0)
             options.monitor = json_object_get_int(val);
-          if (strcmp(key, "heartbeat") == 0)
-            options.heartbeat = json_object_get_int(val);
+          /* if (strcmp(key, "heartbeat") == 0) */
+          /*   options.heartbeat = json_object_get_int(val); */
           if (strcmp(key, "reboot") == 0)
             options.reboot = json_object_get_int(val);
           if (strcmp(key, "health_port") == 0)
@@ -103,8 +103,8 @@ void parse_config(char *buffer)
             strcpy(options.stats_url, json_object_get_string(val));
           if (strcmp(key, "backup_stats_url") == 0)
             strcpy(options.backup_stats_url, json_object_get_string(val));
-          if (strcmp(key, "cache") == 0)
-            strcpy(options.cache, json_object_get_string(val));
+          /* if (strcmp(key, "cache") == 0) */
+          /*   strcpy(options.cache, json_object_get_string(val)); */
           if (strcmp(key, "health_url") == 0)
             strcpy(options.health_url, json_object_get_string(val));
           if (strcmp(key, "boot_url") == 0)
@@ -126,8 +126,6 @@ void parse_config(char *buffer)
     install();
   }
 
-  // Check and set some defaults vals
-
   // How often to check the network connection
   if (options.monitor <= 15) {
     debug("Setting monitor flag to 15 seconds, not %d", options.monitor);
@@ -135,11 +133,11 @@ void parse_config(char *buffer)
   };
 
   // How often to collect and send data
-  if (options.heartbeat < options.monitor)
-    options.heartbeat = options.monitor * 2;
+  /* if (options.sleep <= options.sleep) */
+  /*   options.sleep = options.monitor * 2; */
 
   // Reboot after N seconds offline
-  if (options.reboot < 300) {
+  if (options.reboot > 0 && options.reboot < 300) {
     debug("Setting reboot flag to 300 seconds, not %d", options.reboot);
     options.reboot = 300;
   }

@@ -33,7 +33,7 @@ struct radio_list
 int should_send() {
   time_t now = time(NULL);
   int diff = now - last_collect;
-  if (last_collect == 0 || diff >= options.heartbeat) {
+  if (last_collect == 0 || diff >= options.sleep) {
     last_collect = time(NULL);
     return 1;
   } else {

@@ -195,9 +195,9 @@ int main( int argc,char **argv)
         strcpy(options.password, optarg);
         break;
 
-      case 's':
-        options.sleep = atoi(optarg);
-        break;
+      /* case 's': */
+      /*   options.sleep = atoi(optarg); */
+      /*   break; */
 
       case 'P':
         options.port = atoi(optarg);
