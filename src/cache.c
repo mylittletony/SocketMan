@@ -17,12 +17,6 @@ int compress_cache();
 void cache(const char *postData)
 {
 
-  // Should create the folder for the cache if it doesn't exist?
-  /* struct stat st = {0}; */
-  /* if (stat("/etc/sm-cache", &st) == -1) { */
-  /*   mkdir("/etc/sm-cache", 0755); */
-  /* } */
-
   debug("Caching the datas!");
   FILE *out = fopen(options.cache, "a");
 
@@ -126,9 +120,12 @@ int compress_cache()
 
   fwrite(obuf, strm.total_out, 1, ofp);
 
-  deflateEnd(&strm);
+  (void)deflateEnd(&strm);
   fclose(ofp);
   fclose(ifp);
+
+  free(ibuf);
+  free(obuf);
 
   return ret;
 }

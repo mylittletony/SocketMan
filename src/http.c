@@ -242,6 +242,10 @@ int post_cache()
   goto cleanup;
 
 cleanup:
+  if (c.memory) {
+    free(c.memory);
+  }
+  curl_formfree(post);
   curl_easy_cleanup(curl);
   curl_global_cleanup();
   curl_slist_free_all(headers);
