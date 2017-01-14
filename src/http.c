@@ -64,7 +64,10 @@ void append_url_token(char *url, char *buf)
   }
   if (strcmp(CT_VERSION, "") != 0) {
     strcat(buf, "&v=");
-    strcat(buf, CT_VERSION);
+    char version[6];
+    snprintf(version, sizeof version, "%.10s", CT_VERSION);
+    debug("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC %s", version);
+    strcat(buf, version);
   }
 }
 

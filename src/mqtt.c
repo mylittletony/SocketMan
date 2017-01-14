@@ -317,12 +317,6 @@ void ping()
   char topic[k+n+19];
   topic_id_generate(topic, options.topic, options.key);
 
-  options.qos = 1;
-  char t[128];
-  strcat(t, options.topic);
-
-  mosquitto_subscribe(mosq, NULL, topic, options.qos);
-
   if (strcmp(options.topic, "") == 0) {
     return;
   }
