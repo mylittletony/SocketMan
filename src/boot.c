@@ -71,12 +71,8 @@ void parse_config(char *buffer)
             options.sleep = json_object_get_int(val);
           if (strcmp(key, "port") == 0)
             options.port = json_object_get_int(val);
-          /* if (strcmp(key, "timeout") == 0) */
-          /*   options.timeout = json_object_get_int(val); */
           if (strcmp(key, "monitor") == 0)
             options.monitor = json_object_get_int(val);
-          /* if (strcmp(key, "heartbeat") == 0) */
-          /*   options.heartbeat = json_object_get_int(val); */
           if (strcmp(key, "reboot") == 0)
             options.reboot = json_object_get_int(val);
           if (strcmp(key, "health_port") == 0)
