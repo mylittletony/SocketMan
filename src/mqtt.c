@@ -185,7 +185,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     fread(buffer, sizeof(char), 51200, fp);
     pclose(fp);
   }
-  if (options.debug)
+  if (options.debug == true)
     debug("%s", buffer);
 
   if (strlen(buffer) == 0) {
