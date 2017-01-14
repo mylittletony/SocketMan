@@ -11,6 +11,7 @@
 #include "collector.h"
 #include "platform.h"
 #include "helper.h"
+#include "mqtt.h"
 
 // When offline, the interval for re-check
 #define OFFLINE_INTERVAL 10
@@ -179,8 +180,11 @@ void heartbeat()
   }
   backup_config();
 
-  // We're always online in here, that's why we send 1 to collect and send
+  // We're always online in here, that's why we send 1 (online)
   collect_and_send_data(1);
+
+  // Tests the connection every 2 heartbeats
+  ping();
 
   // Will exit fast if the device isn't initialized. Helps fast init.
   if (options.initialized) {

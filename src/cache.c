@@ -30,7 +30,7 @@ void cache(const char *postData)
 
   /* debug("FILE SIZE: %ld", sz); */
 
-  if (sz > 100000) {
+  if (sz > 1000000) {
     debug("Cache is getting large, not writing...");
     fclose(out);
     return;

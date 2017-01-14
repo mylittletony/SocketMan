@@ -1,4 +1,6 @@
 void mqtt_connect();
+void ping();
+
 /* int mqtt_alarm; */
 
 /* int connect_timeout; */

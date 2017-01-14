@@ -132,9 +132,13 @@ void parse_config(char *buffer)
     options.monitor = 15;
   };
 
-  // How often to collect and send data
-  /* if (options.sleep <= options.sleep) */
-  /*   options.sleep = options.monitor * 2; */
+  // How often to collect and send data. Ensure greater than monitor
+  if (options.sleep <= options.monitor)
+    options.sleep = options.monitor * 2;
+
+  // Ensure not greater than 5 mins
+  if (options.sleep > 300)
+    options.sleep = 300;
 
   // Reboot after N seconds offline
   if (options.reboot > 0 && options.reboot < 300) {

@@ -18,6 +18,8 @@
 #define M 10
 #define N 100
 
+int last_ping = 0;
+struct mosquitto *mosq = NULL;
 bool connected = false;
 time_t m0=0;
 char id[27];
@@ -241,10 +243,7 @@ void *reconnect(UNUSED(void *x))
   while(!connected) {
     debug("Unable to connect to %s. Sleeping 15", options.mqtt_host);
     sleep(5);
-    // Do the port thing here SM....
-    // check connectivity
-    // if online, change port
-    // Notify tony of port change
+    // Swap port, test connection //
     if (!dial_mqtt()) {
       debug("Reconnected to %s, yay!", options.mqtt_host);
       break;
@@ -266,6 +265,14 @@ void mqtt_connect() {
     return;
   }
 
+  // Do the port thing here SM....
+  // check connectivity
+  // if online, change port
+  // Notify tony of port change
+
+  /* int ports[4] = {0,0,0,0}; */
+  /* int test[4] = {80,443,8080,8443}; */
+
   int rc = dial_mqtt();
 
   if (!rc) {
@@ -281,6 +288,65 @@ void mqtt_connect() {
   return;
 }
 
+// Only send the data once per heartbeat cycle
+int should_ping() {
+  /* int sleep = options.sleep * 2; */
+  int sleep = 300;
+  time_t now = time(NULL);
+  int diff = now - last_ping;
+  if (last_ping == 0 || diff >= sleep) {
+    last_ping = time(NULL);
+    return 1;
+  }
+  return 0;
+}
+
+void ping()
+{
+
+  if (should_ping() <= 0) {
+    debug("Not sending ping...");
+    return;
+  }
+
+  debug("Sending ping to Tony!");
+
+  int k,n;
+  k = strlen(options.key);
+  n = strlen(options.topic);
+  char topic[k+n+19];
+  topic_id_generate(topic, options.topic, options.key);
+
+  options.qos = 1;
+  char t[128];
+  strcat(t, options.topic);
+
+  mosquitto_subscribe(mosq, NULL, topic, options.qos);
+
+  if (strcmp(options.topic, "") == 0) {
+    return;
+  }
+
+  json_object *jobj = json_object_new_object();
+
+  json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+  const char *resp = json_object_to_json_string(jobj);
+
+  // refactor and de-dup
+  char topic_a[128];
+
+  // Status at the front is just for status / online / offline updates
+  strcpy(topic_a, "ping/");
+  strcat(topic_a, options.topic);
+  strcat(topic_a, "/");
+  strcat(topic_a, options.key);
+  strcat(topic_a, "/");
+  strcat(topic_a, options.mac);
+
+  mosquitto_publish(mosq, 0, topic_a, strlen(resp), resp, 1, false);
+  json_object_put(jobj);
+}
+
 int dial_mqtt()
 {
   mosquitto_lib_init();
@@ -290,7 +356,6 @@ int dial_mqtt()
 
   int keepalive = 30;
   bool clean_session = true;
-  struct mosquitto *mosq = NULL;
 
   mosq = mosquitto_new(id, clean_session, NULL);
   if(!mosq){
@@ -362,8 +427,10 @@ int dial_mqtt()
     rc = 0;
     connected = 1;
   }
+
   if(rc){
     fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
   }
+
   return rc;
 }
