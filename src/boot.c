@@ -50,6 +50,8 @@ void parse_config(char *buffer)
         case json_type_double:
         case json_type_string:
         case json_type_boolean:
+          if (strcmp(key, "debug") == 0)
+            options.debug = 1;
           if (strcmp(key, "tls") == 0) {
             options.tls = 0;
             if (json_object_get_boolean(val)) {
@@ -57,8 +59,6 @@ void parse_config(char *buffer)
             };
           }
         case json_type_int:
-          if (strcmp(key, "debug") == 0)
-            options.debug = 1;
           if (strcmp(key, "no-cache") == 0)
             options.nocache = json_object_get_int(val);
           if (strcmp(key, "scan") == 0)
