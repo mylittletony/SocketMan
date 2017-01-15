@@ -79,6 +79,24 @@ The many options available to you via the config.json file.
 - boot_cmd, string. Default empty. Run a script on boot.
 - mac_file, string. Default /etc/mac. The file containing your default WAN MAC.
 
+## Sending jobs to devices
+
+Ignore this if using with Cucumber. This applies only if you're using your own MQTT broker.
+
+SocketMan creates a secure tunnel via MQTT to an MQTT broker. The job must be of the following JSON format.
+
+Publish the job to the topic as so:
+
+```
+	topic := "sub/" + your-topic + "/" + your-key + "/" + your-mac
+```
+
+Where your-topic, your-key and your-mac are defined in the config.json:
+
+```
+sub/my-topic/my-key/11:22:33:44:55:66
+```
+
 ## JSON Specification
 
 **Operations**
