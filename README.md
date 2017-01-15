@@ -112,6 +112,31 @@ Where your-topic, your-key and your-mac are defined in the config.json:
 sub/my-topic/my-key/11:22:33:44:55:66
 ```
 
+If you have enabled rest via the options, SocketMan will notify your API whether the job was a success or not. It will also include the output of the command if required. 
+
+With rest disbled (the default), SocketMan will publish a job back to your MQTT broker instead. This will be published to the following topic:
+
+```
+topic := "pub/" + your-topic + "/" + your-key + "/" + your-mac
+```
+
+The JSON will be in the following format:
+
+```
+{
+	"id": "your-job-id",
+	"timestamp": 1484484398,
+	"app": "socketman",
+	"event_type": "PROCESSED",
+	"meta": {
+		"msg": "command-output",
+		"type": "your-job-type"
+	}
+}
+```
+
+For example, if you publish a job with the msg: uptime. SocketMan will process the job and publish the output back to your servers.
+
 ## JSON Specification
 
 **Operations**
