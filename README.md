@@ -64,10 +64,20 @@ The many options available to you via the config.json file.
 - mac, string. The MAC of the device.
 - token, string. Your public API token. Will be appeneded to all API requests
 - monitor, integer. How often to run the collection. Min 15 seconds.
-- sleep, integer. How long to wait before sending data. Default 60.
-- debug, bool. Enable debug mode.
+- heartbeat, integer.  Default 60. How long to wait before sending data.
+- debug, bool. Default 0. Enable debug mode.
 - scan, integer. Run the stats collection, or not. Default 1.
 - no-cache, integer. If disabled, send pure JSON stats
+- rest, integer. Default 0. Enabling will send job notifications via a POST. Otherwise send via MQTT.
+- reboot, integer. Default 600. How long to wait before rebooting. Disable with 0.
+- health_port, integer. Default 53. The port to check for internet connectivity.
+- health_url, string. The default URL to use to check for internet connectivity.
+- qos, integer. MQTT QoS. 0, 1 or 2. Default 0.
+- insecure, integer. Default 0. Send API requests without any certificate validation.
+- backup_stats_url, string. Default empty. Try a secondary URL if stats POST fails.
+- boot_url, string. Default empty. Call a URL on boot.
+- boot_cmd, string. Default empty. Run a script on boot.
+- mac_file, string. Default /etc/mac. The file containing your default WAN MAC.
 
 ## JSON Specification
 
@@ -89,6 +99,9 @@ And here's what the JSON looks like.
     "output": "command output"
 }
 ```
+
+**Inbound Jobs**
+
 
 ### Collector
 
