@@ -10,7 +10,7 @@ PKG_SOURCE_VERSION:=commit
 
 Where commit is the latest commit from the SocketMan repository.
 
-**It's essential to set the __OPENWRT__ flag otherwise SocketMan will fail to collect some data for OpenWRT buids**
+**It's essential to set the __OPENWRT__ flag otherwise SocketMan will fail to collect some data for OpenWRT builds.**
 
 ### Building
 
