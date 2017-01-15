@@ -22,3 +22,50 @@ make package/feeds/cucumber/socketman/compile
 ```
 
 Make sure to add SocketMan via make menuconfig.
+
+### Installing
+
+Send your binary / ipk to your device:
+
+```
+scp bin/ar71xx/packages/cucumber/socketman_v1_ar71xx.ipk root@$IP:/tmp/
+```
+
+Where IP == your device IP.
+
+Install the package with:
+
+```
+opkg install socketman_v1_ar71xx.ipk
+```
+
+### Common errors
+
+After running the install, you see this:
+
+```
+Installing socketman (v1) to root...
+Collected errors:
+ * satisfy_dependencies_for: Cannot satisfy the following dependencies for socketman:
+ *      curl *  libcurl *       libopenssl *    libmosquitto *
+ * opkg_install_cmd: Cannot install package socketman.
+ ```
+ 
+ You're missing some dependencies!
+ 
+ ```
+ opkg update && \
+ opkg install curl libopenssl libmosquitto
+ ```
+ 
+ Then try to install things again.
+ 
+ ### Dependencies
+ 
+ - curl
+ - json-c 
+ - mosquitto 
+ - lnl-3 
+ - lnl-route-3 
+ - lnl-genl-3 
+ - lz
