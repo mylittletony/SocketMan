@@ -79,6 +79,14 @@ The many options available to you via the config.json file.
 - boot_cmd, string. Default empty. Run a script on boot.
 - mac_file, string. Default /etc/mac. The file containing your default WAN MAC.
 
+## Initializing the devices
+
+By default, the devices will initialise themselves against the Cucumber API. If you want to change this behaviour, you can run with the -b flag followed by your init. server URL. For example:
+
+```
+socketman --config=/etc/config.json -b https://api.acme-corp.com/init
+```
+
 ## Sending jobs to devices
 
 Ignore this if using with Cucumber. This applies only if you're using your own MQTT broker.
