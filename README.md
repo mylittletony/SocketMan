@@ -158,9 +158,6 @@ And here's what the JSON looks like.
 }
 ```
 
-**Inbound Jobs**
-
-
 ### Collector
 
 The collector runs every 15 seconds. It caches the data and POSTs to your API as GZIPPED file. The file contains the JSON collection data shown below. Each entry is appeneded as a new line.
