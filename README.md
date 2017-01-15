@@ -47,6 +47,28 @@ If you're using this with Cucumber, the device will download the file automatica
 socketman --config=/etc/config.json
 ```
 
+## Config Options
+
+The many options available to you via the config.json file. 
+
+- username, string. MQTT username
+- password, string. MQTT password
+- topic, string. MQTT topic
+- key, string. MQTT key
+- port, integer. The MQTT port number.
+- tls, boolean. Enable or disable MQTT tls options.
+- cacrt, string. MQTT server CA.
+- mqtt_host, string. MQTT broker hostname.
+- api_url, string. Can be used for provisioning, job notification etc.
+- stats_url, string. The API you're using for stats processing.
+- mac, string. The MAC of the device.
+- token, string. Your public API token. Will be appeneded to all API requests
+- monitor, integer. How often to run the collection. Min 15 seconds.
+- sleep, integer. How long to wait before sending data. Default 60.
+- debug, bool. Enable debug mode.
+- scan, integer. Run the stats collection, or not. Default 1.
+- no-cache, integer. If disabled, send pure JSON stats
+
 ## JSON Specification
 
 **Operations**
