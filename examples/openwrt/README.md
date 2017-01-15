@@ -55,7 +55,7 @@ Collected errors:
  
  ```
  opkg update && \
- opkg install curl libopenssl libmosquitto
+ opkg install curl libopenssl
  ```
  
  Then try to install things again.
