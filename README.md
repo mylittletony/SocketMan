@@ -85,10 +85,25 @@ Ignore this if using with Cucumber. This applies only if you're using your own M
 
 SocketMan creates a secure tunnel via MQTT to an MQTT broker. The job must be of the following JSON format.
 
+```
+{
+	"id": "your-job-id",
+	"timestamp": 1484484398,
+	"meta": {
+		"msg": "your-command",
+		"type": "your-job-type"
+	}
+}
+```
+
+Store the command you want to run in the meta.msg key. An ID is required and used to identifiy the job upon success or fail.
+
+The type key is special. If you send a job with type 'network', SocketMan will perform a network connectivity test before and after the job run. In the event of failure, SM will recover.
+
 Publish the job to the topic as so:
 
 ```
-	topic := "sub/" + your-topic + "/" + your-key + "/" + your-mac
+topic := "sub/" + your-topic + "/" + your-key + "/" + your-mac
 ```
 
 Where your-topic, your-key and your-mac are defined in the config.json:
