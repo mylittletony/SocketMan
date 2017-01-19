@@ -292,7 +292,7 @@ void mqtt_connect() {
 // Only send the data once per heartbeat cycle
 int should_ping() {
   /* int sleep = options.sleep * 2; */
-  int sleep = 300;
+  int sleep = 180;
   time_t now = time(NULL);
   int diff = now - last_ping;
   if (last_ping == 0 || diff >= sleep) {
@@ -325,13 +325,12 @@ void ping()
   json_object *jobj = json_object_new_object();
 
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+  json_object_object_add(jobj, "event_type", json_object_new_string("PING"));
   const char *resp = json_object_to_json_string(jobj);
 
-  // refactor and de-dup
   char topic_a[128];
 
-  // Status at the front is just for status / online / offline updates
-  strcpy(topic_a, "ping/");
+  strcpy(topic_a, "status/");
   strcat(topic_a, options.topic);
   strcat(topic_a, "/");
   strcat(topic_a, options.key);
