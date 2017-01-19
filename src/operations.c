@@ -5,11 +5,6 @@
 #include "dbg.h"
 #include <compiler.h>
 
-size_t write_null(UNUSED(void *buffer), size_t size, size_t nmemb, UNUSED(void *u))
-{
-     return size * nmemb;
-}
-
 void update_operation(json_object *json, char *uid) {
 
   if (strcmp(options.api_url, "") == 0) {

@@ -11,7 +11,7 @@
 #include "collector.h"
 #include "platform.h"
 #include "helper.h"
-#include "mqtt.h"
+#include "ping.h"
 
 // When offline, the interval for re-check
 #define OFFLINE_INTERVAL 10

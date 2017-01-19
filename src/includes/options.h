@@ -20,6 +20,8 @@ struct _options {
   char cache[28];
   char archive[28];
   char *id;
+  int ping_interval;
+  int noping;
   int timeout;
   int nocache;
   int port;

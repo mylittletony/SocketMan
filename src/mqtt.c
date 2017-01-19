@@ -18,7 +18,6 @@
 #define M 10
 #define N 100
 
-int last_ping = 0;
 struct mosquitto *mosq = NULL;
 bool connected = false;
 time_t m0=0;
@@ -289,27 +288,8 @@ void mqtt_connect() {
   return;
 }
 
-// Only send the data once per heartbeat cycle
-int should_ping() {
-  /* int sleep = options.sleep * 2; */
-  int sleep = 300;
-  time_t now = time(NULL);
-  int diff = now - last_ping;
-  if (last_ping == 0 || diff >= sleep) {
-    last_ping = time(NULL);
-    return 1;
-  }
-  return 0;
-}
-
-void ping()
+void ping_mqtt()
 {
-
-  if (should_ping() <= 0) {
-    debug("Not sending ping...");
-    return;
-  }
-
   debug("Sending ping to Tony!");
 
   int k,n;

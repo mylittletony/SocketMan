@@ -68,6 +68,8 @@ The many options available to you via the config.json file.
 - debug, bool. Default 0. Enable debug mode.
 - scan, integer. Run the stats collection, or not. Default 1.
 - no-cache, integer. If disabled, send pure JSON stats
+- no-ping, integer. If disabled, SocketMan won't run a ping test, RESTFully or via MQTT
+- ping-interval, integer. Default 180. Sends a ping via MQTT and POST via api_url.
 - rest, integer. Default 0. Enabling will send job notifications via a POST. Otherwise send via MQTT.
 - reboot, integer. Default 600. How long to wait before rebooting. Disable with 0.
 - health_port, integer. Default 53. The port to check for internet connectivity.

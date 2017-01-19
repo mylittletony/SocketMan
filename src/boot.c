@@ -59,6 +59,10 @@ void parse_config(char *buffer)
             };
           }
         case json_type_int:
+          if (strcmp(key, "ping-interval") == 0)
+            options.ping_interval = json_object_get_int(val);
+          if (strcmp(key, "no-ping") == 0)
+            options.noping = json_object_get_int(val);
           if (strcmp(key, "no-cache") == 0)
             options.nocache = json_object_get_int(val);
           if (strcmp(key, "scan") == 0)
@@ -141,6 +145,14 @@ void parse_config(char *buffer)
     debug("Setting reboot flag to 300 seconds, not %d", options.reboot);
     options.reboot = 300;
   }
+
+  // Ensure ping is set
+  if (options.ping_interval == 0)
+    options.ping_interval = 180;
+
+  // Ensure not less than 60
+  if (options.ping_interval < 60)
+    options.ping_interval = 60;
 
   // Used for the DNS check
   if (strcmp(options.health_url, "") == 0)
