@@ -302,10 +302,7 @@ int should_ping() {
   return 0;
 }
 
-void ping()
-=======
 void ping_mqtt()
->>>>>>> 720879c2ef48a7461663e085184500aa7d5bcf3d
 {
   debug("Sending ping to Tony!");
 
