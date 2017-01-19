@@ -15,9 +15,9 @@
 #include "message.h"
 #include "utils.h"
 #include "cache.h"
-
 #include <stdio.h>
 #include "zlib.h"
+#include <compiler.h>
 
 #ifdef STDC
 #  include <string.h>
@@ -28,6 +28,11 @@ struct CurlResponse {
   char *memory;
   size_t size;
 };
+
+size_t write_null(UNUSED(void *buffer), size_t size, size_t nmemb, UNUSED(void *u))
+{
+     return size * nmemb;
+}
 
 void init_chunk(struct CurlResponse *c)
 {
@@ -331,64 +336,66 @@ int run_init(char *f, char *m, char *mac) {
 
 void send_boot_message()
 {
-  if (strcmp(options.boot_url, "") != 0) {
-    char url[255];
-    long http_code = 0;
-    struct curl_slist *headers = NULL;
-
-    debug("Sending GET request to boot URL");
-    CURL *curl;
-    curl_global_init( CURL_GLOBAL_ALL );
-
-    append_url_token(options.boot_url, url);
-
-    headers = curl_slist_append(headers, "Accept: application/json");
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-
-    CURLcode res;
-
-    curl = curl_easy_init();
-    if (!curl)
-      return;
-
-    struct CurlResponse c;
-    init_chunk(&c);
-
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-    res = curl_easy_perform(curl);
-
-    // The response codes are specific to CT and don't need to be used this way
-    // 200 - the device will process the output, handy for emergencies
-    // 201 - the servers responds with the config.json file
-    // 401 - unauthorized or not found, either way it won't boot NiU
-
-    if(res == CURLE_OK) {
-      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-      if (http_code == 200 && c.size > 0) {
-        process_response(c.memory);
-      } else if (http_code == 201) {
-
-      } else if (http_code == 401) {
-
-      }
-    }
-
-    curl_easy_cleanup(curl);
-    if (c.memory)
-      free(c.memory);
-
-    curl_global_cleanup();
-    curl_slist_free_all(headers);
+  if (strcmp(options.boot_url, "") == 0) {
+    return;
   }
+
+  char url[255];
+  long http_code = 0;
+  struct curl_slist *headers = NULL;
+
+  debug("Sending GET request to boot URL");
+  CURL *curl;
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  append_url_token(options.boot_url, url);
+
+  headers = curl_slist_append(headers, "Accept: application/json");
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+
+  CURLcode res;
+
+  curl = curl_easy_init();
+  if (!curl)
+    return;
+
+  struct CurlResponse c;
+  init_chunk(&c);
+
+  curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+  res = curl_easy_perform(curl);
+
+  // The response codes are specific to CT and don't need to be used this way
+  // 200 - the device will process the output, handy for emergencies
+  // 201 - the servers responds with the config.json file
+  // 401 - unauthorized or not found, either way it won't boot NiU
+
+  if(res == CURLE_OK) {
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+    if (http_code == 200 && c.size > 0) {
+      process_response(c.memory);
+    } else if (http_code == 201) {
+
+    } else if (http_code == 401) {
+
+    }
+  }
+
+  curl_easy_cleanup(curl);
+  if (c.memory)
+    free(c.memory);
+
+  curl_global_cleanup();
+  curl_slist_free_all(headers);
 }
 
 void fetch_ca(char *buff) {
@@ -468,4 +475,46 @@ void install_ca() {
   curl_easy_cleanup(curl);
   curl_global_cleanup();
   return;
+}
+
+void ping_rest()
+{
+  char url[255];
+  struct curl_slist *headers = NULL;
+
+  CURL *curl;
+  curl_global_init( CURL_GLOBAL_ALL );
+
+  strcpy(url, options.api_url);
+  strcat(url, "/ping?");
+  if (strcmp(options.token, "") != 0) {
+    strcat(url, "access_token=");
+    strcat(url, options.token);
+  }
+
+  headers = curl_slist_append(headers, "Accept: application/json");
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+
+  CURLcode res;
+
+  curl = curl_easy_init();
+  if (!curl)
+    return;
+
+  curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_null);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3L);
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+  res = curl_easy_perform(curl);
+
+  debug("Send ping via %s (%d)", options.api_url, res);
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  curl_slist_free_all(headers);
 }

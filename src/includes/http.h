@@ -3,8 +3,9 @@
 
 #include <json-c/json.h>
 #include <curl/curl.h>
+#include <compiler.h>
 
-/* int post(json_object *json); */
+void ping_rest();
 int post_json(const char *postData);
 int post_cache();
 int run_init(char *f, char *m, char * mac);
@@ -13,5 +14,5 @@ void append_url_token(char *url, char *buf);
 void fetch_ca(char *buff);
 void install_ca();
 long do_curl(CURL *curl, char *url);
-
+size_t write_null(UNUSED(void *buffer), size_t size, size_t nmemb, UNUSED(void *u));
 #endif

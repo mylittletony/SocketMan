@@ -1,2 +1,2 @@
 void mqtt_connect();
-void ping();
+void ping_mqtt();
