@@ -1,0 +1,16 @@
+machine:
+  environment:
+    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - mysql -e "CREATE USER 'travis'@'localhost' IDENTIFIED BY '';" && mysql -e "GRANT ALL PRIVILEGES ON * . * TO 'travis'@'localhost';" && mysql -e "FLUSH PRIVILEGES;" && mysql -e "create database puffin_test" && mysql puffin_test < structure.sql
+    - sudo apt-get-update && apt-get install build-essential subversion libncurses5-dev zlib1g-dev gawk gcc-multilib flex git-core gettext libssl-dev
+    - git clone --depth 1 -b chaos_calmer git://github.com/openwrt/openwrt.git
+    - cd openwrt && echo "src-git cucumber http://github.com/cucumber-tony/cucumber-feeds.git;for-15.05" > feeds.conf.default
+    - ./scripts/feeds update -a && ./scripts/feeds install socketman && make defconfig
+    - make tools/install -j 33
+    - make toolchain/install -j 33
