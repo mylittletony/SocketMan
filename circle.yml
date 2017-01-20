@@ -7,7 +7,7 @@ machine:
 
 dependencies:
   pre:
-    - sudo apt-get-update && apt-get install build-essential subversion libncurses5-dev zlib1g-dev gawk gcc-multilib flex git-core gettext libssl-dev
+    - apt-get-update && apt-get install build-essential subversion libncurses5-dev zlib1g-dev gawk gcc-multilib flex git-core gettext libssl-dev
     - git clone --depth 1 -b chaos_calmer git://github.com/openwrt/openwrt.git
     - cd openwrt && echo "src-git cucumber http://github.com/cucumber-tony/cucumber-feeds.git;for-15.05" > feeds.conf.default
     - ./scripts/feeds update -a && ./scripts/feeds install socketman && make defconfig
