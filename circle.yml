@@ -6,6 +6,8 @@ machine:
     - docker
 
 dependencies:
+  # cache_directories:
+  #   - "openwrt"
   pre:
     - sudo apt-get update && sudo apt-get install build-essential subversion libncurses5-dev zlib1g-dev gawk gcc-multilib flex git-core gettext libssl-dev
     - git clone --depth 1 -b chaos_calmer git://github.com/openwrt/openwrt.git
