@@ -121,7 +121,7 @@ void process_message(const char *msg, char *cmd, char *id, char *opType, int len
       case json_type_boolean:
       case json_type_string:
         if (strcmp(key, "id") == 0)
-          strncpy(id, json_object_get_string(val), 36);
+          strncpy(id, json_object_get_string(val), 36+1);
       default:
         break;
     }
