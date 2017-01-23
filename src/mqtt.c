@@ -198,10 +198,12 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
+  char *mmid = "msg_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
   // Refactor
   // Else, let's publish back
   jobj = json_object_new_object();
-  json_object_object_add(jobj, "id", json_object_new_string(mid));
+  json_object_object_add(jobj, "id", json_object_new_string(mmid));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
