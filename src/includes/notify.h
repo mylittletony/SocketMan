@@ -1,1 +1,1 @@
-void cmd_notify(int response, char *id, char *buf);
+void cmd_notify(int response, const char *id, char *buf);

@@ -33,46 +33,6 @@ void process_cmd(char *cmd, char *id)
   return;
 }
 
-void process_message(const char *msg, char *cmd, char *id, char *opType)
-{
-  json_object *jobj = json_tokener_parse(msg);
-  enum json_type type;
-
-  if (!is_error(jobj)) {
-    json_object_object_foreach(jobj, key, val) {
-      type = json_object_get_type(val);
-      switch (type) {
-        case json_type_object:
-          if (strcmp(key, "meta") == 0) {
-            json_object_object_foreach(val, keym, valm) {
-              switch (json_object_get_type(valm)) {
-                case json_type_null:
-                case json_type_boolean:
-                case json_type_double:
-                case json_type_int:
-                case json_type_array:
-                case json_type_object:
-                case json_type_string:
-                  if (strcmp(keym, "msg") == 0)
-                    strcpy(cmd, json_object_get_string(valm));
-                  if (strcmp(keym, "type") == 0)
-                    strcpy(opType, json_object_get_string(valm));
-              }
-            }
-          }
-        case json_type_boolean:
-        case json_type_string:
-          if (strcmp(key, "id") == 0) {
-            strcpy(id, json_object_get_string(val));
-          }
-        default:
-          break;
-      }
-    }
-    json_object_put(jobj);
-  }
-}
-
 void process_response(char *msg)
 {
   json_object *jobj;
@@ -118,7 +78,7 @@ void save_config(char *file, char *msg)
 
 void run_special(char *type)
 {
-  if (strcmp(type, "ping") == 0) {
+  if (type && strcmp(type, "ping") == 0) {
     debug("Running the ping test brother!");
     // Run ping
     return;
@@ -126,4 +86,44 @@ void run_special(char *type)
 
   backup_configs(type);
   return;
+}
+
+void process_message(const char *msg, char *cmd, char *id, char *opType)
+{
+  json_object *jobj = json_tokener_parse(msg);
+  enum json_type type;
+
+  if (!is_error(jobj)) {
+    json_object_object_foreach(jobj, key, val) {
+      type = json_object_get_type(val);
+      switch (type) {
+        case json_type_object:
+          if (strcmp(key, "meta") == 0) {
+            json_object_object_foreach(val, keym, valm) {
+              switch (json_object_get_type(valm)) {
+                case json_type_null:
+                case json_type_boolean:
+                case json_type_double:
+                case json_type_int:
+                case json_type_array:
+                case json_type_object:
+                case json_type_string:
+                  if (strcmp(keym, "msg") == 0)
+                    strncpy(cmd, json_object_get_string(valm), 255);
+                  if (strcmp(keym, "type") == 0)
+                    strncpy(opType, json_object_get_string(valm), 10);
+              }
+            }
+          }
+        case json_type_boolean:
+        case json_type_string:
+          if (strcmp(key, "id") == 0) {
+            strncpy(id, json_object_get_string(val), 36);
+          }
+        default:
+          break;
+      }
+    }
+    json_object_put(jobj);
+  }
 }

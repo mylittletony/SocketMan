@@ -498,6 +498,7 @@ void format_dhcp(json_object *jdhcp_array)
 
 void collect_data(int online)
 {
+
   struct timespec tstart={0,0}, tend={0,0};
   clock_gettime(CLOCK_MONOTONIC, &tstart);
 
@@ -677,7 +678,7 @@ bool should_backup(char *type) {
   return false;
 }
 
-void backup_configs(char *type)
+void backup_configs(const char *type)
 {
   // Not finished - needs logic to save directory etc.
 

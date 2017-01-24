@@ -21,7 +21,7 @@
 struct mosquitto *mosq = NULL;
 bool connected = false;
 time_t m0=0;
-char id[27];
+char mqtt_id[27];
 
 int dial_mqtt();
 
@@ -64,7 +64,7 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
   json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
   json_object_object_add(jmeta, "online", json_object_new_string("1"));
   /* json_object_object_add(jmeta, "msg", json_object_new_string("Device online")); */
-  json_object_object_add(jmeta, "client_id", json_object_new_string(id));
+  json_object_object_add(jmeta, "client_id", json_object_new_string(mqtt_id));
   json_object_object_add(jobj, "meta", jmeta);
 
   const char *resp = json_object_to_json_string(jobj);
@@ -116,7 +116,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   char type[10];
-  char id[100];
+  char id[36];
   char cmd[strlen(message->payload)+1];
 
   id[0] = '\0';
@@ -152,7 +152,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     suffix = "/messages";
     strcat(delivery, suffix);
     rand_string(id, "sm_", 44);
-    // Append messages which prevents all the messages from being seen
     debug("Missing ID. Auto-generating: %s. Topic: %s", id, delivery);
   }
   // Needs check if running, check time, check live cmd.
@@ -326,12 +325,12 @@ int dial_mqtt()
   mosquitto_lib_init();
   debug("Connecting to broker...");
 
-  client_id_generate(id);
+  client_id_generate(mqtt_id);
 
   int keepalive = 30;
   bool clean_session = true;
 
-  mosq = mosquitto_new(id, clean_session, NULL);
+  mosq = mosquitto_new(mqtt_id, clean_session, NULL);
   if(!mosq){
     switch(errno){
       case ENOMEM:
@@ -370,7 +369,7 @@ int dial_mqtt()
     json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
     json_object_object_add(jmeta, "online", json_object_new_string("0"));
     /* json_object_object_add(jmeta, "msg", json_object_new_string("Went offline")); */
-    json_object_object_add(jmeta, "client_id", json_object_new_string(id));
+    json_object_object_add(jmeta, "client_id", json_object_new_string(mqtt_id));
     json_object_object_add(jobj, "meta", jmeta);
 
     const char *report = json_object_to_json_string(jobj);
