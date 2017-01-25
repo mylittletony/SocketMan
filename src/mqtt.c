@@ -135,6 +135,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
+  debug("XXXXXXXXXXXXXX %s", cmd);
+
   // Save output to file if debug flag is set
   if (options.debug)
     save_config("/tmp/.configs", cmd);
@@ -177,7 +179,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   char buffer[51200];
   buffer[0] = '\0';
 
-  fp = popen(cmd, "r");
+  fp = popen("uptime", "r");
   if (fp != NULL) {
     response = 0;
     memset(buffer, '\0', sizeof(buffer));
