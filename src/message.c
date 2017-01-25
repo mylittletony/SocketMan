@@ -88,7 +88,7 @@ void run_special(char *type)
   return;
 }
 
-void process_message(const char *msg, char *cmd, char *id, char *opType)
+void process_message(const char *msg, char *cmd, char *id, char *opType, int len)
 {
   json_object *jobj = json_tokener_parse(msg);
   enum json_type type;
@@ -112,7 +112,7 @@ void process_message(const char *msg, char *cmd, char *id, char *opType)
               case json_type_object:
               case json_type_string:
                 if (strcmp(keym, "msg") == 0)
-                  strncpy(cmd, json_object_get_string(valm), 255);
+                  strncpy(cmd, json_object_get_string(valm), len);
                 if (strcmp(keym, "type") == 0)
                   strncpy(opType, json_object_get_string(valm), 10);
             }
@@ -120,9 +120,8 @@ void process_message(const char *msg, char *cmd, char *id, char *opType)
         }
       case json_type_boolean:
       case json_type_string:
-        if (strcmp(key, "id") == 0) {
-          strncpy(id, json_object_get_string(val), 36);
-        }
+        if (strcmp(key, "id") == 0)
+          strncpy(id, json_object_get_string(val), 36+1);
       default:
         break;
     }

@@ -116,14 +116,15 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   char type[10];
-  char id[36];
+  char mid[36];
+
   char cmd[strlen(message->payload)+1];
 
-  id[0] = '\0';
+  mid[0] = '\0';
   cmd[0] = '\0';
 
   // Unmarshalls the payload into logical parts
-  process_message((const char*)message->payload, cmd, id, type);
+  process_message((const char*)message->payload, cmd, mid, type, strlen(message->payload)+1);
 
   // Runs special commands, based on the type of request
   run_special(type);
@@ -139,7 +140,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     save_config("/tmp/.configs", cmd);
 
   // Refactor
-  char delivery[128];
+  char delivery[117];
   strcpy(delivery, "delivery/");
   strcat(delivery, options.topic);
   strcat(delivery, "/");
@@ -148,11 +149,11 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   strcat(delivery, options.mac);
 
   char *suffix = NULL;
-  if (id[0] == '\0') {
+  if (mid[0] == '\0') {
     suffix = "/messages";
     strcat(delivery, suffix);
-    rand_string(id, "sm_", 44);
-    debug("Missing ID. Auto-generating: %s. Topic: %s", id, delivery);
+    rand_string(mid, "sm_", 44);
+    debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery);
   }
   // Needs check if running, check time, check live cmd.
 
@@ -160,7 +161,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object *jmeta = json_object_new_object();
 
   // Refactor
-  json_object_object_add(jobj, "id", json_object_new_string(id));
+  json_object_object_add(jobj, "id", json_object_new_string(mid));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("DELIVERED"));
@@ -193,14 +194,14 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Will publish the job back to CT via REST API
   if (options.rest) {
-    cmd_notify(response, id, buffer);
+    cmd_notify(response, mid, buffer);
     return;
   }
 
   // Refactor
   // Else, let's publish back
   jobj = json_object_new_object();
-  json_object_object_add(jobj, "id", json_object_new_string(id));
+  json_object_object_add(jobj, "id", json_object_new_string(mid));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
@@ -209,7 +210,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "meta", jmeta);
   report = json_object_to_json_string(jobj);
 
-  char pub[128];
+  char pub[112];
   strcpy(pub, "pub/");
   strcat(pub, options.topic);
   strcat(pub, "/");
