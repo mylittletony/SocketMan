@@ -224,7 +224,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
   json_object_put(jobj);
-  debug("Message published!");
+  debug("Message published to %s!", pub);
 
   return;
 }
