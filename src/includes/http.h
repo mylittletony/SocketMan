@@ -5,7 +5,6 @@
 #include <curl/curl.h>
 #include <compiler.h>
 
-void ping_rest();
 int post_json(const char *postData);
 int post_cache();
 int run_init(char *f, char *m, char * mac);

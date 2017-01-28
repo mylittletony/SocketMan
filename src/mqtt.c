@@ -37,6 +37,7 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
     return;
   }
 
+  // On connect, send a message to the MQTT broker
   connected = true;
 
   int k,n;
@@ -63,7 +64,6 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
   json_object_object_add(jmeta, "online", json_object_new_string("1"));
-  /* json_object_object_add(jmeta, "msg", json_object_new_string("Device online")); */
   json_object_object_add(jmeta, "client_id", json_object_new_string(mqtt_id));
   json_object_object_add(jobj, "meta", jmeta);
 
@@ -290,7 +290,7 @@ void mqtt_connect() {
 
 void ping_mqtt()
 {
-  debug("Sending ping to Tony!");
+  debug("Sending MQTT ping!");
 
   int k,n;
   k = strlen(options.key);
@@ -305,6 +305,7 @@ void ping_mqtt()
   json_object *jobj = json_object_new_object();
 
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+  json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "event_type", json_object_new_string("PING"));
   const char *resp = json_object_to_json_string(jobj);
 
@@ -384,6 +385,7 @@ int dial_mqtt()
     strcat(topic, "/");
     strcat(topic, options.mac);
 
+    // Set the last will on the broker
     mosquitto_will_set(mosq, topic, strlen(report), report, 1, false);
     json_object_put(jobj);
   }
