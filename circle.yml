@@ -1,6 +1,7 @@
 machine:
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+    CPUS: $(grep -c processor /proc/cpuinfo)
 
   services:
     - docker
@@ -9,6 +10,7 @@ dependencies:
   # cache_directories:
   #   - "openwrt"
   pre:
+    
     - sudo apt-get update && sudo apt-get install build-essential subversion libncurses5-dev zlib1g-dev gawk gcc-multilib flex git-core gettext libssl-dev
     - git clone --depth 1 -b chaos_calmer git://github.com/openwrt/openwrt.git
-    - cd openwrt && echo "src-git cucumber http://github.com/cucumber-tony/cucumber-feeds.git;for-15.05" > feeds.conf.default && ./scripts/feeds update -a && ./scripts/feeds install socketman && make defconfig && make tools/install -j 33 && make toolchain/install -j 33
+    - cd openwrt && echo "src-git cucumber http://github.com/cucumber-tony/cucumber-feeds.git;for-15.05" > feeds.conf.default && ./scripts/feeds update -a && ./scripts/feeds install socketman && make defconfig && make tools/install -j $CPUS && make toolchain/install -j $CPUS
