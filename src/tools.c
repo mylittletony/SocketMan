@@ -49,7 +49,7 @@ int open_socket(char *ip)
   setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &so_keepalive, sizeof(so_keepalive));
 
   if (connect(sock, (struct sockaddr *)&address , sizeof(address)) < 0)
-    error = 150;
+    error = 180;
 
   char *message = "HELLO";
   if ((error == 0) && (send(sock , message , strlen(message) , 0) < 0))
@@ -76,6 +76,8 @@ int connection_check()
   addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
   printf("\nUsing %s for internet check\n", inet_ntoa(addr));
   freeaddrinfo(result);
+
+  // Here check DNS AND HTTP
   return(open_socket(inet_ntoa(addr)));
 }
 

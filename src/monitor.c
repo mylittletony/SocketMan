@@ -45,18 +45,28 @@ void monitor()
   struct defaultRoute dr = route();
 
   debug("Running the network monitor");
-  if (strlen(dr.ip) != 0)
-  {
-    debug("Default route: %s", dr.ip);
-    rc = connection_check();
-    if (rc == 0)
-    {
-      heartbeat();
-      return;
-    }
-  } else {
+  if (strlen(dr.ip) == 0) {
     debug("No route found");
+    goto offline;
   }
+
+  debug("Default route: %s", dr.ip);
+
+  // Should run the check, nothing else
+  rc = connection_check();
+
+  // Should we heartbeat when we're not sure if offline
+  // Remove this and send anyway, but remove the logic
+  // the backup the files later on. This should only happen
+  // if we've set something to online
+  if (rc == 0)
+    heartbeat();
+
+  // Tests the connection every 2 heartbeats
+  ping();
+
+offline:
+  // Will eventually re-run the monitor
   go_offline(rc);
 }
 
@@ -173,6 +183,7 @@ void backup_config()
 
 void heartbeat()
 {
+  // Better logic here - we now run each time, even if offline
   if (went_offline == 0) {
     debug("Connection check passed, all systems go.");
   } else {
@@ -182,9 +193,6 @@ void heartbeat()
 
   // We're always online in here, that's why we send 1 (online)
   collect_and_send_data(1);
-
-  // Tests the connection every 2 heartbeats
-  ping();
 
   // Will exit fast if the device isn't initialized. Helps fast init.
   if (options.initialized) {
