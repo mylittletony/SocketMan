@@ -128,7 +128,7 @@ void parse_config(char *buffer)
 
   // How often to check the network connection
   if (options.monitor <= 15) {
-    debug("Setting monitor flag to 15 seconds, not %d", options.monitor);
+    debug("Setting monitor flag to 20 seconds, not %d", options.monitor);
     options.monitor = 20;
   };
 

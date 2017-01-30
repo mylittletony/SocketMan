@@ -26,7 +26,7 @@ time_t went_offline;
 int tried_backup;
 
 void restart_or_reboot();
-void heartbeat();
+void heartbeat(int offline_reason);
 void attempt_recovery();
 void check_dns_and_recover();
 void go_offline();
@@ -59,8 +59,8 @@ void monitor()
   // Remove this and send anyway, but remove the logic
   // the backup the files later on. This should only happen
   // if we've set something to online
-  if (rc == 0)
-    heartbeat();
+  /* if (rc == 0) */
+  heartbeat(rc);
 
   // Tests the connection every 2 heartbeats
   ping();
@@ -181,21 +181,19 @@ void backup_config()
   return;
 }
 
-void heartbeat()
+void heartbeat(int offline_reason)
 {
   // Better logic here - we now run each time, even if offline
-  if (went_offline == 0) {
+  if (went_offline == 0)
     debug("Connection check passed, all systems go.");
-  } else {
-    recover_connection();
-  }
-  backup_config();
-
-  // We're always online in here, that's why we send 1 (online)
-  collect_and_send_data(1);
+  /* } else { */
+  /*   recover_connection(); */
+  /* } */
+  /* backup_config(); */
 
   // Will exit fast if the device isn't initialized. Helps fast init.
   if (options.initialized) {
+    collect_and_send_data(offline_reason);
     debug("Sleeping for %d seconds.", options.monitor);
     sleep(options.monitor);
   }
