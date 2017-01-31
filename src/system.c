@@ -28,7 +28,7 @@ void machine_type(char *type, size_t len)
     char buffer[1024];
     char fmt[64];
 #ifdef __OPENWRT__
-    fp = fopen ("/proc/cpuinfo", "r");
+    fp = fopen ("/tmp/sysinfo/model", "r");
 #elif __linux
     fp = fopen ("/etc/os-release", "r");
 #endif
@@ -42,11 +42,7 @@ void machine_type(char *type, size_t len)
 
     buffer[bytes_read] = '\0';
 #ifdef __OPENWRT__
-    match = strstr (buffer, "machine");
-    if (match == NULL)
-      return;
-    snprintf(fmt, sizeof(fmt), "machine : %%%zu[^\t\n]", len - 1);
-    sscanf (match, fmt, type);
+    strncpy(type, buffer, strlen(buffer));
 #elif __linux
     match = strstr(buffer, "NAME");
 
