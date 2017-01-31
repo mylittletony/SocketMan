@@ -55,34 +55,29 @@ void monitor()
   // Should run the check, nothing else
   rc = connection_check();
 
-  // Should we heartbeat when we're not sure if offline
-  // Remove this and send anyway, but remove the logic
-  // the backup the files later on. This should only happen
-  // if we've set something to online
-  /* if (rc == 0) */
+  // Try and heartbeat, even if offline:
   heartbeat(rc);
 
   // Tests the connection every 2 heartbeats
   ping();
 
 offline:
-  debug("------------------------------------------------------------------------");
   // Will eventually re-run the monitor
-  /* go_offline(rc); */
+  go_offline(rc);
 }
 
 void go_offline(int reason) {
-  int online = 0;
-  if (went_offline == 0)
-    went_offline = time(NULL);
+  /* int online = 0; */
+  /* if (went_offline == 0) */
+  /*   went_offline = time(NULL); */
 
-  debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason);
+  /* debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason); */
 
-  attempt_recovery();
+  /* attempt_recovery(); */
 
-  // Offline collection
-  collect_and_send_data(online);
-  restart_or_reboot();
+  /* // Offline collection */
+  /* collect_and_send_data(online); */
+  /* restart_or_reboot(); */
 }
 
 void restore_original()
