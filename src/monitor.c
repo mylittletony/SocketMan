@@ -66,8 +66,9 @@ void monitor()
   ping();
 
 offline:
+  debug("------------------------------------------------------------------------");
   // Will eventually re-run the monitor
-  go_offline(rc);
+  /* go_offline(rc); */
 }
 
 void go_offline(int reason) {
