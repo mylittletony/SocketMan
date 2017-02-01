@@ -5,7 +5,6 @@
 #include <netinet/tcp.h>
 #include "dbg.h"
 #include "options.h"
-#include "network.h"
 #include "tools.h"
 #include "system.h"
 #include "collector.h"
@@ -26,12 +25,12 @@ time_t went_offline;
 int tried_backup;
 
 void restart_or_reboot();
-void heartbeat(int offline_reason);
-void attempt_recovery();
+/* void heartbeat(int offline_reason); */
+/* void attempt_recovery(); */
 void check_dns_and_recover();
 void go_offline();
 void monitor();
-void recover_connection();
+/* void recover_connection(); */
 
 void reset()
 {
@@ -42,82 +41,93 @@ void reset()
 void monitor()
 {
   int rc = 0;
-  struct defaultRoute dr = route();
+  /* struct defaultRoute dr = route(); */
 
-  debug("Running the network monitor");
-  if (strlen(dr.ip) == 0) {
-    debug("No route found");
-    goto offline;
-  }
+  /* debug("Running the network monitor"); */
+  /* /1* if (strlen(dr.ip) == 0) { *1/ */
+  /* if (1) { */
+  /*   debug("No route found"); */
+  /*   goto offline; */
+  /* } */
 
-  debug("Default route: %s", dr.ip);
+  /* debug("Default route: %s", dr.ip); */
 
   // Should run the check, nothing else
   rc = connection_check();
 
   // Try and heartbeat, even if offline:
-  heartbeat(rc);
+  /* heartbeat(rc); */
+
+  // Go offline - can happen before the init. loop
+  go_offline(rc);
+
+  // Will exit fast if the device isn't initialized. Helps fast init.
+  if (!options.initialized) {
+    return;
+  }
 
   // Tests the connection every 2 heartbeats
   ping();
 
-offline:
-  // Will eventually re-run the monitor
-  go_offline(rc);
+  // Collect the data and send to API
+  collect_and_send_data(rc);
+
+  // Sleep for monitor interval
+  debug("Sleeping for %d seconds.", options.monitor);
+  sleep(options.monitor);
 }
 
 void go_offline(int reason) {
-  /* int online = 0; */
-  /* if (went_offline == 0) */
-  /*   went_offline = time(NULL); */
+  if (reason > 0) {
+    return;
+  }
 
-  /* debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason); */
+  if (went_offline == 0)
+    went_offline = time(NULL);
 
-  /* attempt_recovery(); */
+  debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason);
 
-  /* // Offline collection */
-  /* collect_and_send_data(online); */
   /* restart_or_reboot(); */
 }
 
-void restore_original()
-{
-  if ((remove(NETWORK_FILE) == 0) && (rename(NETWORK_ORIGINAL, NETWORK_FILE) == 0)) {;
-    debug("Restoring original network");
-    return;
-  }
-  if (copy_file(NETWORK_BAK, NETWORK_FILE) != 1) {
-    if (access(NETWORK_FILE, F_OK ) == -1)
-      recover_network();
-    debug("I HAVE NO NETWORK FILE!");
-  }
-}
+/* void restore_original() */
+/* { */
+/*   if ((remove(NETWORK_FILE) == 0) && (rename(NETWORK_ORIGINAL, NETWORK_FILE) == 0)) {; */
+/*     debug("Restoring original network"); */
+/*     return; */
+/*   } */
+/*   if (copy_file(NETWORK_BAK, NETWORK_FILE) != 1) { */
+/*     if (access(NETWORK_FILE, F_OK ) == -1) */
+/*       recover_network(); */
+/*     debug("I HAVE NO NETWORK FILE!"); */
+/*   } */
+/* } */
 
-int should_recover()
-{
-  if (file_present(NETWORK_ORIGINAL)) {
-    debug("I AM GOING TO RESTORE THE ORIGINAL FILE!");
-    restore_original();
-  } else if (!tried_backup && file_present(NETWORK_BAK)) {
-    tried_backup = 1;
-    return 1;
-  }
-  return 0;
-}
+/* int should_recover() */
+/* { */
+/*   if (file_present(NETWORK_ORIGINAL)) { */
+/*     debug("I AM GOING TO RESTORE THE ORIGINAL FILE!"); */
+/*     restore_original(); */
+/*   } else if (!tried_backup && file_present(NETWORK_BAK)) { */
+/*     tried_backup = 1; */
+/*     return 1; */
+/*   } */
+/*   return 0; */
+/* } */
 
-void recover_network_config()
-{
-  if (copy_file(NETWORK_FILE, NETWORK_ORIGINAL))
-    debug("Backing up the original network file");
-  copy_file(NETWORK_BAK, NETWORK_FILE);
-}
+/* void recover_network_config() */
+/* { */
+/*   if (copy_file(NETWORK_FILE, NETWORK_ORIGINAL)) */
+/*     debug("Backing up the original network file"); */
+/*   copy_file(NETWORK_BAK, NETWORK_FILE); */
+/* } */
 
-void attempt_recovery()
-{
-  if (should_recover())
-    debug("Trying to connect with the backup config.");
-  recover_network_config();
-}
+/* void attempt_recovery() */
+/* { */
+/*   if (should_recover()) */
+/*     debug("Trying to connect with the backup config."); */
+/*   recover_network_config(); */
+/* } */
 
 int should_reboot()
 {
@@ -136,29 +146,29 @@ int should_restart_network()
   return 0;
 }
 
-int network_restart() {
-  if (should_restart_network())
-    restart_network();
-  return 0;
-}
+/* int network_restart() { */
+/*   if (should_restart_network()) */
+/*     restart_network(); */
+/*   return 0; */
+/* } */
 
 void restart_or_reboot()
 {
-  if (should_reboot()) {
-    if (reboot() != 0) {
-      debug("Could not restart the device.");
-      reset();
-    }
-    return;
-  } else {
-    network_restart();
-  }
-  if (delay <= MAX_INTERVAL)
-    delay *= 2;
+  /* if (should_reboot()) { */
+  /*   if (reboot() != 0) { */
+  /*     debug("Could not restart the device."); */
+  /*     reset(); */
+  /*   } */
+  /*   return; */
+  /* } else { */
+  /*   network_restart(); */
+  /* } */
+  /* if (delay <= MAX_INTERVAL) */
+  /*   delay *= 2; */
 
-  debug("Network restart delay set to %d seconds. Sleeping for %d before connection check.", delay, OFFLINE_INTERVAL);
-  sleep(OFFLINE_INTERVAL);
-  monitor();
+  /* debug("Network restart delay set to %d seconds. Sleeping for %d before connection check.", delay, OFFLINE_INTERVAL); */
+  /* sleep(OFFLINE_INTERVAL); */
+  /* monitor(); */
 }
 
 void recover_connection() {
@@ -177,20 +187,19 @@ void backup_config()
   return;
 }
 
-void heartbeat(int offline_reason)
-{
-  // Better logic here - we now run each time, even if offline
-  if (went_offline == 0)
-    debug("Connection check passed, all systems go.");
-  /* } else { */
-  /*   recover_connection(); */
-  /* } */
-  /* backup_config(); */
+/* void heartbeat(int offline_reason) */
+/* { */
+/*   // Better logic here - we now run each time, even if offline */
+/*   if (went_offline == 0) */
+/*     debug("Connection check passed, all systems go."); */
+/*   /1* } else { *1/ */
+/*   /1*   recover_connection(); *1/ */
+/*   /1* } *1/ */
+/*   /1* backup_config(); *1/ */
 
-  // Will exit fast if the device isn't initialized. Helps fast init.
-  if (options.initialized) {
-    collect_and_send_data(offline_reason);
-    debug("Sleeping for %d seconds.", options.monitor);
-    sleep(options.monitor);
-  }
-}
+/*   // Will exit fast if the device isn't initialized. Helps fast init. */
+/*   if (options.initialized) { */
+/*     collect_and_send_data(offline_reason); */
+/*     debug("Sleeping for %d seconds.", options.monitor); */
+/*   } */
+/* } */

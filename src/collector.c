@@ -600,8 +600,7 @@ void collect_data(int offline_reason)
   json_object *jv = json_object_new_string("4");
   json_object_object_add(jattr, "v", jv);
 
-  // Reason code ! //
-  bool bonline = offline_reason == 0 ? true : false;
+  bool bonline = offline_reason > 1 ? true : false;
   json_object *jonline = json_object_new_boolean(bonline);
   json_object_object_add(jattr, "online", jonline);
 
