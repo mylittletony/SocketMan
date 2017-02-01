@@ -25,10 +25,8 @@ time_t went_offline;
 int tried_backup;
 
 void restart_or_reboot();
-/* void heartbeat(int offline_reason); */
-/* void attempt_recovery(); */
 void check_dns_and_recover();
-void go_offline();
+void check_connection();
 void monitor();
 /* void recover_connection(); */
 
@@ -41,25 +39,12 @@ void reset()
 void monitor()
 {
   int rc = 0;
-  /* struct defaultRoute dr = route(); */
-
-  /* debug("Running the network monitor"); */
-  /* /1* if (strlen(dr.ip) == 0) { *1/ */
-  /* if (1) { */
-  /*   debug("No route found"); */
-  /*   goto offline; */
-  /* } */
-
-  /* debug("Default route: %s", dr.ip); */
 
   // Should run the check, nothing else
   rc = connection_check();
 
-  // Try and heartbeat, even if offline:
-  /* heartbeat(rc); */
-
   // Go offline - can happen before the init. loop
-  go_offline(rc);
+  check_connection(rc);
 
   // Will exit fast if the device isn't initialized. Helps fast init.
   if (!options.initialized) {
@@ -77,7 +62,7 @@ void monitor()
   sleep(options.monitor);
 }
 
-void go_offline(int reason) {
+void check_connection(int reason) {
   if (reason > 0) {
     return;
   }
