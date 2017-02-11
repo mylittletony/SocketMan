@@ -14,7 +14,7 @@ MAC=$(ifconfig $WAN | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'| sed
 
 check_wan() {
   if
-   [ "$WAN" ]
+    [ "$WAN" ]
   then
     return 0
   else
@@ -56,7 +56,7 @@ start_socketman() {
 }
 
 start_service() {
-touch $MACF
+    touch $MACF
   if
     check_mac $MACF
   then
@@ -69,7 +69,7 @@ touch $MACF
 }
 
 reload_service() {
-  echo "Restarting Socketman"
-  stop
-  start
+ echo "Restarting Socketman"
+ stop
+ start
 }
