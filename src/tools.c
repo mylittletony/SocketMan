@@ -93,6 +93,11 @@ int connection_check()
 {
   int result = 0;
 
+  struct timespec tstart={0,0}, tend={0,0};
+  if (options.debug) {
+    clock_gettime(CLOCK_MONOTONIC, &tstart);
+  }
+
   // Check IP - return if we do not have an IP - result 0
   struct defaultRoute dr = route();
   if (strlen(dr.ip) == 0) {
@@ -110,6 +115,13 @@ int connection_check()
   int web = health_check("www.google.com", 80);
   if (web >= 0) {
     result = result + 5;
+  }
+
+  if (options.debug) {
+    clock_gettime(CLOCK_MONOTONIC, &tend);
+    printf("Connection check finished in %.5f seconds\n",
+        ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
+        ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
   }
 
   return result;
