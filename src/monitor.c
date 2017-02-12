@@ -63,9 +63,14 @@ void monitor()
 }
 
 void check_connection(int reason) {
-  if (reason > 0) {
+  // If no IP or DNS && HTTP fail we restart the network once
+  // After N minutes, we restart the AP
+  if (reason > 1)
     return;
-  }
+
+  // Don't reboot if this is disabled!!
+  if (options.reboot == 0)
+    return;
 
   if (went_offline == 0)
     went_offline = time(NULL);
@@ -77,7 +82,7 @@ void check_connection(int reason) {
 
 int should_reboot()
 {
-  if (options.reboot > 0 && went_offline > 0)
+  if (went_offline > 0)
     return (time(NULL) - went_offline) >= options.reboot;
   return 0;
 }
@@ -116,7 +121,7 @@ void restart_or_reboot()
   if (delay <= MAX_INTERVAL)
     delay *= 2;
 
-  debug("Network restart delay set to %d seconds. Sleeping for %d before connection check.", delay, OFFLINE_INTERVAL);
+  /* debug("Network restart delay set to %d seconds. Sleeping for %d before connection check.", delay, OFFLINE_INTERVAL); */
   /* sleep(OFFLINE_INTERVAL); */
   /* monitor(); */
 }
