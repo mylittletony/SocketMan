@@ -1123,6 +1123,7 @@ Installing package 'socketman' from cucumber
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ 
 ```
 
+```
 In make menuconfig, go with defaults except for:
 
 Network -> Socketman [M]
@@ -1130,6 +1131,7 @@ Image Configuration [*]) -> Separate feed repositories [*] -> Enable feed cucumb
 <Save> (writes to .config)
 <Exit>
 <Exit>
+```
 
 ```
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ make menuconfig
