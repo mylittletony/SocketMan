@@ -107,7 +107,7 @@ int connection_check()
   }
 
   // Check 80 - change to customisable value
-  int web = health_check("google.com", 80);
+  int web = health_check("www.google.com", 80);
   if (web >= 0) {
     result = result + 5;
   }
