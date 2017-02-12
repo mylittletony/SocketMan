@@ -47,9 +47,8 @@ void monitor()
   check_connection(rc);
 
   // Will exit fast if the device isn't initialized. Helps fast init.
-  if (!options.initialized) {
+  if (!options.initialized)
     return;
-  }
 
   // Tests the connection every 2 heartbeats
   ping();
@@ -63,6 +62,11 @@ void monitor()
 }
 
 void check_connection(int reason) {
+
+  if (options.debug) {
+    debug("CONNECTION STATUS: %d", reason);
+  }
+
   // If no IP or DNS && HTTP fail we restart the network once
   // After N minutes, we restart the AP
   if (reason > 1)
@@ -120,13 +124,4 @@ void restart_or_reboot()
 
   if (delay <= MAX_INTERVAL)
     delay *= 2;
-
-  /* debug("Network restart delay set to %d seconds. Sleeping for %d before connection check.", delay, OFFLINE_INTERVAL); */
-  /* sleep(OFFLINE_INTERVAL); */
-  /* monitor(); */
 }
-
-/* void recover_connection() { */
-/*   debug("Connection recovered!"); */
-/*   reset(); */
-/* } */
