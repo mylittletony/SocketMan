@@ -45,8 +45,6 @@ ls -l
 For reference purposes, the commands and full output of each stage of the build process is shown below:
 
 ```
-#######################################################################
-
 nbowden@nbowden-Aspire-E1-532:~/dev$ git clone https://github.com/openwrt/openwrt.git
 Cloning into 'openwrt'...
 remote: Counting objects: 360799, done.
@@ -57,9 +55,9 @@ Resolving deltas: 100% (241421/241421), done.
 Checking connectivity... done.
 Checking out files: 100% (7357/7357), done.
 nbowden@nbowden-Aspire-E1-532:~/dev$ 
+```
 
-#######################################################################
-
+```
 nbowden@nbowden-Aspire-E1-532:~/dev$ cd openwrt
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ ls -l
 total 84
@@ -79,13 +77,13 @@ drwxrwxr-x  6 nbowden nbowden  4096 Feb  6 05:08 target
 drwxrwxr-x 12 nbowden nbowden  4096 Feb  6 05:08 toolchain
 drwxrwxr-x 57 nbowden nbowden  4096 Feb  6 05:08 tools
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ 
+```
 
-#######################################################################
-
+```
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ echo "src-git cucumber http://github.com/cucumber-tony/cucumber-feeds.git;for-15.05" >> feeds.conf.default
+```
 
-#######################################################################
-
+```
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ ./scripts/feeds update -a
 Updating feed 'packages' from 'https://github.com/openwrt/packages.git' ...
 Cloning into './feeds/packages'...
@@ -163,9 +161,9 @@ Create index file './feeds/cucumber.index'
 Collecting package info: done
 Collecting target info: done
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$
+```
 
-#######################################################################
-
+```
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ ./scripts/feeds install -a
 Installing all packages from feed packages.
 Installing package 'acl' from packages
@@ -1123,17 +1121,17 @@ Installing all packages from feed targets.
 Installing all packages from feed cucumber.
 Installing package 'socketman' from cucumber
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ 
-
-#######################################################################
+```
 
 In make menuconfig, go with defaults except for:
 
-# -> Network -> Socketman [M]
-# -> Image Configuration [*]) -> Separate feed repositories [*] -> Enable feed cucumber [*]
-# <Save> (writes to .config)
-# <Exit>
-# <Exit>
+Network -> Socketman [M]
+Image Configuration [*]) -> Separate feed repositories [*] -> Enable feed cucumber [*]
+<Save> (writes to .config)
+<Exit>
+<Exit>
 
+```
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ make menuconfig
 Collecting package info: done
 tmp/.config-package.in:51566:error: recursive dependency detected!
@@ -1151,9 +1149,9 @@ tmp/.config-package.in:32819:	symbol PACKAGE_luci-app-p2pblock depends on PACKAG
 *** Execute 'make' to start the build or try 'make help'.
 
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ 
+```
 
-#######################################################################
-
+```
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ make -j`grep -c processor /proc/cpuinfo`
  make[1] world
  make[2] tools/install
@@ -1356,9 +1354,9 @@ nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ make -j`grep -c processor /proc/cpu
  make[6] -C target/linux/ar71xx/image/lzma-loader compile loader.elf
  make[2] package/index
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ 
+```
 
-#######################################################################
-
+```
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt$ cd bin/ar71xx/packages/cucumber
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt/bin/ar71xx/packages/cucumber$ ls -l
 total 48
@@ -1367,8 +1365,6 @@ total 48
 -rw-r--r-- 1 nbowden nbowden   151 Feb  6 06:39 Packages.sig
 -rw-r--r-- 1 nbowden nbowden 32896 Feb  6 06:21 socketman_0d94378_ar71xx.ipk
 nbowden@nbowden-Aspire-E1-532:~/dev/openwrt/bin/ar71xx/packages/cucumber$ 
-
-#######################################################################
 ```
 
 
