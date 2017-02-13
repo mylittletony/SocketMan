@@ -284,10 +284,10 @@ void mqtt_connect() {
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
-  connected = false;
+  /* connected = false; */
   debug("Lost connection with broker: %s", options.mqtt_host);
-  sleep(5);
-  mqtt_connect();
+  /* sleep(5); */
+  /* mqtt_connect(); */
 }
 
 void ping_mqtt()
