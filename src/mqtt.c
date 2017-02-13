@@ -253,12 +253,6 @@ void *reconnect(UNUSED(void *x))
   return NULL;
 }
 
-void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
-{
-  /* connected = false; */
-  debug("Lost connection with broker: %s", options.mqtt_host);
-}
-
 void mqtt_connect() {
   if (strcmp(options.mqtt_host, "") == 0) {
     debug("No MQTT host, skipping connect.");
@@ -286,6 +280,13 @@ void mqtt_connect() {
   }
 
   return;
+}
+
+void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
+{
+  /* connected = false; */
+  debug("Lost connection with broker: %s", options.mqtt_host);
+  mqtt_connect();
 }
 
 void ping_mqtt()
