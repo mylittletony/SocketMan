@@ -257,7 +257,6 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 {
   connected = false;
   debug("Lost connection with broker: %s", options.mqtt_host);
-  /* sleep(10); */
 }
 
 void mqtt_connect() {
@@ -330,7 +329,7 @@ int dial_mqtt()
 
   client_id_generate(mqtt_id);
 
-  int keepalive = 30;
+  int keepalive = 10;
   bool clean_session = true;
 
   mosq = mosquitto_new(mqtt_id, clean_session, NULL);
