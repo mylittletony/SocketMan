@@ -286,6 +286,7 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 {
   /* connected = false; */
   debug("Lost connection with broker: %s", options.mqtt_host);
+  sleep(5);
   mqtt_connect();
 }
 
