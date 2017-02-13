@@ -1,0 +1,291 @@
+ubiquiti_unifi: &unifi
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+ubiquiti_airrouter: &airrouter
+  lan_wan:  ["eth0", "eth1"]
+  switch:   [ "0 1 2 3 4" ]
+  radios:   ["radio0"]
+
+ubiquiti_unifi_ac_lite:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  require_mode: "ac"
+
+ubiquiti_unifi_ac_pro:
+  lan_wan:  ["eth1", "eth0.1"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0t 2 3" ]
+  require_mode: "ac"
+
+engenius_esr900:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4",  "0t 5"]
+  radios:   ["radio0", "radio1"]
+
+tp_link_tl_wdr3600_4300_4310:
+  lan_wan:  [ "eth0.1", "eth0.2" ]
+  switch:   [ "0t 2 3 4 5", "0t 1" ]
+  radios:   [ "radio0", "radio1" ]
+
+ubiquiti_unifi_ap_pro: &pro
+  lan_wan:  [ "eth1", "eth0" ]
+  switch:   [ "0 1 2" ]
+  radios:   [ "radio1", "radio0" ]
+
+d_link_dir_505_rev_a1: &505
+  lan_wan: [ "eth0", "eth1" ]
+  radios:   ["radio0"]
+
+wd_my_net_n600:
+  lan_wan:  ["eth0", "eth1"]
+  switch:   [ "0 1 2 3 4" ]
+  radios:   ["radio0", "radio1"]
+
+openmesh_mr600: &mr600
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+
+openmesh_om2p: &om2p
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+meraki_mr16: &mr16
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio0", "radio1" ]
+
+openmesh_mr1750: &mr1750
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+openmesh_om5p_ac:
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+powercloud_cap324: &cap324
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+
+meraki_mr18: &mr18
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio0", "radio1" ]
+
+devolo_dlan_pro_1200+_wifi_ac:
+  lan_wan:  [ "eth1", "eth0" ]
+  switch:   [ "0 2 3 4" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+devolo_dlan_pro_1200+_wifi_n:
+  lan_wan:  [ "eth1", "eth0" ]
+  switch:   [ "0 2 3 4" ]
+  radios:   ["radio0"]
+
+compex_wpj344:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   [ "0t 3", "0t 2" ]
+  radios:   ["radio0"]
+
+witelcom_n3_iap_dual:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   [ "0t 3", "0t 2" ]
+  radios:   ["radio1", "radio0"]
+  require_mode: "ac"
+
+compex_wpj531:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+witelcom_n3_iap_single:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+compex_wpj558:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   [ "0t 3", "0t 2" ]
+  radios:   ["radio0"]
+
+witelcom_n3_iap_dual3x3:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   [ "0t 3", "0t 2" ]
+  radios:   ["radio1", "radio0"]
+  require_mode: "ac"
+
+mikrotik_routerboard_2011uias:
+  lan_wan:  ["eth0.1 eth1", "eth0.2"]
+  switch:   ["0t 2 3 4 5",  "0t 1"]
+
+mikrotik_routerboard_951g_2hnd:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 2 3 4 5", "0t 1"]
+  radios:   ["radio0"]
+
+devolo_wifi_pro_1750c: &devolo_wifi_pro_1750c
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+devolo_wifi_pro_1750i: &devolo_wifi_pro_1750i
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+devolo_wifi_pro_1750e: &devolo_wifi_pro_1750e
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+devolo_wifi_pro_1200e: &devolo_wifi_pro_1200e
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+devolo_wifi_pro_1200i: &devolo_wifi_pro_1200i
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+devolo_wifi_pro_1750x: &devolo_wifi_pro_1750x
+  lan_wan:  [ "eth1", "eth0" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+ligowave_nft_1n:
+  lan_wan:  ["eth1", "eth0"]
+  switch:   [ "0 2 3" ]
+  radios:   ["radio0"]
+
+no_wan_dummy:
+  lan_wan:  [ "eth0" ]
+  switch:   [ "0 2 3 4" ]
+  radios:   [ "radio1", "radio0" ]
+  require_mode: "ac"
+
+sitecom_wlr_8100:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 2 3 4 5",  "0t 1"]
+  radios:   ["radio0", "radio1"]
+
+jjplus_ja76pf2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+allnet_all0258n:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+allnet_all0315n:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+engenius_epg5000:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0t 1 2 3 4", "0t 5" ]
+  require_mode: "ac"
+
+engenius_esr1750:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0t 1 2 3 4", "0t 5" ]
+  require_mode: "ac"
+
+buffalo_wzr_450hp2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+  switch:   [ "0 1 2 3 4", "5 6" ]
+
+tp_link_tl_wr1043nd_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+  switch:   [ "0 1 2 3 4", "5 6" ]
+
+tp_link_tl_wr1043nd:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio0"]
+  switch:   [ "1 2 3 4 5t", "0 5t" ]
+
+tp_link_tl_wr2543n_nd:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio0"]
+  switch:   [ "1 2 3 4 9t", "0 9t" ]
+
+domywifi_dw33d:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0 2 3 4 5", "1 6" ]
+  require_mode: "ac"
+
+tp_link_archer_c5:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0 2 3 4 5", "1 6" ]
+  require_mode: "ac"
+
+tp_link_archer_c7:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0 2 3 4 5", "1 6" ]
+  require_mode: "ac"
+
+tp_link_tl_wdr4900_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0 2 3 4 5", "1 6" ]
+
+belkin_ac1750db:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "2 3 4 5 6", "0 1" ]
+  require_mode: "ac"
+
+zyxel_nbg6716:
+  lan_wan:  ["eth0.1", "eth1"]
+  radios:   ["radio1", "radio0"]
+  switch:   [ "0t 1 2 3 4", "5 6" ]
+  require_mode: "ac"
+
+aerohive_hiveap_121:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0", "radio1"]
+  
+ meraki_mr12:
+  <<: *unifi
+
+ubiquiti_unifiap_outdoor:
+  <<: *unifi
+
+ubiquiti_nanostation_m:
+  <<: *unifi
+
+ubiquiti_unifiap_outdoor_plus:
+  <<: *unifi
+
+ubiquiti_bullet_m:
+  <<: *unifi
+
+engenius_eap300_v2:
+  <<: *unifi
+
+openmesh_om2pv2:
+  <<: *om2p
+
+openmesh_om2p_lc:
+  <<: *om2p
+
+openmesh_om2p_hs:
+  <<: *om2p
+
+openmesh_om2p_hsv2:
+  <<: *om2p
+
+openmesh_mr600v2:
+  <<: *mr600
+
+openmesh_mr900:
+  <<: *mr600
+
+openmesh_mr900v2:
+  <<: *mr600
