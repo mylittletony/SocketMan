@@ -251,7 +251,7 @@ aerohive_hiveap_121:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0", "radio1"]
   
- meraki_mr12:
+meraki_mr12:
   <<: *unifi
 
 ubiquiti_unifiap_outdoor:
