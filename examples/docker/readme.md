@@ -1,3 +1,7 @@
+## Build your own SocketMan with Docker
+
+Same yourself a few hours, use this to build your images and shoot them out as packages.
+
 ## How to use:
 
 ```
