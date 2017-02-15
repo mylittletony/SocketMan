@@ -10,6 +10,6 @@ Once done, file will be in your volume of the container. In the above example th
 
 ### Options:
 
-LEDE_TARGET = Target/Subtarget you want to build with. Examples are apm821xx, ar71xx, etc.
-LEDE_REPO = Repo of LEDE/OpenWRT you want to use. LEDE is used by default.
-LEDE_BRANCH = Branch of the repo you want to use. "master" is used by default.
+- LEDE_TARGET = Target/Subtarget you want to build with. Examples are apm821xx, ar71xx, etc.
+- LEDE_REPO = Repo of LEDE/OpenWRT you want to use. LEDE is used by default.
+- LEDE_BRANCH = Branch of the repo you want to use. "master" is used by default.
