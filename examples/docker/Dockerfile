@@ -1,6 +1,3 @@
-# Dockerfile used to build a copy of the Socketman binary for OpenWRT/LEDE
-#
-
 FROM debian:latest
 MAINTAINER Chris Blake <chris@servernetworktech.com>
 
