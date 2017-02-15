@@ -1,8 +1,10 @@
 ## How to use:
 
+```
 docker build -t socketman:latest ./
 sudo mkdir /opt/socketman && sudo chown -R 1000:1000 /opt/socketman
 docker run -e LEDE_TARGET=x86_64 -v /opt/socketman:/builddir/save socketman
+```
 
 Once done, file will be in your volume of the container. In the above example this would be located at /opt/socketman. You can also run without a volume mount, but then the file will be stuck in a docker volume until you extract it.
 
