@@ -129,6 +129,16 @@ d_link_dir_615_rev._i1:
 d_link_dir_505_rev_a1:
   lan_wan: ["eth0", "eth1"]
   radios:   ["radio0"]
+--
+d_link_dgl_5500_rev._a1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4", "0t 5"]
+  radios:   ["radio1", "radio0"]
+
+d_link_dir_825_rev._c1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4", "0t 5"]
+  radios:   ["radio1", "radio0"]
 
 engenius_eap300_v2:
   lan_wan:  ["eth1", "eth0"]
@@ -155,6 +165,26 @@ easylink_el_m150:
   lan_wan:  ["eth1", "eth0"]
   switch:   ["0 1 3"]
   radios:   ["radio0"]
+
+d_link_dhp_1565_rev._a1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4",  "0t 5"]
+  radios:   ["radio0", "radio1"]
+
+d_link_dir_835_rev._a1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4",  "0t 5"]
+  radios:   ["radio0", "radio1"]
+
+netgear_wndr3700v4:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4",  "0t 5"]
+  radios:   ["radio0", "radio1"]
+
+netgear_wndr4300:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4",  "0t 5"]
+  radios:   ["radio0", "radio1"]
 
 jjplus_ja76pf2:
   lan_wan:  ["eth1", "eth0"]
@@ -445,6 +475,11 @@ witelcom_n3_iap_dual3x3:
 wd_my_net_n600:
   lan_wan:  ["eth0", "eth1"]
   switch:   ["0 1 2 3 4"]
+  radios:   ["radio0", "radio1"]
+
+wd_my_net_n750:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4", "0t 5"]
   radios:   ["radio0", "radio1"]
 
 zyxel_nbg6716:
