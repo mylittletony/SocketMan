@@ -18,6 +18,8 @@
 #define M 10
 #define N 100
 
+int counter = 0;
+bool certs_checked = false;
 struct mosquitto *mosq = NULL;
 bool connected = false;
 time_t m0=0;
@@ -233,6 +235,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
 {
   int i;
+  counter = 0;
   debug("Subscribed (mid: %d): %d", mid, granted_qos[0]);
   for(i=1; i<qos_count; i++) {
     debug("QOS: %d", granted_qos[i]);
@@ -259,19 +262,13 @@ void mqtt_connect() {
     return;
   }
 
-  // Do the port thing here SM....
-  // check connectivity
-  // if online, change port
-  // Notify tony of port change
-
   /* int ports[4] = {0,0,0,0}; */
   /* int test[4] = {80,443,8080,8443}; */
 
   int rc = dial_mqtt();
 
-  if (!rc) {
+  if (!rc)
     return;
-  }
 
   pthread_t conn_thread;
   if(pthread_create(&conn_thread, NULL, reconnect, NULL)) {
@@ -284,10 +281,18 @@ void mqtt_connect() {
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
-  /* connected = false; */
-  debug("Lost connection with broker: %s", options.mqtt_host);
-  /* sleep(5); */
-  /* mqtt_connect(); */
+  counter++;
+  debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
+  if (counter > 1 && !certs_checked) {
+    certs_checked = true;
+    int check = check_certificates();
+    if (check == 0) {
+      mosquitto_destroy(mosq);
+      mosquitto_lib_cleanup();
+      debug("Exiting, new certificates installed");
+      exit(0);
+    }
+  }
 }
 
 void ping_mqtt()
@@ -372,7 +377,6 @@ int dial_mqtt()
     json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
     json_object_object_add(jobj, "event_type", json_object_new_string("CONNECT"));
     json_object_object_add(jmeta, "online", json_object_new_string("0"));
-    /* json_object_object_add(jmeta, "msg", json_object_new_string("Went offline")); */
     json_object_object_add(jmeta, "client_id", json_object_new_string(mqtt_id));
     json_object_object_add(jobj, "meta", jmeta);
 

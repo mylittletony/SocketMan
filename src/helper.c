@@ -171,7 +171,7 @@ int in_array(int val, int *arr, int size){
   return 0;
 }
 
-void check_certificates()
+int check_certificates()
 {
 
   unsigned char c[MD5_DIGEST_LENGTH];
@@ -217,13 +217,13 @@ void check_certificates()
   // Missing CA or not connected to Internet
   if (current[0] == '\0') {
     debug("CA empty, continuing without updating.");
-    return;
+    return 0;
   }
 
   // CA matches our one!
   if (current[0] != '\0' && strcmp(current, md) == 0) {
     debug("CA matches current, not updating!");
-    return;
+    return 0;
   }
 
   // CA doesn't match, we shall update it
@@ -233,5 +233,5 @@ void check_certificates()
 update:
   debug("Installing new CA");
   install_ca();
-  return;
+  return -1;
 }
