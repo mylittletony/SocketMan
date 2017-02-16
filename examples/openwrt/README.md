@@ -59,8 +59,16 @@ Collected errors:
  ```
 
  Then try to install things again.
+ 
+ ### socketman.init
+ 
+Here you will find a working example of the socketman init.
+ 
+Add this init in a ```files``` directory in the same place as the ```Makefile``` in your package dir.
+Procd is enabled and a respaw threshold is added. 
+The init will also populate ```/etc/mac``` with the WAN MAC which is required by SocketMan.
 
- ### Dependencies
+### Dependencies
 
  - curl
  - json-c
