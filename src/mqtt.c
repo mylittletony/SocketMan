@@ -283,8 +283,16 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 {
   counter++;
   debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
-  if (counter > 1 && !certs_checked) {
+
+  // Checks once after 60s, then will only check every 180s
+  if ((counter > 60 && !certs_checked) || counter > 180) {
     certs_checked = true;
+    if (counter > 180) {
+      // leave false to force check every 180
+      /* certs_checked = false; */
+      counter = 0;
+    }
+
     int check = check_certificates();
     if (check == 0) {
       mosquitto_destroy(mosq);
