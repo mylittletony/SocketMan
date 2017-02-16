@@ -281,23 +281,18 @@ void mqtt_connect() {
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
-  counter++;
   debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
+  counter++;
 
   // Checks once after 60s, then will only check every 180s
-  if (1) { //((counter > 60 && !certs_checked) || counter > 180) {
+  if ((counter > 60 && !certs_checked) || counter > 180) {
     certs_checked = true;
-    if (counter > 180) {
-      // leave false to force check every 180
-      /* certs_checked = false; */
+    if (counter > 180)
       counter = 0;
-    }
 
     int check = check_certificates();
-    if (check == 0) {
-      mosquitto_destroy(mosq);
-      mosquitto_lib_cleanup();
-      debug("Exiting, new certificates installed");
+    if (check < 0) {
+      debug("Restarting MQTT, new certificates installed");
       mosquitto_reconnect_async(mosq);
     }
   }

@@ -233,5 +233,5 @@ int check_certificates()
 update:
   debug("Installing new CA");
   install_ca();
-  return -1;
+  return 0;
 }
