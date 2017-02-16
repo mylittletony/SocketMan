@@ -128,8 +128,8 @@ void parse_config(char *buffer)
 
   // How often to check the network connection
   if (options.monitor <= 15) {
-    debug("Setting monitor flag to 15 seconds, not %d", options.monitor);
-    options.monitor = 15;
+    debug("Setting monitor flag to 20 seconds, not %d", options.monitor);
+    options.monitor = 20;
   };
 
   // How often to collect and send data. Ensure greater than monitor
@@ -148,11 +148,11 @@ void parse_config(char *buffer)
 
   // Ensure ping is set
   if (options.ping_interval == 0)
-    options.ping_interval = 180;
+    options.ping_interval = 30;
 
   // Ensure not less than 60
-  if (options.ping_interval < 60)
-    options.ping_interval = 60;
+  if (options.ping_interval < 30)
+    options.ping_interval = 30;
 
   // Used for the DNS check
   if (strcmp(options.health_url, "") == 0)

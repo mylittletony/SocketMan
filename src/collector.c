@@ -496,7 +496,7 @@ void format_dhcp(json_object *jdhcp_array)
   }
 }
 
-void collect_data(int online)
+void collect_data(int offline_reason)
 {
 
   struct timespec tstart={0,0}, tend={0,0};
@@ -600,8 +600,7 @@ void collect_data(int online)
   json_object *jv = json_object_new_string("4");
   json_object_object_add(jattr, "v", jv);
 
-  // Reason code ! //
-  bool bonline = online ? true : false;
+  bool bonline = offline_reason > 1 ? true : false;
   json_object *jonline = json_object_new_boolean(bonline);
   json_object_object_add(jattr, "online", jonline);
 
@@ -654,16 +653,16 @@ cleanup:
   json_object_put(jobj);
 }
 
-void collect_and_send_data(int online)
+void collect_and_send_data(int offline_reason)
 {
-  collect_data(online);
+  collect_data(offline_reason);
 
   // Finish or delete !! Always returns 0
   if (unauthorized()) {
   }
 }
 
-bool should_backup(char *type) {
+bool should_backup(const char *type) {
   int i;
   int size = 3;
 

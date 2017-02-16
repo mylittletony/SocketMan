@@ -24,5 +24,4 @@ void ping()
     return;
 
   ping_mqtt();
-  ping_rest();
 }

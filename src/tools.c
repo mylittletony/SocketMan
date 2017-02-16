@@ -13,6 +13,7 @@
 #include "options.h"
 #include "dbg.h"
 #include "platform.h"
+#include "network.h"
 #include "system.h"
 #include <compiler.h>
 
@@ -20,7 +21,7 @@
 #define   NI_MAXHOST 1025
 #endif
 
-int open_socket(char *ip)
+int open_socket(char *ip, int port)
 {
   int error = 0; // Socket error
   struct sockaddr_in address;
@@ -31,11 +32,11 @@ int open_socket(char *ip)
 
   sock = socket(PF_INET, SOCK_STREAM , 0);
   if (sock < 0)
-    return 150;
+    return -1;
 
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = inet_addr(ip);
-  address.sin_port = htons(options.health_port);
+  address.sin_port = htons(port);
 
   FD_ZERO(&fdset);
   FD_SET(sock, &fdset);
@@ -49,7 +50,7 @@ int open_socket(char *ip)
   setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &so_keepalive, sizeof(so_keepalive));
 
   if (connect(sock, (struct sockaddr *)&address , sizeof(address)) < 0)
-    error = 150;
+    error = -1;
 
   char *message = "HELLO";
   if ((error == 0) && (send(sock , message , strlen(message) , 0) < 0))
@@ -59,24 +60,71 @@ int open_socket(char *ip)
   return error;
 }
 
-int connection_check()
+int health_check(char *url, int port)
 {
   struct addrinfo *result;
   struct in_addr addr;
-
   int error;
 
-  error = getaddrinfo(options.health_url, NULL, NULL, &result);
+  char *t = "DNS";
+  if (port > 53) {
+    t = "WEB";
+  }
+
+  error = getaddrinfo(url, NULL, NULL, &result);
   if (error != 0)
   {
-    fprintf(stderr, "DNS Lookup Failed: %s\n", gai_strerror(error));
-    return 100;
+    debug("%s Lookup Failed: %s", t, gai_strerror(error));
+    return -1;
   }
 
   addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
-  printf("\nUsing %s for internet check\n", inet_ntoa(addr));
+  debug("\nUsing %s for %s check", inet_ntoa(addr), t);
   freeaddrinfo(result);
-  return(open_socket(inet_ntoa(addr)));
+
+  return open_socket(inet_ntoa(addr), port);
+}
+
+// Connection Check tests the route, DNS and IP and returns a
+// value greater than 0 if it was a (semi) success.
+// FAIL = 0, IP = 1, IP+DNS = 4, IP+HTTP = 6, IP+DNS+HTTP = 9
+// Use 1,3,5 primary number logic to get to this result
+int connection_check()
+{
+  int result = 0;
+
+  struct timespec tstart={0,0}, tend={0,0};
+  if (options.debug) {
+    clock_gettime(CLOCK_MONOTONIC, &tstart);
+  }
+
+  // Check IP - return if we do not have an IP - result 0
+  struct defaultRoute dr = route();
+  if (strlen(dr.ip) == 0) {
+    return result;
+  }
+  result = 1;
+
+  // Run DNS check
+  int dns = health_check(options.health_url, options.health_port);
+  if (dns >= 0) {
+    result = result + 3;
+  }
+
+  // Check 80 - change to customisable value
+  int web = health_check("www.google.com", 80);
+  if (web >= 0) {
+    result = result + 5;
+  }
+
+  if (options.debug) {
+    clock_gettime(CLOCK_MONOTONIC, &tend);
+    printf("Connection check finished in %.5f seconds\n",
+        ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
+        ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
+  }
+
+  return result;
 }
 
 int copy_file(char *from, char *to)
