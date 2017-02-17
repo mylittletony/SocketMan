@@ -129,7 +129,7 @@ d_link_dir_615_rev._i1:
 d_link_dir_505_rev_a1:
   lan_wan: ["eth0", "eth1"]
   radios:   ["radio0"]
---
+
 d_link_dgl_5500_rev._a1:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0t 1 2 3 4", "0t 5"]
