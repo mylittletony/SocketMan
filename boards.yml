@@ -29,6 +29,18 @@ atheros_db120_reference_board:
   lan_wan:  ["eth0.1 eth1", "eth0.2"]
   switch:   ["0t 2 3 4 5",  "0t 1"]
 
+alfa_network_ap120c:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+
+azurewave_aw_nr580:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+allnet_all0305:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+
 belkin_ac1750db:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
@@ -61,6 +73,10 @@ compex_wpj344:
   radios:   ["radio0"]
 
 compex_wpj531:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+compex_wp543:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
@@ -129,7 +145,7 @@ d_link_dir_615_rev._i1:
 d_link_dir_505_rev_a1:
   lan_wan: ["eth0", "eth1"]
   radios:   ["radio0"]
---
+
 d_link_dgl_5500_rev._a1:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0t 1 2 3 4", "0t 5"]
@@ -141,6 +157,10 @@ d_link_dir_825_rev._c1:
   radios:   ["radio1", "radio0"]
 
 engenius_eap300_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+easylink_el_mini:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
@@ -218,6 +238,22 @@ mikrotik_routerboard_450:
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
+mikrotik_routerboard_411_a_ah:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+mikrotik_routerboard_911g_2hpnd:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+mikrotik_routerboard_911g_5hpacd:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+mikrotik_routerboard_sxt_lite2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 meraki_mr18:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0", "radio1"]
@@ -266,6 +302,10 @@ netgear_wpn824n:
   lan_wan:  ["eth1", "eth0"]
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
+
+netgear_wndap360:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
 
 nc_link_smart_300:
   lan_wan:  ["eth1", "eth0"]
@@ -342,6 +382,86 @@ trendnet_tew_673gru:
   radios:   ["radio1", "radio0"]
   switch:   ["0 1 2 3 5t"]
   radios:   ["radio1", "radio0"]
+
+senao_cap4200ag:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+
+senao_eap7660d:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr10u:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr11u:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr12u:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr13u:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr3020:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr3040:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr3040_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa701nd_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa7210n_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa750re:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa850re:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa830re_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa901nd:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa901nd_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa901nd_v3:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wa901nd_v4:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_wr703n_v1:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+alfa_network_tube2h:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
 
 tp_link_archer_c5:
   lan_wan:  ["eth1", "eth0"]
@@ -424,6 +544,10 @@ ubiquiti_airrouter:
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
+ubiquiti_loco_m_xw:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+
 ubiquiti_unifi_ac_lite:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
@@ -471,6 +595,10 @@ witelcom_n3_iap_dual3x3:
   switch:   ["0t 3", "0t 2"]
   radios:   ["radio1", "radio0"]
   require_mode: "ac"
+
+wd_my_net_wi_fi_range_extender:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
 
 wd_my_net_n600:
   lan_wan:  ["eth0", "eth1"]
