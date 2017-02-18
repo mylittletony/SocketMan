@@ -500,6 +500,13 @@ void format_dhcp(json_object *jdhcp_array)
 void collect_data(int offline_reason)
 {
 
+  debug("ajaksdfkajhslaksdjflasdkjflaksjdflaksdjflaksjdf");
+  debug("ajaksdfkajhslaksdjflasdkjflaksjdflaksdjflaksjdf");
+  debug("ajaksdfkajhslaksdjflasdkjflaksjdflaksdjflaksjdf");
+  debug("ajaksdfkajhslaksdjflasdkjflaksjdflaksdjflaksjdf");
+  debug("ajaksdfkajhslaksdjflasdkjflaksjdflaksdjflaksjdf");
+  debug("ajaksdfkajhslaksdjflasdkjflaksjdflaksdjflaksjdf");
+
   int *clients = 0;
   struct timespec tstart={0,0}, tend={0,0};
   clock_gettime(CLOCK_MONOTONIC, &tstart);
