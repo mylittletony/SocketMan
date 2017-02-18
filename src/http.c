@@ -209,12 +209,13 @@ int post_cache()
   struct CurlResponse c;
   init_chunk(&c);
 
+  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-  /* curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem"); */
+  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
   curl_formadd(&post, &last, CURLFORM_COPYNAME, "data",
