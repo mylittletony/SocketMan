@@ -218,8 +218,8 @@ int post_cache()
   curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-  curl_formadd(&post, &last, CURLFORM_COPYNAME, "data",
-      CURLFORM_FILE, options.archive, CURLFORM_END);
+  /* curl_formadd(&post, &last, CURLFORM_COPYNAME, "data", */
+  /*     CURLFORM_FILE, options.archive, CURLFORM_END); */
 
   curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
 
