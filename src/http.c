@@ -78,6 +78,9 @@ void append_url_token(char *url, char *buf)
 long do_curl(CURL *curl, char *url)
 {
   long http_code = 0;
+  if (options.debug) {
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+  }
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_perform(curl);
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
@@ -208,13 +211,10 @@ int post_cache()
 
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
-  if (options.debug) {
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-  }
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem");
+  /* curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/bundle.pem"); */
   curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
   curl_formadd(&post, &last, CURLFORM_COPYNAME, "data",
