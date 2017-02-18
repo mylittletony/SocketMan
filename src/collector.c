@@ -612,7 +612,6 @@ void collect_data(int offline_reason)
   json_object *jstatus = json_object_new_int(offline_reason);
   json_object_object_add(jattr, "status", jstatus);
 
-  debug("SSSSSSSSSSSSSSS %d", online);
   json_object *jconnected = json_object_new_int(online);
   json_object_object_add(jattr, "connected", jconnected);
 
@@ -627,11 +626,6 @@ void collect_data(int offline_reason)
   json_object *jsplash_array = json_object_new_array();
   format_splash(jsplash_array);
   json_object_object_add(jobj, "splash", jsplash_array);
-
-  // MISSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // INTERFACES
-  // CAPS
-  // MQTT STATUS
 
   json_object_object_add(jobj, "device", jattr);
 
