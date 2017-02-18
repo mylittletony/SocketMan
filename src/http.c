@@ -78,8 +78,8 @@ void append_url_token(char *url, char *buf)
 long do_curl(CURL *curl, char *url)
 {
   long http_code = 0;
-  if (options.debug == true) {
-    /* curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); */
+  if (options.debug == 1) {
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
   }
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_perform(curl);
