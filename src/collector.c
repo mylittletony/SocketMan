@@ -345,7 +345,7 @@ void run_interface_scan(json_object *jiface_array,
       format_stations(e->ssid, e->ifname, st, jstations);
       json_object_array_add(jstations_array, jstations);
     }
-    clients++;
+    /* clients++; */
     debug("%d clients connected to %s", xx-1, e->ifname);
 
     json_object *jssids = json_object_new_object();
