@@ -307,7 +307,7 @@ struct radio_list* add_to_list(struct iw_ssid_entry *e)
 }
 
 void run_interface_scan(json_object *jiface_array,
-    json_object *jstations_array, json_object *jscan_array
+    json_object *jstations_array, json_object *jscan_array, int *clients
     )
 {
 
@@ -345,7 +345,7 @@ void run_interface_scan(json_object *jiface_array,
       format_stations(e->ssid, e->ifname, st, jstations);
       json_object_array_add(jstations_array, jstations);
     }
-    /* clients++; */
+    (*clients)++;
     debug("%d clients connected to %s", xx-1, e->ifname);
 
     json_object *jssids = json_object_new_object();
@@ -500,7 +500,7 @@ void format_dhcp(json_object *jdhcp_array)
 void collect_data(int offline_reason)
 {
 
-  /* int *clients = 0; */
+  int *clients = 0;
   struct timespec tstart={0,0}, tend={0,0};
   clock_gettime(CLOCK_MONOTONIC, &tstart);
 
@@ -532,7 +532,7 @@ void collect_data(int offline_reason)
     json_object *jstations_array = json_object_new_array();
     json_object *jscan_array = json_object_new_array();
 
-    run_interface_scan(jiface_array, jstations_array, jscan_array);
+    run_interface_scan(jiface_array, jstations_array, jscan_array, clients);
 
     json_object_object_add(jobj, "ssids", jiface_array);
     json_object_object_add(jobj, "survey", jscan_array);
@@ -605,8 +605,8 @@ void collect_data(int offline_reason)
   json_object *jstatus = json_object_new_int(offline_reason);
   json_object_object_add(jattr, "status", jstatus);
 
-  /* json_object *jclients = json_object_new_int(*clients); */
-  /* json_object_object_add(jattr, "connected", jclients); */
+  json_object *jclients = json_object_new_int(*clients);
+  json_object_object_add(jattr, "connected", jclients);
 
   time_t now = time(NULL);
   json_object *jcreated_at = json_object_new_int(now);
