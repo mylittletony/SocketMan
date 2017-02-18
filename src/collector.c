@@ -608,6 +608,8 @@ void collect_data(int offline_reason)
   json_object *jclients = json_object_new_int(*clients);
   json_object_object_add(jattr, "connected", jclients);
 
+  debug("sssssssssssssssssss %d", *clients);
+
   time_t now = time(NULL);
   json_object *jcreated_at = json_object_new_int(now);
   json_object_object_add(jattr, "created_at", jcreated_at);
