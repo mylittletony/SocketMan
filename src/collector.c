@@ -605,8 +605,9 @@ void collect_data(int offline_reason)
   json_object *jstatus = json_object_new_int(offline_reason);
   json_object_object_add(jattr, "status", jstatus);
 
-  /* json_object *jclients = json_object_new_int(clients); */
-  /* json_object_object_add(jattr, "connected", jclients); */
+  debug("SSSSSSSSSSSSSSS %d", clients);
+  json_object *jclients = json_object_new_int(clients);
+  json_object_object_add(jattr, "connected", jclients);
 
   time_t now = time(NULL);
   json_object *jcreated_at = json_object_new_int(now);
