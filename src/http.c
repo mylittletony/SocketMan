@@ -206,8 +206,11 @@ int post_cache()
   struct CurlResponse c;
   init_chunk(&c);
 
-  /* curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); */
-  /* curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c); */
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
+  if (options.debug) {
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+  }
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Cucumber Bot");
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
