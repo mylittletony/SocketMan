@@ -21,7 +21,7 @@ time_t last_collect = 0;
 int collected;
 
 /// Remove ///
-int connected = 0;
+int online = 0;
 
 struct radio_list *curr, *head;
 
@@ -349,7 +349,7 @@ void run_interface_scan(json_object *jiface_array,
       json_object_array_add(jstations_array, jstations);
     }
 
-    connected++;
+    online++;
     debug("%d clients connected to %s", xx-1, e->ifname);
 
     json_object *jssids = json_object_new_object();
@@ -504,7 +504,7 @@ void format_dhcp(json_object *jdhcp_array)
 void collect_data(int offline_reason)
 {
 
-  connected = 0;
+  online = 0;
   struct timespec tstart={0,0}, tend={0,0};
   clock_gettime(CLOCK_MONOTONIC, &tstart);
 
@@ -609,8 +609,8 @@ void collect_data(int offline_reason)
   json_object *jstatus = json_object_new_int(offline_reason);
   json_object_object_add(jattr, "status", jstatus);
 
-  debug("SSSSSSSSSSSSSSS %d", connected);
-  json_object *jconnected = json_object_new_int(connected);
+  debug("SSSSSSSSSSSSSSS %d", online);
+  json_object *jconnected = json_object_new_int(online);
   json_object_object_add(jattr, "connected", jconnected);
 
   time_t now = time(NULL);
