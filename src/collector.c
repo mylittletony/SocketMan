@@ -351,7 +351,7 @@ void run_interface_scan(json_object *jiface_array,
 
     int conn = xx-1;
     if (conn > 0)
-      online++;
+      online = online + conn;
 
     debug("%d clients connected to %s", conn, e->ifname);
 
