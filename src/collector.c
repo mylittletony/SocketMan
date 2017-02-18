@@ -307,7 +307,7 @@ struct radio_list* add_to_list(struct iw_ssid_entry *e)
 }
 
 void run_interface_scan(json_object *jiface_array,
-    json_object *jstations_array, json_object *jscan_array, int *clients
+    json_object *jstations_array, json_object *jscan_array
     )
 {
 
@@ -532,7 +532,7 @@ void collect_data(int offline_reason)
     json_object *jstations_array = json_object_new_array();
     json_object *jscan_array = json_object_new_array();
 
-    run_interface_scan(jiface_array, jstations_array, jscan_array, clients);
+    run_interface_scan(jiface_array, jstations_array, jscan_array);
 
     json_object_object_add(jobj, "ssids", jiface_array);
     json_object_object_add(jobj, "survey", jscan_array);
