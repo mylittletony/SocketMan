@@ -79,7 +79,7 @@ long do_curl(CURL *curl, char *url)
 {
   long http_code = 0;
   if (options.debug == true) {
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    /* curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); */
   }
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_perform(curl);
@@ -209,7 +209,6 @@ int post_cache()
   struct CurlResponse c;
   init_chunk(&c);
 
-  curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&c);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
