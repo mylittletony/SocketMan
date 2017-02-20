@@ -33,13 +33,17 @@ alfa_network_ap120c:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
 
-azurewave_aw_nr580:
+alfa_network_tube2h:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
 allnet_all0305:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
+
+azurewave_aw_nr580:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
 
 belkin_ac1750db:
   lan_wan:  ["eth1", "eth0"]
@@ -73,10 +77,6 @@ compex_wpj344:
   radios:   ["radio0"]
 
 compex_wpj531:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio0"]
-
-compex_wp543:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
@@ -132,23 +132,18 @@ devolo_wifi_pro_1750x:
   radios:   ["radio1", "radio0"]
   require_mode: "ac"
 
-d_link_dir_825_rev._b1:
-  lan_wan:  ["eth0.1", "eth1"]
-  switch:   ["0 1 2 3 5t"]
-  radios:   ["radio1", "radio0"]
+d_link_dir_505_rev_a1:
+  lan_wan: ["eth0", "eth1"]
+  radios:   ["radio0"]
 
 d_link_dir_615_rev._i1:
   lan_wan:  ["eth1", "eth0"]
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
-d_link_dir_505_rev_a1:
-  lan_wan: ["eth0", "eth1"]
-  radios:   ["radio0"]
-
-d_link_dgl_5500_rev._a1:
-  lan_wan:  ["eth0.1", "eth0.2"]
-  switch:   ["0t 1 2 3 4", "0t 5"]
+d_link_dir_825_rev._b1:
+  lan_wan:  ["eth0.1", "eth1"]
+  switch:   ["0 1 2 3 5t"]
   radios:   ["radio1", "radio0"]
 
 d_link_dir_825_rev._c1:
@@ -156,11 +151,22 @@ d_link_dir_825_rev._c1:
   switch:   ["0t 1 2 3 4", "0t 5"]
   radios:   ["radio1", "radio0"]
 
-engenius_eap300_v2:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio0"]
+d_link_dir_835_rev._a1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4",  "0t 5"]
+  radios:   ["radio0", "radio1"]
 
-easylink_el_mini:
+d_link_dgl_5500_rev._a1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4", "0t 5"]
+  radios:   ["radio1", "radio0"]
+
+d_link_dhp_1565_rev._a1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 1 2 3 4",  "0t 5"]
+  radios:   ["radio0", "radio1"]
+
+engenius_eap300_v2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
@@ -181,20 +187,14 @@ engenius_esr900:
   switch:   ["0t 1 2 3 4",  "0t 5"]
   radios:   ["radio0", "radio1"]
 
+easylink_el_mini:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 easylink_el_m150:
   lan_wan:  ["eth1", "eth0"]
   switch:   ["0 1 3"]
   radios:   ["radio0"]
-
-d_link_dhp_1565_rev._a1:
-  lan_wan:  ["eth0.1", "eth0.2"]
-  switch:   ["0t 1 2 3 4",  "0t 5"]
-  radios:   ["radio0", "radio1"]
-
-d_link_dir_835_rev._a1:
-  lan_wan:  ["eth0.1", "eth0.2"]
-  switch:   ["0t 1 2 3 4",  "0t 5"]
-  radios:   ["radio0", "radio1"]
 
 netgear_wndr3700v4:
   lan_wan:  ["eth0.1", "eth0.2"]
@@ -252,6 +252,11 @@ mikrotik_routerboard_911g_5hpacd:
 
 mikrotik_routerboard_sxt_lite2:
   lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+mikrotik_routerboard_2011uias_2hnd:
+  lan_wan:  ["eth0.1 eth1", "eth0.2"]
+  switch:   ["0t 2 3 4 5",  "0t 1"]
   radios:   ["radio0"]
 
 meraki_mr18:
@@ -312,6 +317,10 @@ nc_link_smart_300:
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
+openmesh_om2p:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 openmesh_om2pv2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
@@ -327,10 +336,6 @@ openmesh_om2p_hs:
 openmesh_om2p_hsv2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
-
-openmesh_mr600v2:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio1", "radio0"]
 
 openmesh_mr900:
   lan_wan:  ["eth1", "eth0"]
@@ -354,18 +359,13 @@ openmesh_mr600:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
 
-openmesh_om2p:
+openmesh_mr600v2:
   lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio0"]
+  radios:   ["radio1", "radio0"]
 
 powercloud_cap324:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
-
-routerboard_2011uias_2hnd:
-  lan_wan:  ["eth0.1 eth1", "eth0.2"]
-  switch:   ["0t 2 3 4 5",  "0t 1"]
-  radios:   ["radio0"]
 
 smart_electronics_black_swift_board:
   lan_wan:  ["eth1", "eth0"]
@@ -456,10 +456,6 @@ tp_link_tl_wa901nd_v4:
   radios:   ["radio0"]
 
 tp_link_tl_wr703n_v1:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio0"]
-
-alfa_network_tube2h:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
