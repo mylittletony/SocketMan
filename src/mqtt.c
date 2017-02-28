@@ -281,7 +281,9 @@ void mqtt_connect() {
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
-  debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
+  if (options.debug == 1)
+    debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
+
   counter++;
 
   // Checks once after 60s, then will only check every 180s
