@@ -588,13 +588,20 @@ void collect_data(int offline_reason)
   json_object *juptime = json_object_new_int(info.uptime);
   json_object_object_add(jattr, "uptime", juptime);
 
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_1);
+
   json_object *jload_1 = json_object_new_double(info.load_1);
   json_object_object_add(jattr, "load_1", jload_1);
 
   json_object *jload_5 = json_object_new_double(info.load_5);
   json_object_object_add(jattr, "load_5", jload_5);
-
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %f", info.load_5);
 
   json_object *jload_15 = json_object_new_double(info.load_15);
   json_object_object_add(jattr, "load_15", jload_15);
