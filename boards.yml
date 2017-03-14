@@ -329,6 +329,10 @@ mikrotik_routerboard_2011uias_2hnd:
   switch:   ["0t 2 3 4 5",  "0t 1"]
   radios:   ["radio0"]
 
+meraki_mr24_access_point:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0", "radio1"]
+
 meraki_mr18:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0", "radio1"]
