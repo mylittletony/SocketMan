@@ -57,8 +57,10 @@ void monitor()
   collect_and_send_data(rc);
 
   // Sleep for monitor interval
-  debug("Sleeping for %d seconds.", options.monitor);
-  sleep(options.monitor);
+  if (options.initialized) {
+    debug("Sleeping for %d seconds.", options.monitor);
+    sleep(options.monitor);
+  }
 }
 
 void check_connection(int reason) {

@@ -20,6 +20,9 @@
 time_t last_collect = 0;
 int collected;
 
+/// Remove ///
+int online = 0;
+
 struct radio_list *curr, *head;
 
 struct radio_list
@@ -345,7 +348,12 @@ void run_interface_scan(json_object *jiface_array,
       format_stations(e->ssid, e->ifname, st, jstations);
       json_object_array_add(jstations_array, jstations);
     }
-    debug("%d clients connected to %s", xx-1, e->ifname);
+
+    int conn = xx-1;
+    if (conn > 0)
+      online = online + conn;
+
+    debug("%d clients connected to %s", conn, e->ifname);
 
     json_object *jssids = json_object_new_object();
     format_ssids(iw, e, jssids, len_a);
@@ -499,6 +507,7 @@ void format_dhcp(json_object *jdhcp_array)
 void collect_data(int offline_reason)
 {
 
+  online = 0;
   struct timespec tstart={0,0}, tend={0,0};
   clock_gettime(CLOCK_MONOTONIC, &tstart);
 
@@ -600,9 +609,11 @@ void collect_data(int offline_reason)
   json_object *jv = json_object_new_string("4");
   json_object_object_add(jattr, "v", jv);
 
-  bool bonline = offline_reason > 1 ? true : false;
-  json_object *jonline = json_object_new_boolean(bonline);
-  json_object_object_add(jattr, "online", jonline);
+  json_object *jstatus = json_object_new_int(offline_reason);
+  json_object_object_add(jattr, "status", jstatus);
+
+  json_object *jconnected = json_object_new_int(online);
+  json_object_object_add(jattr, "connected", jconnected);
 
   time_t now = time(NULL);
   json_object *jcreated_at = json_object_new_int(now);
@@ -615,11 +626,6 @@ void collect_data(int offline_reason)
   json_object *jsplash_array = json_object_new_array();
   format_splash(jsplash_array);
   json_object_object_add(jobj, "splash", jsplash_array);
-
-  // MISSING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // INTERFACES
-  // CAPS
-  // MQTT STATUS
 
   json_object_object_add(jobj, "device", jattr);
 

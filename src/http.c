@@ -78,12 +78,12 @@ void append_url_token(char *url, char *buf)
 long do_curl(CURL *curl, char *url)
 {
   long http_code = 0;
-
+  if (options.debug) {
+    /* curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); */
+  }
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_perform(curl);
-
   curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-
   return http_code;
 }
 
@@ -223,9 +223,9 @@ int post_cache()
   curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
 
   long resp = do_curl(curl, url);
-  debug("Data sent (%ld)", resp);
 
   if (resp == 0) {
+    debug("Data could not be sent (%ld)", resp);
     goto cleanup;
   }
 
@@ -238,7 +238,7 @@ int post_cache()
   }
 
   if ((resp == 200 || resp == 201) && c.size > 0) {
-    debug("Stats successfully sent (%ld)", resp);
+    debug("Data sent (%ld)", resp);
     process_response(c.memory);
     free(c.memory);
     c.memory = NULL;
