@@ -1,7 +1,11 @@
 # CC=gcc
-IDIR = "./includes"
-INCLUDES = "-I/usr/include/libnl3"
-CFLAGS= -g -O2 -Wall -Wextra -Isrc -I$(IDIR) $(INCLUDES) $(CT_ARCH) -DCT_VERSION='"$(VERSION)"'
+LIBNL3_PATH = "-I/usr/include/libnl3"
+
+# When packaging, someone else sets the CFLAGS, so don't override them if they
+# have already been set. If there is no CFLAGS, then party hard!
+CFLAGS ?= -g -O2 -Wall -Wextra -I$(LIBNL3_PATH) $(CT_ARCH) -DCT_VERSION='"$(VERSION)"'
+# However, only we know about these paths, so append them to CFLAGS
+CFLAGS += -Isrc -Iincludes
 
 ODIR=obj
 LDIR =../lib
