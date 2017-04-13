@@ -755,6 +755,12 @@ wd_my_net_n750:
   switch:   ["0t 1 2 3 4", "0t 5"]
   radios:   ["radio0", "radio1"]
 
+xiaomi_miwifi_mini:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0 1 2 3 6t",  "4 6t"]
+  radios:   ["radio1", "radio0"]
+  require_mode: "ac"
+
 zyxel_nbg6716:
   lan_wan:  ["eth0.1", "eth1"]
   radios:   ["radio1", "radio0"]
