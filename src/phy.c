@@ -648,7 +648,7 @@ static struct nl80211_msg_conveyor * nl80211_msg(const char *ifname, int cmd, in
   if (ifname) {
     devidx = if_nametoindex(ifname);
     if (devidx <= 0) {
-      fprintf(stderr, "Device not found.\n");
+      fprintf(stderr, "Interface not found.\n");
       return NULL;
     }
   }

@@ -256,14 +256,21 @@ void *reconnect(UNUSED(void *x))
   return NULL;
 }
 
+void disconnect() {
+  if (connected) {
+    debug("Disconnecting and cleaning up.");
+    mosquitto_destroy(mosq);
+    mosquitto_lib_cleanup();
+    connected = 0;
+  }
+}
+
 void mqtt_connect() {
+  disconnect();
   if (strcmp(options.mqtt_host, "") == 0) {
     debug("No MQTT host, skipping connect.");
     return;
   }
-
-  /* int ports[4] = {0,0,0,0}; */
-  /* int test[4] = {80,443,8080,8443}; */
 
   int rc = dial_mqtt();
 
@@ -286,15 +293,15 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 
   counter++;
 
-  // Checks once after 60s, then will only check every 180s
-  if ((counter > 60 && !certs_checked) || counter > 180) {
+  // Checks once after 60s, then will only check every 120s
+  if ((counter > 20 && !certs_checked) || counter > 120) {
     certs_checked = true;
-    if (counter > 180)
+    if (counter > 120)
       counter = 0;
-
     int check = check_certificates();
     if (check < 0) {
       debug("Restarting MQTT, new certificates installed");
+      disconnect();
       mosquitto_reconnect_async(mosq);
     }
   }
@@ -403,8 +410,7 @@ int dial_mqtt()
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
   if (rc) {
-    mosquitto_destroy(mosq);
-    mosquitto_lib_cleanup();
+    disconnect();
     return(rc);
   }
 
