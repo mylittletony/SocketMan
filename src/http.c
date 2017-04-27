@@ -312,7 +312,7 @@ int run_init(char *f, char *m, char *mac) {
 
   // Exit monitor and poll for a config
   if (resp != 201 || resp != 200) {
-    debug("Could not initialize, device not found (%ld).", resp);
+    debug("Could not initialize, device not found or not authorized (%ld).", resp);
   }
 
   if ((resp == 200 || resp == 201) && c.size > 0) {
