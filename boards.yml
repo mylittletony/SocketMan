@@ -783,6 +783,5 @@ zyxel_nbg6716:
 
 zyxel_nbg460n_550n_550nh:
   lan_wan:  ["eth0.1", "eth1"]
-  radios:   [radio0"]
   switch:   ["0", "0 1 2 3 5"]
   radios:   ["radio0"]
