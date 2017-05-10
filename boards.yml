@@ -258,7 +258,7 @@ gainstrong_minibox_v1.0:
 
 gl_inet_gl_mt300a:
   lan_wan:  ["eth0.1", "eth0.2"]
-  switch:   [ "1 2 3 4 6t" "0 6t" ]
+  switch:   [ "1 2 3 4 6t", "0 6t" ]
   radios:   ["radio0"]
 
 hiwifi_hc6361:
