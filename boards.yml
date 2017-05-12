@@ -261,6 +261,10 @@ hiwifi_hc6361:
   switch:   [ "0 1 2 3 4" ]
   radios:   ["radio0"]
 
+innotek_gmbh_virtualbox:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 jjplus_ja76pf2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
