@@ -256,8 +256,10 @@ void install() {
 
 void boot()
 {
+  http_init();
   check_config();
   if (options.initialized)
     run_socketman();
   install();
+  http_cleanup();
 }

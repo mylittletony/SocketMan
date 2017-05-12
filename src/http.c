@@ -113,8 +113,6 @@ int post_json(const char *postData)
 
   append_url_token(options.stats_url, url);
 
-  curl_global_init( CURL_GLOBAL_ALL );
-
   curl = curl_easy_init();
   if (!curl)
     return 0;
@@ -176,7 +174,6 @@ cleanup:
     free(c.memory);
   }
   curl_easy_cleanup(curl);
-  curl_global_cleanup();
   curl_slist_free_all(headers);
   return 1;
 }
@@ -195,8 +192,6 @@ int post_cache()
   char url[255];
 
   append_url_token(options.stats_url, url);
-
-  curl_global_init( CURL_GLOBAL_ALL );
 
   curl = curl_easy_init();
   if (!curl)
@@ -258,7 +253,6 @@ cleanup:
   }
   curl_formfree(post);
   curl_easy_cleanup(curl);
-  curl_global_cleanup();
   curl_slist_free_all(headers);
   return resp;
 }
@@ -282,8 +276,6 @@ int run_init(char *f, char *m, char *mac) {
   strcat(url, curl_easy_escape(curl, m, 0));
   strcat(url, "&firmware=");
   strcat(url, curl_easy_escape(curl, f, 0));
-
-  curl_global_init( CURL_GLOBAL_ALL );
 
   curl = curl_easy_init();
   if (!curl)
@@ -328,7 +320,6 @@ int run_init(char *f, char *m, char *mac) {
   }
 
   curl_easy_cleanup(curl);
-  curl_global_cleanup();
   curl_slist_free_all(headers);
 
   return response;
@@ -346,7 +337,6 @@ void send_boot_message()
 
   debug("Sending GET request to boot URL");
   CURL *curl;
-  curl_global_init( CURL_GLOBAL_ALL );
 
   append_url_token(options.boot_url, url);
 
@@ -394,7 +384,6 @@ void send_boot_message()
   if (c.memory)
     free(c.memory);
 
-  curl_global_cleanup();
   curl_slist_free_all(headers);
 }
 
@@ -402,8 +391,6 @@ void fetch_ca(char *buff) {
 
   CURL *curl;
   char *url = "http://s3.amazonaws.com/puffin-certs/md5.txt";
-
-  curl_global_init( CURL_GLOBAL_ALL );
 
   curl = curl_easy_init();
   if (!curl)
@@ -434,7 +421,6 @@ void fetch_ca(char *buff) {
   }
 
   curl_easy_cleanup(curl);
-  curl_global_cleanup();
   return;
 }
 
@@ -442,8 +428,6 @@ void install_ca() {
 
   CURL *curl;
   char *url = "http://s3.amazonaws.com/puffin-certs/current.ca";
-
-  curl_global_init( CURL_GLOBAL_ALL );
 
   curl = curl_easy_init();
   if (!curl)
@@ -473,6 +457,13 @@ void install_ca() {
   }
 
   curl_easy_cleanup(curl);
-  curl_global_cleanup();
   return;
+}
+
+void http_init() {
+  curl_global_init( CURL_GLOBAL_ALL );
+}
+
+void http_cleanup() {
+  curl_global_cleanup();
 }

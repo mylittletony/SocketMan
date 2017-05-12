@@ -23,8 +23,6 @@ void update_operation(json_object *json, char *uid) {
     strcat(url, options.token);
   }
 
-  curl_global_init( CURL_GLOBAL_ALL );
-
   curl = curl_easy_init();
   if (!curl)
     return;
@@ -45,7 +43,6 @@ void update_operation(json_object *json, char *uid) {
     debug("Could not connect to %s", url);
 
   curl_easy_cleanup(curl);
-  curl_global_cleanup();
   curl_slist_free_all(headers);
 
   return;
