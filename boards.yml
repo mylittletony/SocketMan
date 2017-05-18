@@ -509,6 +509,23 @@ senao_eap7660d:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
+tp_link_archer_c5:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  switch:   ["0 2 3 4 5", "1 6"]
+  require_mode: "ac"
+
+tp_link_archer_c7:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  switch:   ["0 2 3 4 5", "1 6"]
+  require_mode: "ac"
+
+tp_link_cpe210_220_510_520:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio1", "radio0"]
+  switch:   ["0t 5", "0t 4"]
+
 tp_link_tl_mr10u:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
@@ -535,6 +552,26 @@ tp_link_tl_mr3040:
 
 tp_link_tl_mr3040_v2:
   lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr3220:
+  lan_wan:  ["eth0", "eth1"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr3220_v2:
+  lan_wan:  ["eth0", "eth1"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr3420:
+  lan_wan:  ["eth0", "eth1"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
+tp_link_tl_mr3420_v2:
+  lan_wan:  ["eth1", "eth0"]
+  switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
 tp_link_tl_wa701nd_v2:
@@ -573,100 +610,23 @@ tp_link_tl_wa901nd_v4:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
-tp_link_tl_wr703n_v1:
-  lan_wan:  ["eth1", "eth0"]
+tp_link_tl_wdr3500:
+  lan_wan:  ["eth0", "eth1"]
+  switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
-
-tp_link_archer_c5:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio1", "radio0"]
-  switch:   ["0 2 3 4 5", "1 6"]
-  require_mode: "ac"
-
-tp_link_archer_c7:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio1", "radio0"]
-  switch:   ["0 2 3 4 5", "1 6"]
-  require_mode: "ac"
 
 tp_link_tl_wdr4900_v2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
   switch:   ["0 2 3 4 5", "1 6"]
 
-tp_link_tl_wr1043nd_v2:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio0"]
-  switch:   ["0 1 2 3 4", "5 6"]
-
-tp_link_tl_wr1043nd:
-  lan_wan:  ["eth0.1", "eth0.2"]
-  radios:   ["radio0"]
-  switch:   ["1 2 3 4 5t", "0 5t"]
-
-tp_link_tl_wr2543n_nd:
-  lan_wan:  ["eth0.1", "eth0.2"]
-  radios:   ["radio0"]
-  switch:   ["1 2 3 4 9t", "0 9t"]
-
 tp_link_tl_wdr3600_4300_4310:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0t 2 3 4 5", "0t 1"]
   radios:   ["radio0", "radio1"]
 
-tp_link_tl_wr1041n_v2:
-  lan_wan:  ["eth0.1", "eth0.2"]
-  switch:   ["0t 2 3 4 5", "0t 1"]
-  radios:   ["radio0"]
-
-tp_link_cpe210_220_510_520:
-  lan_wan:  ["eth0.1", "eth0.2"]
-  radios:   ["radio1", "radio0"]
-  switch:   ["0t 5", "0t 4"]
-
-tp_link_tl_mr3420_v2:
+tp_link_tl_wr703n_v1:
   lan_wan:  ["eth1", "eth0"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_wr841n_nd_v8:
-  lan_wan:  ["eth1", "eth0"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_wr842n_nd_v2:
-  lan_wan:  ["eth1", "eth0"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_wr941n_nd_v5:
-  lan_wan:  ["eth1", "eth0"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_wr941n_nd_v6:
-  lan_wan:  ["eth1", "eth0"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_mr3220:
-  lan_wan:  ["eth0", "eth1"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_mr3220_v2:
-  lan_wan:  ["eth0", "eth1"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_mr3420:
-  lan_wan:  ["eth0", "eth1"]
-  switch:   ["0 1 2 3 4"]
-  radios:   ["radio0"]
-
-tp_link_tl_wdr3500:
-  lan_wan:  ["eth0", "eth1"]
-  switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
 tp_link_tl_wr741nd:
@@ -676,6 +636,11 @@ tp_link_tl_wr741nd:
 
 tp_link_tl_wr741nd_v4:
   lan_wan:  ["eth0", "eth1"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
+tp_link_tl_wr841n_nd_v8:
+  lan_wan:  ["eth1", "eth0"]
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
@@ -693,6 +658,46 @@ tp_link_tl_wr841n_nd_v11:
   lan_wan:  ["eth0", "eth1"]
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
+
+tp_link_tl_wr941n_nd_v5:
+  lan_wan:  ["eth1", "eth0"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
+tp_link_tl_wr941n_nd_v6:
+  lan_wan:  ["eth1", "eth0"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
+tp_link_tl_wr842n_nd_v2:
+  lan_wan:  ["eth1", "eth0"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
+tp_link_tl_wr1041n_v2:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 2 3 4 5", "0t 1"]
+  radios:   ["radio0"]
+
+tp_link_tl_wr1043nd_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+  switch:   ["0 1 2 3 4", "5 6"]
+
+tp_link_tl_wr1043nd:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio0"]
+  switch:   ["1 2 3 4 5t", "0 5t"]
+
+tp_link_tl_wr1043n_nd_v4:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio0"]
+  switch:   ["1 2 3 4 0t", "5 0t"]
+
+tp_link_tl_wr2543n_nd:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  radios:   ["radio0"]
+  switch:   ["1 2 3 4 9t", "0 9t"]
 
 ubiquiti_unifi:
   lan_wan:  ["eth1", "eth0"]
