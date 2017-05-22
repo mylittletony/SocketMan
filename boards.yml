@@ -120,6 +120,32 @@ compex_wpj558:
   switch:   ["0t 3", "0t 2"]
   radios:   ["radio0"]
 
+comfast_cf_e380ac_v1:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  require_mode: "ac"
+
+comfast_cf_e380ac_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio1", "radio0"]
+  require_mode: "ac"
+
+comfast_cf_e520n:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+comfast_cf_e530n:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+comfast_cf_e316n_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+comfast_cf_e320n_v2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 domywifi_dw33d:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
