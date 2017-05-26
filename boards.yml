@@ -504,25 +504,25 @@ powercloud_cap324:
 raspberry_pi_2_model_b_rev_1.1:
   lan_wan:  ["eth1", "eth0"]
 
-raspberry_pi_3_model_b_rev:
+raspberry_pi_3_model_b_rev_1.2:
   lan_wan:  ["eth1", "eth0"]
 
-raspberry_pi_compute_module_rev:
+raspberry_pi_compute_module_rev1.0:
   lan_wan:  ["eth1", "eth0"]
 
-raspberry_pi_model_b_plus_rev:
+raspberry_pi_model_b_plus_rev_1.2:
   lan_wan:  ["eth1", "eth0"]
 
-raspberry_pi_model_b+_rev:
+raspberry_pi_model_b+_rev_1.0:
   lan_wan:  ["eth1", "eth0"]
 
-raspberry_pi_model_b_rev:
+raspberry_pi_model_b_rev_1.0:
   lan_wan:  ["eth1", "eth0"]
 
-raspberry_pi_zero_rev:
+raspberry_pi_zero_rev_1.1:
   lan_wan:  ["eth1", "eth0"]
 
-raspberry_pi_zero_w_rev:
+raspberry_pi_zero_w_rev_1.1:
   lan_wan:  ["eth1", "eth0"]
 
 smart_electronics_black_swift_board:
