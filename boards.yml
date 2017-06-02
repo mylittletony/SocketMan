@@ -10,6 +10,9 @@ aerohive_hiveap_121:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0", "radio1"]
 
+arduino_yun:
+  lan_wan:  ["eth1", "eth0"]
+
 atheros_ap136_010_reference_board:
   lan_wan:  ["eth0", "eth1"]
   radios:   ["radio0"]
