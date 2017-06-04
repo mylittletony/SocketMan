@@ -52,7 +52,7 @@ void handle_signal(int signal) {
       printf("Caught SIGTERM, exiting now\n");
       exit(0);
     default:
-      fprintf(stderr, "Caught wrong signal: %d\n", signal);
+      debug("Caught wrong signal: %d", signal);
       return;
   }
 }

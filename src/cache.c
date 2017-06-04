@@ -18,6 +18,7 @@ void cache(const char *postData)
 {
 
   debug("Caching the datas!");
+
   FILE *out = fopen(options.cache, "a");
 
   if(out == NULL) {

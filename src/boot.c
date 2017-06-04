@@ -180,7 +180,7 @@ void boot_cmd()
 
   FILE * fp = popen(options.boot_cmd, "r");
   if ( fp == 0 ) {
-    fprintf(stderr, "Could not execute cmd\n");
+    debug("Could not execute cmd");
     return;
   }
   debug("Running boot CMD");
