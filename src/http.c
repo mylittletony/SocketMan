@@ -270,16 +270,16 @@ int run_init(char *f, char *m, char *mac) {
   }
   debug("Initializing against %s", url);
 
+  curl = curl_easy_init();
+  if (!curl)
+    return 0;
+
   strcat(url, "?mac=");
   strcat(url, mac);
   strcat(url, "&machine=");
   strcat(url, curl_easy_escape(curl, m, 0));
   strcat(url, "&firmware=");
   strcat(url, curl_easy_escape(curl, f, 0));
-
-  curl = curl_easy_init();
-  if (!curl)
-    return 0;
 
   struct curl_slist *headers = NULL;
   headers = curl_slist_append(headers, "Accept: application/json");
