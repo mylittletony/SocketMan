@@ -36,7 +36,7 @@ int valid_mac(char *mac)
     return 0;
 
   for(i = 0; i < 17; i++) {
-    if(i % 3 != 2 && !isxdigit(mac[i]))
+    if(i % 3 != 2 && !isxdigit((unsigned char)mac[i]))
       return 0;
     if(i % 3 == 2 && (mac[i] != '-'))
       return 0;
