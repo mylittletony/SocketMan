@@ -520,7 +520,7 @@ void collect_data(int offline_reason)
 
   struct defaultRoute dr = route();
 
-  struct InterfaceStats istats;
+  struct InterfaceStats istats = { 0 };
   if (strcmp(dr.if_name, "") != 0) {
     interface_ip(dr.if_name, wan_ip, sizeof(wan_ip));
     istats = stats(dr.if_name);
