@@ -110,8 +110,13 @@ int compress_cache()
   strm.opaque = Z_NULL;
 
   ret = strm_init (& strm);
-  if (ret != Z_OK)
+  if (ret != Z_OK) {
+    fclose(ifp);
+    fclose(ofp);
+    free(ibuf);
+    free(obuf);
     return ret;
+  }
 
   strm.next_in = ibuf;
   strm.avail_in = CHUNK;
