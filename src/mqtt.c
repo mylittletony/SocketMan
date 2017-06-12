@@ -49,7 +49,7 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
   topic_id_generate(topic, options.topic, options.key);
 
   options.qos = 1;
-  char t[128];
+  char t[128] = "";
   strcat(t, options.topic);
 
   mosquitto_subscribe(mosq, NULL, topic, options.qos);
