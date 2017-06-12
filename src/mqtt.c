@@ -92,8 +92,8 @@ static char *rand_string(char *str, char *prefix, size_t size)
   if (size) {
     strcpy(str, prefix);
     --size;
-    int im, n;
-    for (n = strlen(prefix); n < N && im < M; ++n) {
+    int n;
+    for (n = strlen(prefix); n < N; ++n) {
       int key = rand() % (int) (sizeof charset - 1);
       str[n] = charset[key];
     }
