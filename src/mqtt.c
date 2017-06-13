@@ -89,15 +89,15 @@ void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int res
 static char *rand_string(char *str, char *prefix, size_t size)
 {
   const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJK0123456789...";
-  if (size) {
+  if (str && prefix && size > strlen(prefix)) {
     strcpy(str, prefix);
-    --size;
-    int n;
-    for (n = strlen(prefix); n < N; ++n) {
+
+    size_t n;
+    for (n = strlen(prefix); n < (size - 1); ++n) {
       int key = rand() % (int) (sizeof charset - 1);
       str[n] = charset[key];
     }
-    str[size] = '\0';
+    str[size - 1] = '\0';
   }
   return str;
 }
@@ -154,7 +154,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   if (mid[0] == '\0') {
     suffix = "/messages";
     strcat(delivery, suffix);
-    rand_string(mid, "sm_", 44);
+    rand_string(mid, "sm_", sizeof(mid));
     debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery);
   }
   // Needs check if running, check time, check live cmd.
