@@ -117,7 +117,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
-  char type[10];
+  char type[10] = "";
   char mid[36+1];
 
   char cmd[strlen(message->payload)+1];
