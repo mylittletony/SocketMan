@@ -1,11 +1,3 @@
-allnet_all0258n:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio0"]
-
-allnet_all0315n:
-  lan_wan:  ["eth1", "eth0"]
-  radios:   ["radio0"]
-
 aerohive_hiveap_121:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0", "radio1"]
@@ -46,6 +38,14 @@ atheros_ap121_mini_reference_board:
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
+allnet_all0258n:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+allnet_all0315n:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 alfa_network_ap96:
   lan_wan:  ["eth0", "eth1"]
   switch:   ["0 1 2 3 4"]
@@ -58,6 +58,12 @@ alfa_network_tube2h:
 allnet_all0305:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
+
+amer_wap1000:
+  lan_wan:  ["eth0", "eth1"]
+  radios:   ["radio1", "radio0"]
+  switch:   ["1 0", "2 6"]
+  require_mode: "ac"
 
 azurewave_aw_nr580:
   lan_wan:  ["eth1", "eth0"]
