@@ -320,7 +320,7 @@ void run_interface_scan(json_object *jiface_array,
   int len = 0;
   int x, i, ii, len_a, xx;
   char ssids[1024];
-  char buf_a[1024*100];
+  char buf_a[1024*10];
   const struct iw_ops *iw;
   struct iw_ssid_entry *e;
   struct iw_stationlist_entry *st;
