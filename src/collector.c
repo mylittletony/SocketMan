@@ -550,11 +550,15 @@ void collect_data(int offline_reason)
     json_object_object_add(jobj, "stations", jstations_array);
   }
 
-#ifdef __OPENWRT__
-  /* char firmware[20]; */
-  /* readlineToBuffer("/etc/openwrt_version", firmware); */
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
-  json_object *jfirmware = json_object_new_string("firmware");
+#ifdef __OPENWRT__
+  char firmware[20];
+  readlineToBuffer("/etc/openwrt_version", firmware);
+
+  json_object *jfirmware = json_object_new_string(firmware);
   json_object_object_add(jattr, "firmware", jfirmware);
 #endif
 
@@ -585,6 +589,8 @@ void collect_data(int offline_reason)
 
   json_object *jtx = json_object_new_double(istats.tx);
   json_object_object_add(jattr, "tx_bytes", jtx);
+
+
 
   json_object *jrx = json_object_new_double(istats.rx);
   json_object_object_add(jattr, "rx_bytes", jrx);
@@ -632,10 +638,6 @@ void collect_data(int offline_reason)
   json_object_object_add(jobj, "splash", jsplash_array);
 
   json_object_object_add(jobj, "device", jattr);
-
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
   clock_gettime(CLOCK_MONOTONIC, &tend);
   printf("Stats collection finished in %.5f seconds\n",
