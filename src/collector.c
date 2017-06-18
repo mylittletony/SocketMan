@@ -550,9 +550,7 @@ void collect_data(int offline_reason)
     json_object_object_add(jobj, "stations", jstations_array);
   }
 
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+
 
 #ifdef __OPENWRT__
   char firmware[20];
@@ -571,6 +569,10 @@ void collect_data(int offline_reason)
     json_object *jgateway = json_object_new_string(dr.ip);
     json_object_object_add(jattr, "wan_gateway", jgateway);
   }
+
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
   if (strlen(wan_ip) > 0) {
     json_object *jwanip = json_object_new_string(wan_ip);
