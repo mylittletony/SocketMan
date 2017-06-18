@@ -47,6 +47,14 @@ If you're using this with Cucumber, the device will download the file automatica
 socketman --config=/etc/config.json
 ```
 
+By default, SocketMan will log via syslog. If you want to change this behaviour, you can add the environment variable ```DEBUG``` which will force it to log to the terminal.
+
+For example:
+
+```
+DEBUG=1 socketman --config=/etc/config.json
+```
+
 ## Config Options
 
 The many options available to you via the config.json file.
