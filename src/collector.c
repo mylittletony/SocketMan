@@ -635,7 +635,7 @@ void collect_data(int offline_reason)
   json_object_object_add(jobj, "device", jattr);
 
   clock_gettime(CLOCK_MONOTONIC, &tend);
-  printf("Stats collection finished in %.5f seconds\n",
+  debug("Stats collection finished in %.5f seconds\n",
       ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
       ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
