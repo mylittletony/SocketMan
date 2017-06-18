@@ -604,20 +604,20 @@ void collect_data(int offline_reason)
   /* json_object *jtotalram = json_object_new_double(info.totalram); */
   /* json_object_object_add(jattr, "total_ram", jtotalram); */
 
-  json_object *jfreeram = json_object_new_double(info.freeram);
-  json_object_object_add(jattr, "free_ram", jfreeram);
+  /* json_object *jfreeram = json_object_new_double(info.freeram); */
+  /* json_object_object_add(jattr, "free_ram", jfreeram); */
 
-  json_object *jprocs = json_object_new_int(info.procs);
-  json_object_object_add(jattr, "procs", jprocs);
+  /* json_object *jprocs = json_object_new_int(info.procs); */
+  /* json_object_object_add(jattr, "procs", jprocs); */
 
-  json_object *jv = json_object_new_string("4");
-  json_object_object_add(jattr, "v", jv);
+  /* json_object *jv = json_object_new_string("4"); */
+  /* json_object_object_add(jattr, "v", jv); */
 
-  json_object *jstatus = json_object_new_int(offline_reason);
-  json_object_object_add(jattr, "status", jstatus);
+  /* json_object *jstatus = json_object_new_int(offline_reason); */
+  /* json_object_object_add(jattr, "status", jstatus); */
 
-  json_object *jconnected = json_object_new_int(online);
-  json_object_object_add(jattr, "connected", jconnected);
+  /* json_object *jconnected = json_object_new_int(online); */
+  /* json_object_object_add(jattr, "connected", jconnected); */
 
   time_t now = time(NULL);
   json_object *jcreated_at = json_object_new_int(now);
