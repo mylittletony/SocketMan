@@ -257,8 +257,9 @@ int main( int argc,char **argv)
 
   validate_options();
 
-  if (strcmp(OS, "OPENWRT") == 0)
+  if (strcmp(OS, "OPENWRT") == 0) {
     debug("I am an OpenWRT box, yay!");
+  }
 
   boot();
 

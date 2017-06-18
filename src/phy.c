@@ -720,7 +720,7 @@ static int get_link_noise(struct nl_msg *msg, void *arg)
       genlmsg_attrlen(gnlh, 0), NULL);
 
   if (!tb_msg[NL80211_ATTR_SURVEY_INFO]) {
-    debug(stderr, "survey data missing!");
+    debug("survey data missing!");
     return NL_SKIP;
   }
 
