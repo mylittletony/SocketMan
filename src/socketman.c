@@ -261,6 +261,10 @@ int main( int argc,char **argv)
     debug("I am an OpenWRT box, yay!");
   }
 
+  if (getenv("DEBUG")==NULL) {
+    printf("Starting SocketMan. Logs will be output to syslog.");
+  }
+
   boot();
 
   return 1;

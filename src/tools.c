@@ -119,7 +119,7 @@ int connection_check()
 
   if (options.debug) {
     clock_gettime(CLOCK_MONOTONIC, &tend);
-    printf("Connection check finished in %.5f seconds\n",
+    debug("Connection check finished in %.5f seconds\n",
         ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
         ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
   }
