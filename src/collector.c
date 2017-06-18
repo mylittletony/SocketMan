@@ -631,7 +631,7 @@ void collect_data(int offline_reason)
   /* format_splash(jsplash_array); */
   /* json_object_object_add(jobj, "splash", jsplash_array); */
 
-  /* json_object_object_add(jobj, "device", jattr); */
+  json_object_object_add(jobj, "device", jattr);
 
   clock_gettime(CLOCK_MONOTONIC, &tend);
   printf("Stats collection finished in %.5f seconds\n",
