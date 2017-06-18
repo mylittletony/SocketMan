@@ -110,6 +110,10 @@ void validate_options()
 
 int main( int argc,char **argv)
 {
+  if (getenv("DEBUG")==NULL) {
+    printf("Starting SocketMan. Logs will be output to syslog.");
+  }
+
   int c;
 
   struct sigaction sa;
@@ -259,10 +263,6 @@ int main( int argc,char **argv)
 
   if (strcmp(OS, "OPENWRT") == 0) {
     debug("I am an OpenWRT box, yay!");
-  }
-
-  if (getenv("DEBUG")==NULL) {
-    printf("Starting SocketMan. Logs will be output to syslog.");
   }
 
   boot();
