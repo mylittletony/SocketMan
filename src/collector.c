@@ -362,9 +362,7 @@ void run_interface_scan(json_object *jiface_array,
     int ret = strcmp(e->ifname, "mon0");
     if (ret != 0 && options.survey == 1)
       add_to_list(e);
-    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+
   }
 
   // Needs scan logic built in
@@ -425,6 +423,9 @@ void run_interface_scan(json_object *jiface_array,
       }
     }
   }
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 }
 
 void format_splash(json_object *jsplash_array)
@@ -631,6 +632,10 @@ void collect_data(int offline_reason)
   json_object_object_add(jobj, "splash", jsplash_array);
 
   json_object_object_add(jobj, "device", jattr);
+
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
   clock_gettime(CLOCK_MONOTONIC, &tend);
   printf("Stats collection finished in %.5f seconds\n",
