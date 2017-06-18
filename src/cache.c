@@ -11,7 +11,7 @@
 #define windowBits 15
 #define GZIP_ENCODING 16
 /* #define CHUNK 0x4000 */
-#define CHUNK 16384
+#define CHUNK 16384*2
 
 int compress_cache();
 
