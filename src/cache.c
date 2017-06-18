@@ -31,7 +31,7 @@ void cache(const char *postData)
 
   /* debug("FILE SIZE: %ld", sz); */
 
-  if (sz > 1000000) {
+  if (sz > 5000000) {
     debug("Cache is getting large, not writing...");
     fclose(out);
     return;
@@ -83,10 +83,10 @@ void send_cached()
 
   // delete the archive every run but leave the cache
   // in place just in case it fails
-  del = unlink(options.cache);
-  if(del != 0) {
-    printf("File can not be deleted!");
-  }
+  /* del = unlink(options.cache); */
+  /* if(del != 0) { */
+  /*   printf("File can not be deleted!"); */
+  /* } */
 
   return;
 }

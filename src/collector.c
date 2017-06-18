@@ -638,7 +638,11 @@ void collect_data(int offline_reason)
 
   // Cache the results even if we have no-cache enabled at the mo
   const char *jdata = json_object_to_json_string(jobj);
-  cache(jdata);
+  if (options.nocache) {
+    debug("Not caching results");
+  } else {
+    cache(jdata);
+  }
 
   // Even if the box is offline, try and send the cache
   // in case it's actually online again since collection.
