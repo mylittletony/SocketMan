@@ -551,10 +551,10 @@ void collect_data(int offline_reason)
   }
 
 #ifdef __OPENWRT__
-  char firmware[20];
-  readlineToBuffer("/etc/openwrt_version", firmware);
+  /* char firmware[20]; */
+  /* readlineToBuffer("/etc/openwrt_version", firmware); */
 
-  json_object *jfirmware = json_object_new_string(firmware);
+  json_object *jfirmware = json_object_new_string("firmware");
   json_object_object_add(jattr, "firmware", jfirmware);
 #endif
 
