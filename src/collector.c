@@ -585,10 +585,6 @@ void collect_data(int offline_reason)
     json_object_object_add(jattr, "machine_type", jmachine);
   }
 
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-
   json_object *jmac = json_object_new_string(options.mac);
   json_object_object_add(jattr, "mac", jmac);
 
@@ -599,6 +595,10 @@ void collect_data(int offline_reason)
   json_object *jtx = json_object_new_double(istats.tx);
   json_object_object_add(jattr, "tx_bytes", jtx);
 
+
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
 
   json_object *jrx = json_object_new_double(istats.rx);
