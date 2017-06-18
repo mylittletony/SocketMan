@@ -588,10 +588,6 @@ void collect_data(int offline_reason)
   json_object *jmac = json_object_new_string(options.mac);
   json_object_object_add(jattr, "mac", jmac);
 
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-
   json_object *jtx = json_object_new_double(istats.tx);
   json_object_object_add(jattr, "tx_bytes", jtx);
 
@@ -600,9 +596,12 @@ void collect_data(int offline_reason)
   debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
   debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
-
   json_object *jrx = json_object_new_double(istats.rx);
   json_object_object_add(jattr, "rx_bytes", jrx);
+
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+  debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
   json_object *juptime = json_object_new_int(info.uptime);
   json_object_object_add(jattr, "uptime", juptime);
