@@ -42,7 +42,7 @@ void machine_type(char *type, size_t len)
 
     buffer[bytes_read] = '\0';
 #ifdef __OPENWRT__
-    strncpy(type, buffer, len);
+    strncpy(type, buffer, len - 1);
 #elif __linux
     match = strstr(buffer, "NAME");
 
