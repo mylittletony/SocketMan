@@ -572,7 +572,7 @@ void collect_data(int offline_reason)
 
   if (machine[0] !='\0') {
     // Save to the options to prevent future lookups
-    strcpy(options.machine, machine);
+    strncpy(options.machine, machine, sizeof(options.machine) - 1);
     json_object *jmachine = json_object_new_string(machine);
     json_object_object_add(jattr, "machine_type", jmachine);
   }
