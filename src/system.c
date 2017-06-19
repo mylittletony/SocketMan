@@ -20,7 +20,7 @@ int reboot() {
 void machine_type(char *type, size_t len)
 {
   if (strlen(options.machine) > 0) {
-    strncpy(type, options.machine, len);
+    strncpy(type, options.machine, len - 1);
   } else {
     FILE* fp;
     size_t bytes_read = 0;
