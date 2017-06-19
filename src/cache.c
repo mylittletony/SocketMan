@@ -24,6 +24,7 @@ void cache(const char *postData)
 
   if(out == NULL) {
     perror("Error opening file.");
+    return;
   }
 
   fseek(out, 0L, SEEK_END);
