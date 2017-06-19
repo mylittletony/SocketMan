@@ -116,7 +116,7 @@ void read_file(char *file, char *buf, size_t len)
       }
     }
   }
-  if(len > 0) {
+  if(len > 0 && buffer != NULL) {
     strncpy(buf, buffer, len - 1);
   }
   free(buffer);
