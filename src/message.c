@@ -115,14 +115,14 @@ void process_message(const char *msg, char *cmd, char *id, char *opType, int len
                 if (strcmp(keym, "msg") == 0)
                   strncpy(cmd, json_object_get_string(valm), len);
                 if (strcmp(keym, "type") == 0)
-                  strncpy(opType, json_object_get_string(valm), 10);
+                  strncpy(opType, json_object_get_string(valm), 9);
             }
           }
         }
       case json_type_boolean:
       case json_type_string:
         if (strcmp(key, "id") == 0)
-          strncpy(id, json_object_get_string(val), 36+1);
+          strncpy(id, json_object_get_string(val), 36);
       default:
         break;
     }
