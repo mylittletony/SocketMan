@@ -82,7 +82,7 @@ char *read_config()
 }
 
 // Replace config above with this
-void read_file(char *file, char *buf)
+void read_file(char *file, char *buf, size_t len)
 {
   FILE *fp;
   long lSize;
@@ -116,7 +116,9 @@ void read_file(char *file, char *buf)
       }
     }
   }
-  strcpy(buf, buffer);
+  if(len > 0) {
+    strncpy(buf, buffer, len - 1);
+  }
   free(buffer);
   fclose(fp);
   return;
