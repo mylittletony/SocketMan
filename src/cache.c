@@ -102,6 +102,10 @@ int compress_cache()
   FILE *ifp = fopen(options.cache, "r");
   FILE *ofp = fopen(options.archive, "w");
 
+  if (!ifp || !ofp) {
+      return Z_STREAM_ERROR;
+  }
+
   ibuf = (Byte *)calloc(CHUNK, sizeof(Byte));
   obuf = (Byte *)calloc(CHUNK, sizeof(Byte));
   fread(ibuf, CHUNK, 1, ifp);
