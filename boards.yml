@@ -441,6 +441,11 @@ netgear_wnr612_v2:
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
+netgear_wndr3700
+  lan_wan:  ["eth0", "eth1"]
+  radios:   ["radio0", "radio1"]
+  switch:   ["0 1 2 3 5"]
+
 netgear_wndr3700v4:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0t 1 2 3 4",  "0t 5"]
