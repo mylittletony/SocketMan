@@ -126,7 +126,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   cmd[0] = '\0';
 
   // Unmarshalls the payload into logical parts
-  process_message((const char*)message->payload, cmd, mid, type, strlen(message->payload)+1);
+  process_message((const char*)message->payload, cmd, mid, type, strlen(message->payload));
 
   // Runs special commands, based on the type of request
   run_special(type);
