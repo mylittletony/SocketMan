@@ -28,10 +28,15 @@ void cache(const char *postData)
   }
 
   fseek(out, 0L, SEEK_END);
-  unsigned long sz = (unsigned long)ftell(out);
+  long sz = ftell(out);
   fseek(out, 0, SEEK_SET);
 
   /* debug("FILE SIZE: %ld", sz); */
+
+  if (sz < 0) {
+    perror("Failed to determine file size.");
+    return;
+  }
 
   if (sz > 5000000) {
     debug("Cache is getting large, not writing...");
