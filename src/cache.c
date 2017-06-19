@@ -35,6 +35,7 @@ void cache(const char *postData)
 
   if (sz < 0) {
     perror("Failed to determine file size.");
+    fclose(out);
     return;
   }
 
