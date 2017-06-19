@@ -681,9 +681,11 @@ bool should_backup(const char *type) {
   // Extend if you want to back up and check more types
   char *types[] = {"network", "networking", "all"};
 
-  for (i=0; i < size; i++) {
-    if (strcmp(types[i], type) == 0) {
-      return true;
+  if (type) {
+    for (i=0; i < size; i++) {
+      if (strcmp(types[i], type) == 0) {
+        return true;
+      }
     }
   }
   return false;
