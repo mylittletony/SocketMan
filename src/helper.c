@@ -196,7 +196,7 @@ int check_certificates()
   MD5_Final (c, &mdContext);
 
   for (i = 0; i < MD5_DIGEST_LENGTH; ++i) {
-    snprintf(&(md[i*2]), 16*2, "%02x", (unsigned int)c[i]);
+    snprintf(&(md[i*2]), 2, "%02x", (unsigned int)c[i]);
   }
 
   fclose (inFile);
