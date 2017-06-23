@@ -187,8 +187,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     pclose(fp);
   }
 
-  if (options.debug == 1)
+  if (options.debug == 1) {
     debug("%s", buffer);
+  }
 
   if (strlen(buffer) == 0) {
     strcpy(buffer, "DNE");
@@ -227,7 +228,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Worth checking the connection //
   mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
   json_object_put(jobj);
-  debug("Message published to %s!", pub);
+  debug("Message published!");
 
   return;
 }
@@ -288,8 +289,9 @@ void mqtt_connect() {
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
-  if (options.debug == 1)
+  if (options.debug == 1) {
     debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
+  }
 
   counter++;
 

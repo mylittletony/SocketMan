@@ -353,7 +353,9 @@ void run_interface_scan(json_object *jiface_array,
     if (conn > 0)
       online = online + conn;
 
-    debug("%d clients connected to %s", conn, e->ifname);
+    if (options.debug) {
+      debug("%d clients connected to %s", conn, e->ifname);
+    }
 
     json_object *jssids = json_object_new_object();
     format_ssids(iw, e, jssids, len_a);
@@ -534,7 +536,9 @@ void collect_data(int offline_reason)
 
   if (options.scan == 1)
   {
-    debug("Running WiFi Collection");
+    if (options.debug) {
+      debug("Running WiFi Collection");
+    }
 
     json_object *jiface_array = json_object_new_array();
     json_object *jstations_array = json_object_new_array();

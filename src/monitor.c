@@ -65,21 +65,28 @@ void monitor()
 
 void check_connection(int reason) {
 
-  if (options.debug) {
-    debug("CONNECTION STATUS: %d", reason);
+  if (options.debug && reason != 9) {
+    debug("Connection status: %d", reason);
+  }
+
+  if (reason != 9) {
+    debug("SocketMan connection issue detected!!! Code (%d)", reason)
   }
 
   // If no IP or DNS && HTTP fail we restart the network once
   // After N minutes, we restart the AP
-  if (reason > 1)
+  if (reason > 1) {
     return;
+  }
 
   // Don't reboot if this is disabled!!
-  if (options.reboot == 0)
+  if (options.reboot == 0) {
     return;
+  }
 
-  if (went_offline == 0)
+  if (went_offline == 0) {
     went_offline = time(NULL);
+  }
 
   debug("Device went offline at %lld. Reason code %d, attemping recovery.", (long long) went_offline, reason);
 
