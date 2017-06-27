@@ -36,7 +36,7 @@ int valid_mac(char *mac)
     return 0;
 
   for(i = 0; i < 17; i++) {
-    if(i % 3 != 2 && !isxdigit(mac[i]))
+    if(i % 3 != 2 && !isxdigit((unsigned char)mac[i]))
       return 0;
     if(i % 3 == 2 && (mac[i] != '-'))
       return 0;
@@ -82,7 +82,7 @@ char *read_config()
 }
 
 // Replace config above with this
-void read_file(char *file, char *buf)
+void read_file(char *file, char *buf, size_t len)
 {
   FILE *fp;
   long lSize;
@@ -116,7 +116,9 @@ void read_file(char *file, char *buf)
       }
     }
   }
-  strcpy(buf, buffer);
+  if(len > 0 && buffer != NULL) {
+    strncpy(buf, buffer, len - 1);
+  }
   free(buffer);
   fclose(fp);
   return;
@@ -196,7 +198,7 @@ int check_certificates()
   MD5_Final (c, &mdContext);
 
   for (i = 0; i < MD5_DIGEST_LENGTH; ++i) {
-    snprintf(&(md[i*2]), 16*2, "%02x", (unsigned int)c[i]);
+    snprintf(&(md[i*2]), 2, "%02x", (unsigned int)c[i]);
   }
 
   fclose (inFile);

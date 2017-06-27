@@ -24,13 +24,20 @@ void cache(const char *postData)
 
   if(out == NULL) {
     perror("Error opening file.");
+    return;
   }
 
   fseek(out, 0L, SEEK_END);
-  unsigned long sz = (unsigned long)ftell(out);
+  long sz = ftell(out);
   fseek(out, 0, SEEK_SET);
 
   /* debug("FILE SIZE: %ld", sz); */
+
+  if (sz < 0) {
+    perror("Failed to determine file size.");
+    fclose(out);
+    return;
+  }
 
   if (sz > 5000000) {
     debug("Cache is getting large, not writing...");
@@ -101,6 +108,10 @@ int compress_cache()
   FILE *ifp = fopen(options.cache, "r");
   FILE *ofp = fopen(options.archive, "w");
 
+  if (!ifp || !ofp) {
+      return Z_STREAM_ERROR;
+  }
+
   ibuf = (Byte *)calloc(CHUNK, sizeof(Byte));
   obuf = (Byte *)calloc(CHUNK, sizeof(Byte));
   fread(ibuf, CHUNK, 1, ifp);
@@ -110,8 +121,13 @@ int compress_cache()
   strm.opaque = Z_NULL;
 
   ret = strm_init (& strm);
-  if (ret != Z_OK)
+  if (ret != Z_OK) {
+    fclose(ifp);
+    fclose(ofp);
+    free(ibuf);
+    free(obuf);
     return ret;
+  }
 
   strm.next_in = ibuf;
   strm.avail_in = CHUNK;

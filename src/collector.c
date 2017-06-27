@@ -520,7 +520,7 @@ void collect_data(int offline_reason)
 
   struct defaultRoute dr = route();
 
-  struct InterfaceStats istats;
+  struct InterfaceStats istats = { 0 };
   if (strcmp(dr.if_name, "") != 0) {
     interface_ip(dr.if_name, wan_ip, sizeof(wan_ip));
     istats = stats(dr.if_name);
@@ -572,7 +572,7 @@ void collect_data(int offline_reason)
 
   if (machine[0] !='\0') {
     // Save to the options to prevent future lookups
-    strcpy(options.machine, machine);
+    strncpy(options.machine, machine, sizeof(options.machine) - 1);
     json_object *jmachine = json_object_new_string(machine);
     json_object_object_add(jattr, "machine_type", jmachine);
   }
@@ -681,9 +681,11 @@ bool should_backup(const char *type) {
   // Extend if you want to back up and check more types
   char *types[] = {"network", "networking", "all"};
 
-  for (i=0; i < size; i++) {
-    if (strcmp(types[i], type) == 0) {
-      return true;
+  if (type) {
+    for (i=0; i < size; i++) {
+      if (strcmp(types[i], type) == 0) {
+        return true;
+      }
     }
   }
   return false;

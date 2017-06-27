@@ -20,7 +20,7 @@ int reboot() {
 void machine_type(char *type, size_t len)
 {
   if (strlen(options.machine) > 0) {
-    strcpy(type, options.machine);
+    strncpy(type, options.machine, len - 1);
   } else {
     FILE* fp;
     size_t bytes_read = 0;
@@ -42,7 +42,7 @@ void machine_type(char *type, size_t len)
 
     buffer[bytes_read] = '\0';
 #ifdef __OPENWRT__
-    strncpy(type, buffer, strlen(buffer)+1);
+    strncpy(type, buffer, len - 1);
 #elif __linux
     match = strstr(buffer, "NAME");
 
