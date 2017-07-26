@@ -10,8 +10,8 @@
 // GZIP compression
 #define windowBits 15
 #define GZIP_ENCODING 16
-#define CHUNK 0x4000
-/* #define CHUNK 16384*2 */
+/* #define CHUNK 0x4000 */
+#define CHUNK 16384*2
 
 int compress_cache();
 
@@ -74,10 +74,10 @@ void send_cached()
   int run = post_cache(options.archive);
 
   // Remove the archive whatever the result
-  int del = unlink(options.archive);
-  if (del != 0) {
-    printf("Archive could not be deleted!");
-  }
+  /* int del = unlink(options.archive); */
+  /* if (del != 0) { */
+  /*   printf("Archive could not be deleted!"); */
+  /* } */
 
   // run == the returned value from the api
   if (run == 0) {
@@ -86,10 +86,10 @@ void send_cached()
 
   // delete the archive every run but leave the cache
   // in place just in case it fails
-  del = unlink(options.cache);
-  if(del != 0) {
-    printf("File can not be deleted!");
-  }
+  /* del = unlink(options.cache); */
+  /* if(del != 0) { */
+  /*   printf("File can not be deleted!"); */
+  /* } */
 
   return;
 }
