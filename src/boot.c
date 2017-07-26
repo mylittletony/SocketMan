@@ -103,8 +103,6 @@ void parse_config(char *buffer)
             strcpy(options.stats_url, json_object_get_string(val));
           if (strcmp(key, "backup_stats_url") == 0)
             strcpy(options.backup_stats_url, json_object_get_string(val));
-          /* if (strcmp(key, "cache") == 0) */
-          /*   strcpy(options.cache, json_object_get_string(val)); */
           if (strcmp(key, "health_url") == 0)
             strcpy(options.health_url, json_object_get_string(val));
           if (strcmp(key, "boot_url") == 0)
