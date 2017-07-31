@@ -7,9 +7,6 @@
 #include <stdlib.h>
 #include <syslog.h>
 
-#include <syslog.h>
-openlog ("exampleprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-
 #ifdef NDEBUG
 #define debug(M, ...)
 #else

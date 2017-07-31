@@ -265,6 +265,8 @@ int main( int argc,char **argv)
     debug("I am an OpenWRT box, yay!");
   }
 
+  openlog ("exampleprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+
   boot();
 
   return 1;
