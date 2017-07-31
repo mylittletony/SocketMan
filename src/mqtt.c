@@ -314,7 +314,9 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 
 void ping_mqtt()
 {
-  debug("Sending MQTT ping!");
+  if (options.debug) {
+    debug("Sending MQTT ping!");
+  }
 
   int k,n;
   k = strlen(options.key);
