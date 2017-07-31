@@ -233,9 +233,7 @@ int post_cache()
   }
 
   if ((resp == 200 || resp == 201) && c.size > 0) {
-    if (options.debug) {
-      debug("Data sent (%ld)", resp);
-    }
+    debug("Data sent (%ld)", resp);
     process_response(c.memory);
     free(c.memory);
     c.memory = NULL;
