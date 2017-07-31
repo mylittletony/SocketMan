@@ -7,8 +7,7 @@
 #include <stdlib.h>
 #include <syslog.h>
 
-/* void logger(char * fmt); */
-
+#include <syslog.h>
 openlog ("exampleprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 
 #ifdef NDEBUG
