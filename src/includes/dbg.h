@@ -16,7 +16,7 @@
   if (getenv("DEBUG")!=NULL) { \
     fprintf(stderr, "DEBUG %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
   } else { \
-    syslog(LOG_INFO, "socketman: %s:%d" M "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    syslog(LOG_INFO, "socketman: ", ##__VA_ARGS__); \
   }
 #endif
 
