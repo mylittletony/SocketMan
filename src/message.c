@@ -9,6 +9,8 @@
 
 void save_and_notify(char *id, char *cmd)
 {
+  debug("xxxxxxxxxxxxxx");
+
   FILE *fp;
   int response = -1;
   char buffer[BUFF_SIZE];
@@ -22,7 +24,7 @@ void save_and_notify(char *id, char *cmd)
     pclose(fp);
   }
   if (options.debug){
-    /* debug("%s", buffer); */
+    debug("%s", buffer);
   }
 
   cmd_notify(response, id, buffer);
