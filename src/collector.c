@@ -640,9 +640,11 @@ void collect_data(int offline_reason)
   json_object_object_add(jobj, "device", jattr);
 
   clock_gettime(CLOCK_MONOTONIC, &tend);
-  debug("Stats collection finished in %.5f seconds\n",
-      ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
-      ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
+  if (options.debug) {
+    debug("Stats collection finished in %.5f seconds",
+        ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
+        ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
+  }
 
   // Cache the results even if we have no-cache enabled at the mo
   const char *jdata = json_object_to_json_string(jobj);
