@@ -9,8 +9,6 @@
 
 void save_and_notify(char *id, char *cmd)
 {
-  debug("xxxxxxxxxxxxxx");
-
   FILE *fp;
   int response = -1;
   char buffer[BUFF_SIZE];

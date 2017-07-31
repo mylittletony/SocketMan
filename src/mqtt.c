@@ -187,8 +187,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     pclose(fp);
   }
 
+  debug("1111111111111111111111111111111111111111111111111111111111111111111");
   if (options.debug == 1) {
-    debug("%s", buffer);
+    /* debug("%s", buffer); */
   }
 
   if (strlen(buffer) == 0) {
