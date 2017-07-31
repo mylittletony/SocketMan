@@ -79,7 +79,9 @@ int health_check(char *url, int port)
   }
 
   addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
-  debug("\nUsing %s for %s check", inet_ntoa(addr), t);
+  if (options.debug) {
+    debug("\nUsing %s for %s check", inet_ntoa(addr), t);
+  }
   freeaddrinfo(result);
 
   return open_socket(inet_ntoa(addr), port);
