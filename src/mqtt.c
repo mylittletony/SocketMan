@@ -138,8 +138,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Save output to file if debug flag is set
-  if (options.debug)
+  if (options.debug) {
     save_config("/tmp/.configs", cmd);
+  }
 
   // Refactor
   char delivery[117];
@@ -228,7 +229,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Worth checking the connection //
   mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
   json_object_put(jobj);
-  debug("Message published!");
+  if (options.debug) {
+    debug("Message published!");
+  }
 
   return;
 }
