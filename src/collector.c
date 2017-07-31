@@ -40,7 +40,9 @@ int should_send() {
     last_collect = time(NULL);
     return 1;
   } else {
-    debug("Running now for %d seconds", diff);
+    if (options.debug) {
+      debug("Running now for %d seconds", diff);
+    }
   }
   return 0;
 }
@@ -514,7 +516,9 @@ void collect_data(int offline_reason)
   struct timespec tstart={0,0}, tend={0,0};
   clock_gettime(CLOCK_MONOTONIC, &tstart);
 
-  debug("Collecting the device stats");
+  if (options.debug) {
+    debug("Collecting the device stats");
+  }
 
   char wan_ip[21] = "";
   json_object *jobj = json_object_new_object();

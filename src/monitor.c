@@ -58,7 +58,9 @@ void monitor()
 
   // Sleep for monitor interval
   if (options.initialized) {
-    debug("Sleeping for %d seconds.", options.monitor);
+    if (options.debug) {
+      debug("Sleeping for %d seconds.", options.monitor);
+    }
     sleep(options.monitor);
   }
 }
