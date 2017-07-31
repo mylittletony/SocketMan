@@ -51,8 +51,7 @@ void parse_config(char *buffer)
         case json_type_string:
         case json_type_boolean:
           if (strcmp(key, "debug") == 0) {
-            debug("111111111231293719283791827391827391 %d", json_object_get_int(val));
-            options.debug = 1;
+            options.debug = json_object_get_int(val);
           }
           if (strcmp(key, "tls") == 0) {
             options.tls = 0;
