@@ -810,7 +810,7 @@ ubiquiti_nanostation_m:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
  
- ubiquiti_nanostation_loco_m2:
+ubiquiti_nanostation_loco_m2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
