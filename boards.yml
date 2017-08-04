@@ -822,6 +822,10 @@ ubiquiti_bullet_m:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
+ubiquiti_picostation_m2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 witelcom_n3_iap_dual:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0t 3", "0t 2"]
