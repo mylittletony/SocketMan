@@ -814,6 +814,10 @@ ubiquiti_nanostation_loco_m2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
+ubiquiti_rocket_m2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 ubiquiti_unifiap_outdoor_plus:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
