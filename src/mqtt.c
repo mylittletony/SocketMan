@@ -174,6 +174,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
 
+  // Wants to sleep for a bit since the delivery is so important
+  sleep(3);
+
   // Removing since this often fails. From now on, we will use the delivered flag and not wait
   // for the message to be processed lah. For the time being, only messages can use this on the
   // backend since commands can take network down. When this happens, the job is never send and we
