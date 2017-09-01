@@ -338,6 +338,12 @@ linksys_wrt1900ac:
   switch:   ["0 1 2 3 5", "4 6"]
   require_mode: "ac"
 
+linksys_wrt3200acm:
+  lan_wan:  ["eth0.1", "eth1.2"]
+  radios:   ["radio1", "radio0"]
+  switch:   ["0 1 2 3 5t", "4 6t"]
+  require_mode: "ac"
+
 mikrotik_routerboard_433_433ah:
   lan_wan:  ["eth1", "eth0"]
   switch:   ["1 2 5"]
