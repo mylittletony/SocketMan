@@ -545,6 +545,7 @@ raspberry_pi_2_model_b_rev_1.1:
 
 raspberry_pi_3_model_b_rev_1.2:
   lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
 
 raspberry_pi_compute_module_rev1.0:
   lan_wan:  ["eth1", "eth0"]
