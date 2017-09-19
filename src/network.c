@@ -144,7 +144,7 @@ struct defaultRoute route()
 
   if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0) {
     debug("Socket creation failed, exiting.");
-    return dr;
+    exit(0);
   }
 
   memset(msgBuf, 0, BUFSIZE);
