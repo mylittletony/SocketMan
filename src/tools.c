@@ -79,7 +79,9 @@ int health_check(char *url, int port)
   }
 
   addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
-  debug("\nUsing %s for %s check", inet_ntoa(addr), t);
+  if (options.debug) {
+    debug("\nUsing %s for %s check", inet_ntoa(addr), t);
+  }
   freeaddrinfo(result);
 
   return open_socket(inet_ntoa(addr), port);
@@ -119,7 +121,7 @@ int connection_check()
 
   if (options.debug) {
     clock_gettime(CLOCK_MONOTONIC, &tend);
-    printf("Connection check finished in %.5f seconds\n",
+    debug("Connection check finished in %.5f seconds\n",
         ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
         ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
   }

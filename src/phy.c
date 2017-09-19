@@ -541,7 +541,6 @@ void parse_mcs(struct nlattr *bitrate_attr, int8_t *buf)
 {
 
   int mcs = 0;
-  char *pos = buf;
   struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
   static struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = {
     [NL80211_RATE_INFO_BITRATE] = { .type = NLA_U16 },
@@ -578,20 +577,20 @@ int nl80211_init(void)
 
     nlstate->nl_sock = nl_socket_alloc();
     if (!nlstate->nl_sock) {
-      fprintf(stderr, "Failed to allocate netlink socket.\n");
+      debug("Failed to allocate netlink socket.");
       err = -ENOMEM;
       goto err;
     }
 
     if (genl_connect(nlstate->nl_sock)) {
-      fprintf(stderr, "Failed to connect to generic netlink.\n");
+      debug("Failed to connect to generic netlink.");
       err = -ENOLINK;
       goto err;
     }
 
     nlstate->nl80211_id = genl_ctrl_resolve(nlstate->nl_sock, "nl80211");
     if (nlstate->nl80211_id < 0) {
-      fprintf(stderr, "nl80211 not found.\n");
+      debug("nl80211 not found.");
       err = -ENOENT;
       goto err;
     }
@@ -612,13 +611,13 @@ static struct nl80211_msg_conveyor * nl80211_new(int cmd, int flags)
   struct nl_msg *msg = nlmsg_alloc();
 
   if (!msg) {
-    fprintf(stderr, "Failed to allocate netlink message.\n");
+    debug("Failed to allocate netlink message.");
     goto err;
   }
 
   struct nl_cb *cb = nl_cb_alloc(NL_CB_DEFAULT);
   if (!cb) {
-    fprintf(stderr, "Failed to allocate netlink callback.\n");
+    debug("Failed to allocate netlink callback.");
     goto err;
   }
 
@@ -648,7 +647,7 @@ static struct nl80211_msg_conveyor * nl80211_msg(const char *ifname, int cmd, in
   if (ifname) {
     devidx = if_nametoindex(ifname);
     if (devidx <= 0) {
-      fprintf(stderr, "Interface not found.\n");
+      debug("Interface not found. %s (%lld)", ifname, devidx);
       return NULL;
     }
   }
@@ -684,14 +683,14 @@ static int get_link_freq(struct nl_msg *msg, void *arg)
       genlmsg_attrlen(gnlh, 0), NULL);
 
   if (!tb_msg[NL80211_ATTR_SURVEY_INFO]) {
-    fprintf(stderr, "survey data missing!\n");
+    debug("survey data missing!");
     return NL_SKIP;
   }
 
   if (nla_parse_nested(sinfo, NL80211_SURVEY_INFO_MAX,
         tb_msg[NL80211_ATTR_SURVEY_INFO],
         survey_policy)) {
-    fprintf(stderr, "failed to parse nested attributes!\n");
+    debug("failed to parse nested attributes!");
     return NL_SKIP;
   }
 
@@ -721,14 +720,14 @@ static int get_link_noise(struct nl_msg *msg, void *arg)
       genlmsg_attrlen(gnlh, 0), NULL);
 
   if (!tb_msg[NL80211_ATTR_SURVEY_INFO]) {
-    fprintf(stderr, "survey data missing!\n");
+    debug("survey data missing!");
     return NL_SKIP;
   }
 
   if (nla_parse_nested(sinfo, NL80211_SURVEY_INFO_MAX,
         tb_msg[NL80211_ATTR_SURVEY_INFO],
         survey_policy)) {
-    fprintf(stderr, "failed to parse nested attributes!\n");
+    debug("failed to parse nested attributes!");
     return NL_SKIP;
   }
 
@@ -860,13 +859,13 @@ static int nl80211_signal_cb(struct nl_msg *msg, void *arg)
       genlmsg_attrlen(gnlh, 0), NULL);
 
   if (!tb[NL80211_ATTR_STA_INFO]) {
-    fprintf(stderr, "sta stats missing!\n");
+    debug("sta stats missing!");
     return NL_SKIP;
   }
   if (nla_parse_nested(sinfo, NL80211_STA_INFO_MAX,
         tb[NL80211_ATTR_STA_INFO],
         stats_policy)) {
-    fprintf(stderr, "failed to parse nested attributes!\n");
+    debug("failed to parse nested attributes!");
     return NL_SKIP;
   }
 
@@ -963,13 +962,13 @@ static int get_stations(struct nl_msg *msg, void *arg)
       genlmsg_attrlen(gnlh, 0), NULL);
 
   if (!tb[NL80211_ATTR_STA_INFO]) {
-    fprintf(stderr, "sta stats missing!\n");
+    debug("sta stats missing!");
     return NL_SKIP;
   }
   if (nla_parse_nested(sinfo, NL80211_STA_INFO_MAX,
         tb[NL80211_ATTR_STA_INFO],
         stats_policy)) {
-    fprintf(stderr, "failed to parse nested attributes!\n");
+    debug("failed to parse nested attributes!");
     return NL_SKIP;
   }
 
@@ -1795,7 +1794,7 @@ int nl80211_disconnect(char *buf)
     unsigned char mac_addr[ETH_ALEN];
 
     if (mac_addr_a2n(mac_addr, buf)) {
-      fprintf(stderr, "invalid mac address\n");
+      debug("invalid mac address");
       return 2;
     }
     NLA_PUT(req->msg, NL80211_ATTR_MAC, ETH_ALEN, mac_addr);

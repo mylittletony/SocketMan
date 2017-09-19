@@ -1,6 +1,6 @@
 # SocketMan
 
-A light-weight daemon, written purely in c, that runs on most OpenWRT, LEDE and other \*nix devices. SocketMan is used at Cucumber Tony to control their global estate of access points and routers.
+A light-weight daemon, written purely in c, that runs on most OpenWRT, LEDE and other \*nix devices. SocketMan is used at [CT WiFi](https://ct-networks.io) (formally known as Cucumber Tony) to control their global estate of access points and routers.
 
 The project is still being developed. A full beta release will be made available soon.
 
@@ -45,6 +45,14 @@ If you're using this with Cucumber, the device will download the file automatica
 
 ```
 socketman --config=/etc/config.json
+```
+
+By default, SocketMan will log via syslog. If you want to change this behaviour, you can add the environment variable ```DEBUG``` which will force it to log to the terminal.
+
+For example:
+
+```
+DEBUG=1 socketman --config=/etc/config.json
 ```
 
 ## Config Options

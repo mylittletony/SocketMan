@@ -138,8 +138,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Save output to file if debug flag is set
-  if (options.debug)
+  if (options.debug) {
     save_config("/tmp/.configs", cmd);
+  }
 
   // Refactor
   char delivery[117];
@@ -173,6 +174,14 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
 
+  // Wants to sleep for a bit since the delivery is so important
+  sleep(3);
+
+  // Removing since this often fails. From now on, we will use the delivered flag and not wait
+  // for the message to be processed lah. For the time being, only messages can use this on the
+  // backend since commands can take network down. When this happens, the job is never send and we
+  // continue to mark the job as failed.
+
   // Message processing
   FILE *fp;
   int response = -1;
@@ -187,8 +196,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     pclose(fp);
   }
 
-  if (options.debug == 1)
+  if (options.debug) {
     debug("%s", buffer);
+  }
 
   if (strlen(buffer) == 0) {
     strcpy(buffer, "DNE");
@@ -227,7 +237,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Worth checking the connection //
   mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
   json_object_put(jobj);
-  debug("Message published to %s!", pub);
+  if (options.debug) {
+    debug("Message published!");
+  }
 
   return;
 }
@@ -288,8 +300,9 @@ void mqtt_connect() {
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
-  if (options.debug == 1)
+  if (options.debug == 1) {
     debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
+  }
 
   counter++;
 
@@ -309,7 +322,9 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
 
 void ping_mqtt()
 {
-  debug("Sending MQTT ping!");
+  if (options.debug) {
+    debug("Sending MQTT ping!");
+  }
 
   int k,n;
   k = strlen(options.key);

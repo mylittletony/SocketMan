@@ -50,8 +50,9 @@ void parse_config(char *buffer)
         case json_type_double:
         case json_type_string:
         case json_type_boolean:
-          if (strcmp(key, "debug") == 0)
-            options.debug = 1;
+          if (strcmp(key, "debug") == 0) {
+            options.debug = json_object_get_int(val);
+          }
           if (strcmp(key, "tls") == 0) {
             options.tls = 0;
             if (json_object_get_boolean(val)) {
@@ -103,8 +104,6 @@ void parse_config(char *buffer)
             strcpy(options.stats_url, json_object_get_string(val));
           if (strcmp(key, "backup_stats_url") == 0)
             strcpy(options.backup_stats_url, json_object_get_string(val));
-          /* if (strcmp(key, "cache") == 0) */
-          /*   strcpy(options.cache, json_object_get_string(val)); */
           if (strcmp(key, "health_url") == 0)
             strcpy(options.health_url, json_object_get_string(val));
           if (strcmp(key, "boot_url") == 0)
@@ -180,7 +179,7 @@ void boot_cmd()
 
   FILE * fp = popen(options.boot_cmd, "r");
   if ( fp == 0 ) {
-    fprintf(stderr, "Could not execute cmd\n");
+    debug("Could not execute cmd");
     return;
   }
   debug("Running boot CMD");

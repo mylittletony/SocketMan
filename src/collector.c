@@ -40,7 +40,9 @@ int should_send() {
     last_collect = time(NULL);
     return 1;
   } else {
-    debug("Running now for %d seconds", diff);
+    if (options.debug) {
+      debug("Running now for %d seconds", diff);
+    }
   }
   return 0;
 }
@@ -320,7 +322,7 @@ void run_interface_scan(json_object *jiface_array,
   int len = 0;
   int x, i, ii, len_a, xx;
   char ssids[1024];
-  char buf_a[1024];
+  char buf_a[1024*10];
   const struct iw_ops *iw;
   struct iw_ssid_entry *e;
   struct iw_stationlist_entry *st;
@@ -353,7 +355,9 @@ void run_interface_scan(json_object *jiface_array,
     if (conn > 0)
       online = online + conn;
 
-    debug("%d clients connected to %s", conn, e->ifname);
+    if (options.debug) {
+      debug("%d clients connected to %s", conn, e->ifname);
+    }
 
     json_object *jssids = json_object_new_object();
     format_ssids(iw, e, jssids, len_a);
@@ -362,6 +366,7 @@ void run_interface_scan(json_object *jiface_array,
     int ret = strcmp(e->ifname, "mon0");
     if (ret != 0 && options.survey == 1)
       add_to_list(e);
+
   }
 
   // Needs scan logic built in
@@ -511,7 +516,9 @@ void collect_data(int offline_reason)
   struct timespec tstart={0,0}, tend={0,0};
   clock_gettime(CLOCK_MONOTONIC, &tstart);
 
-  debug("Collecting the device stats");
+  if (options.debug) {
+    debug("Collecting the device stats");
+  }
 
   char wan_ip[21] = "";
   json_object *jobj = json_object_new_object();
@@ -533,7 +540,9 @@ void collect_data(int offline_reason)
 
   if (options.scan == 1)
   {
-    debug("Running WiFi Collection");
+    if (options.debug) {
+      debug("Running WiFi Collection");
+    }
 
     json_object *jiface_array = json_object_new_array();
     json_object *jstations_array = json_object_new_array();
@@ -623,20 +632,27 @@ void collect_data(int offline_reason)
   format_dhcp(jdhcp_array);
   json_object_object_add(jobj, "dhcp", jdhcp_array);
 
-  json_object *jsplash_array = json_object_new_array();
-  format_splash(jsplash_array);
-  json_object_object_add(jobj, "splash", jsplash_array);
+  // TODO: Outputs write: broken pipe if no splash - should suppress //
+  /* json_object *jsplash_array = json_object_new_array(); */
+  /* format_splash(jsplash_array); */
+  /* json_object_object_add(jobj, "splash", jsplash_array); */
 
   json_object_object_add(jobj, "device", jattr);
 
   clock_gettime(CLOCK_MONOTONIC, &tend);
-  printf("Stats collection finished in %.5f seconds\n",
-      ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
-      ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
+  if (options.debug) {
+    debug("Stats collection finished in %.5f seconds",
+        ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
+        ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
+  }
 
   // Cache the results even if we have no-cache enabled at the mo
   const char *jdata = json_object_to_json_string(jobj);
-  cache(jdata);
+  if (options.nocache) {
+    debug("Not caching results");
+  } else {
+    cache(jdata);
+  }
 
   // Even if the box is offline, try and send the cache
   // in case it's actually online again since collection.

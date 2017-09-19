@@ -300,6 +300,10 @@ gl_inet_gl_mt300a:
   switch:   ["1 2 3 4 6t", "0 6t"]
   radios:   ["radio0"]
 
+gl_mifi:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 hiwifi_hc6361:
   lan_wan:  ["eth0", "eth1"]
   switch:   ["0 1 2 3 4"]
@@ -332,6 +336,12 @@ linksys_wrt1900ac:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
   switch:   ["0 1 2 3 5", "4 6"]
+  require_mode: "ac"
+
+linksys_wrt3200acm:
+  lan_wan:  ["eth0.1", "eth1.2"]
+  radios:   ["radio1", "radio0"]
+  switch:   ["0 1 2 3 5t", "4 6t"]
   require_mode: "ac"
 
 mikrotik_routerboard_433_433ah:
@@ -441,6 +451,11 @@ netgear_wnr612_v2:
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
+netgear_wndr3700:
+  lan_wan:  ["eth0", "eth1"]
+  radios:   ["radio0", "radio1"]
+  switch:   ["0 1 2 3 5"]
+
 netgear_wndr3700v4:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0t 1 2 3 4",  "0t 5"]
@@ -459,6 +474,11 @@ netgear_wpn824n:
 netgear_wndap360:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio1", "radio0"]
+
+netgear_wndr3800:
+  lan_wan: ["eth0", "eth1"]
+  radios:  ["radio0", "radio1"]
+  switch:  ["0 1 2 3 5"]
 
 nc_link_smart_300:
   lan_wan:  ["eth1", "eth0"]
@@ -525,6 +545,7 @@ raspberry_pi_2_model_b_rev_1.1:
 
 raspberry_pi_3_model_b_rev_1.2:
   lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
 
 raspberry_pi_compute_module_rev1.0:
   lan_wan:  ["eth1", "eth0"]
@@ -804,12 +825,24 @@ ubiquiti_unifiap_outdoor:
 ubiquiti_nanostation_m:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
+ 
+ubiquiti_nanostation_loco_m2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+ubiquiti_rocket_m2:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
 
 ubiquiti_unifiap_outdoor_plus:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
 ubiquiti_bullet_m:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
+ubiquiti_picostation_m2:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
@@ -859,3 +892,9 @@ zyxel_nbg460n_550n_550nh:
   lan_wan:  ["eth0.1", "eth1"]
   radios:   ["radio0"]
   switch:   ["0", "0 1 2 3 5"]
+
+zbt_we826:
+   lan_wan:  ["eth0.1", "eth0.2"]
+   switch:   ["0t 0 1 2 3", "0t 4"]
+   radios:   ["radio1", "radio0"]
+   require_mode: "ac"

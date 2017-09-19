@@ -52,7 +52,7 @@ void handle_signal(int signal) {
       printf("Caught SIGTERM, exiting now\n");
       exit(0);
     default:
-      fprintf(stderr, "Caught wrong signal: %d\n", signal);
+      debug("Caught wrong signal: %d", signal);
       return;
   }
 }
@@ -110,6 +110,10 @@ void validate_options()
 
 int main( int argc,char **argv)
 {
+  if (getenv("DEBUG")==NULL) {
+    printf("Starting SocketMan. Logs will be output to syslog.");
+  }
+
   int c;
 
   struct sigaction sa;
@@ -257,8 +261,11 @@ int main( int argc,char **argv)
 
   validate_options();
 
-  if (strcmp(OS, "OPENWRT") == 0)
+  openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
+
+  if (strcmp(OS, "OPENWRT") == 0) {
     debug("I am an OpenWRT box, yay!");
+  }
 
   boot();
 

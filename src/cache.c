@@ -10,14 +10,18 @@
 // GZIP compression
 #define windowBits 15
 #define GZIP_ENCODING 16
-#define CHUNK 0x4000
+/* #define CHUNK 0x4000 */
+#define CHUNK 16384*2
 
 int compress_cache();
 
 void cache(const char *postData)
 {
 
-  debug("Caching the datas!");
+  if (options.debug) {
+    debug("Caching the datas!");
+  }
+
   FILE *out = fopen(options.cache, "a");
 
   if(out == NULL) {
@@ -30,7 +34,7 @@ void cache(const char *postData)
 
   /* debug("FILE SIZE: %ld", sz); */
 
-  if (sz > 1000000) {
+  if (sz > 5000000) {
     debug("Cache is getting large, not writing...");
     fclose(out);
     return;

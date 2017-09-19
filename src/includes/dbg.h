@@ -4,11 +4,18 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <stdlib.h>
+#include <syslog.h>
 
 #ifdef NDEBUG
 #define debug(M, ...)
 #else
-#define debug(M, ...) fprintf(stderr, "DEBUG %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#define debug(M, ...) \
+  if (getenv("DEBUG")!=NULL) { \
+    fprintf(stderr, "DEBUG %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+  } else { \
+    syslog(LOG_INFO, "" M "\n", ##__VA_ARGS__); \
+  }
 #endif
 
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))

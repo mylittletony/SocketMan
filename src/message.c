@@ -21,8 +21,9 @@ void save_and_notify(char *id, char *cmd)
     fread(buffer, sizeof(char), BUFF_SIZE, fp);
     pclose(fp);
   }
-  if (options.debug)
+  if (options.debug){
     debug("%s", buffer);
+  }
 
   cmd_notify(response, id, buffer);
 }
@@ -55,7 +56,7 @@ void process_response(char *msg)
   if (cmd[0] != '\0') {
     FILE * fp = popen(cmd, "r");
     if ( fp == 0 ) {
-      fprintf(stderr, "Could not execute cmd\n");
+      debug("Could not execute cmd");
       return;
     }
     debug("Running response CMD");
