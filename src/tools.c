@@ -103,7 +103,8 @@ int connection_check()
   // Check IP - return if we do not have an IP - result 0
   struct defaultRoute dr = route();
   if (strlen(dr.ip) == 0) {
-    return result;
+    debug("EEEEEEEEEEEEEEEEEEEEEEEEEEEGS11");
+    /* return result; */
   }
   result = 1;
 
