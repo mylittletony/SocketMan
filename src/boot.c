@@ -69,7 +69,7 @@ void parse_config(char *buffer)
           if (strcmp(key, "scan") == 0)
             options.scan = json_object_get_int(val);
           if (strcmp(key, "disable_mqtt") == 0)
-            options.rest = 1;
+            options.disable_mqtt = 1;
           if (strcmp(key, "rest") == 0)
             options.rest = json_object_get_int(val);
           if (strcmp(key, "survey") == 0)
