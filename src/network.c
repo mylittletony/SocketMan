@@ -144,7 +144,8 @@ struct defaultRoute route()
 
   if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0) {
     debug("Socket creation failed, exiting.");
-    exit(0);
+    close(sock);
+    return dr;
   }
 
   memset(msgBuf, 0, BUFSIZE);
@@ -166,6 +167,7 @@ struct defaultRoute route()
 
   if ((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0) {
     debug("Read From Socket Failed...");
+    close(sock);
     return dr;
   }
 

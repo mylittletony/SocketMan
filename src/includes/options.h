@@ -31,6 +31,7 @@ struct _options {
   /* int heartbeat; */
   int rest;
   int reboot;
+  int disable_mqtt;
   int health_port;
   int monitor;
   int sleep;

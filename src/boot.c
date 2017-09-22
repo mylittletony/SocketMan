@@ -68,6 +68,8 @@ void parse_config(char *buffer)
             options.nocache = json_object_get_int(val);
           if (strcmp(key, "scan") == 0)
             options.scan = json_object_get_int(val);
+          if (strcmp(key, "disable_mqtt") == 0)
+            options.rest = 1;
           if (strcmp(key, "rest") == 0)
             options.rest = json_object_get_int(val);
           if (strcmp(key, "survey") == 0)
@@ -206,7 +208,9 @@ void run_socketman()
 {
   debug("Starting Socketman.");
   pre_boot_cb();
-  mqtt_connect();
+  if (options.disable_mqtt != 1) {
+    mqtt_connect();
+  }
   do
   {
     monitor();
