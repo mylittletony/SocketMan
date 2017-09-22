@@ -70,7 +70,7 @@ void save_config(char *file, char *msg)
   if (f == NULL)
   {
     printf("Error opening file!\n");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   fprintf(f, "%s", msg);
