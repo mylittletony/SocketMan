@@ -59,7 +59,6 @@ void handle_signal(int signal) {
 
 void validate_options()
 {
-  exit(0);
   if (strlen(options.config) == 0) {
     debug("Use a config file not arguments.");
     if (strlen(options.username) == 0) {
