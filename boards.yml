@@ -838,6 +838,10 @@ ubiquiti_unifiap_outdoor_plus:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
 
+ubiquiti_unifiap_outdoor+:
+  lan_wan:  ["eth1", "eth0"]
+  radios:   ["radio0"]
+
 ubiquiti_bullet_m:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
