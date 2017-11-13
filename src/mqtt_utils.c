@@ -13,7 +13,7 @@ int client_id_generate(char *id)
   int len;
 
   len = strlen("/-") + 6 + strlen(options.mac);
-  snprintf(id, len, "%d/%s", getpid(), options.mac);
+  snprintf(id, len, "%d%s", getpid(), options.mac);
   if(strlen(id) > MOSQ_MQTT_ID_MAX_LENGTH){
     id[MOSQ_MQTT_ID_MAX_LENGTH] = '\0';
   }
