@@ -900,3 +900,7 @@ zyxel_nbg460n_550n_550nh:
 debian_gnu_linux_8_jessie:
   lan_wan:  ["eth0"]
   radios:   ["radio0"]
+  
+mediatek_linkit_smart_7688:
+lan_wan:  ["eth0"]
+radios:   ["radio0"]
