@@ -904,3 +904,9 @@ debian_gnu_linux_8_jessie:
 mediatek_linkit_smart_7688:
   lan_wan:  ["eth0"]
   radios:   ["radio0"]
+
+netgear_wndr3400_v3":
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0 1 2 3 5t",  "4 5t"]
+  radios:   ["radio0", "radio1"]
+  require_mode: "ac"
