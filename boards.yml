@@ -571,8 +571,9 @@ smart_electronics_black_swift_board:
   switch:   ["0 1 3"]
 
 solidrun_clearfog_pro_a1:
-  lan_wan:  ["eth0", "eth1", "eth2", "ifb0", "ifb1", "lan1", "lan2", "lan3", "lan4", "lan4", "lan5", "lan6"]
-  radios:   ["wlan0", "wlan1"]
+  lan_wan:  ["eth0 eth1", "eth2"]
+  radios:   ["radio1", "radio0"]
+  require_mode: "ac"
 
 sitecom_wlr_8100:
   lan_wan:  ["eth0.1", "eth0.2"]
