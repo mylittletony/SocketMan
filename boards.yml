@@ -720,6 +720,11 @@ tp_link_tl_wdr3600_4300_4310:
   switch:   ["0t 2 3 4 5", "0t 1"]
   radios:   ["radio0", "radio1"]
 
+tp_link_tl_wdr4300_v1:
+  lan_wan:  ["eth0.1", "eth0.2"]
+  switch:   ["0t 2 3 4 5", "0t 1"]
+  radios:   ["radio0", "radio1"]
+
 tp_link_tl_wr703n_v1:
   lan_wan:  ["eth1", "eth0"]
   radios:   ["radio0"]
