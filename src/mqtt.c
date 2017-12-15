@@ -24,6 +24,12 @@ struct mosquitto *mosq = NULL;
 bool connected = false;
 time_t m0=0;
 char mqtt_id[27];
+static int last_mid = -1;
+static int last_mid_sent = -1;
+static int mid_sent = 0;
+static int mode = 0;
+static bool disconnect_sent = false;
+int mqtt_fails = 0;
 
 int dial_mqtt();
 
@@ -100,6 +106,16 @@ static char *rand_string(char *str, char *prefix, size_t size)
     str[size] = '\0';
   }
   return str;
+}
+
+void disconnect() {
+  if (connected) {
+    debug("Disconnecting and cleaning up.");
+    mqtt_fails=0;
+    mosquitto_destroy(mosq);
+    mosquitto_lib_cleanup();
+    connected = 0;
+  }
 }
 
 // Refactor whole function
@@ -235,9 +251,11 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Worth checking the connection //
-  mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
+  int ret = mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
   json_object_put(jobj);
-  if (options.debug) {
+  /* check_message_sent(ret); */
+
+  if (options.debug && ret != MOSQ_ERR_SUCCESS) {
     debug("Message published!");
   }
 
@@ -268,15 +286,6 @@ void *reconnect(UNUSED(void *x))
   return NULL;
 }
 
-void disconnect() {
-  if (connected) {
-    debug("Disconnecting and cleaning up.");
-    mosquitto_destroy(mosq);
-    mosquitto_lib_cleanup();
-    connected = 0;
-  }
-}
-
 void mqtt_connect() {
   disconnect();
   if (strcmp(options.mqtt_host, "") == 0) {
@@ -298,6 +307,36 @@ void mqtt_connect() {
   return;
 }
 
+void check_message_sent(int ret) {
+  if (ret != MOSQ_ERR_SUCCESS) {
+    mqtt_fails++;
+    debug("Message failed to send. Code: %d (%d)", ret, mqtt_fails);
+  } else if (mqtt_fails != 0) {
+    mqtt_fails=0;
+  }
+
+  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 3) {
+    debug("Exiting after %d failed pings", mqtt_fails);
+    /* disconnect(); */
+    /* /1* mqtt_fails=0; *1/ */
+    /* /1* connected = 0; *1/ */
+    /* /1* exit(1); *1/ */
+    /* reconnect(NULL); */
+    mqtt_connect();
+  }
+}
+
+void my_publish_callback(struct mosquitto *mosq, void *obj, int mid)
+{
+  // Not in use
+  last_mid_sent = mid;
+  if(mode == 2){
+    if(mid == last_mid){
+      debug("Message successfully sent %d %d", mode, mid);
+    }
+  }
+}
+
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
   if (options.debug == 1) {
@@ -314,18 +353,13 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
     int check = check_certificates();
     if (check < 0) {
       debug("Restarting MQTT, new certificates installed");
-      disconnect();
-      mosquitto_reconnect_async(mosq);
+      dial_mqtt();
     }
   }
 }
 
 void ping_mqtt()
 {
-  if (options.debug) {
-    debug("Sending MQTT ping!");
-  }
-
   int k,n;
   k = strlen(options.key);
   n = strlen(options.topic);
@@ -352,8 +386,9 @@ void ping_mqtt()
   strcat(topic_a, "/");
   strcat(topic_a, options.mac);
 
-  mosquitto_publish(mosq, 0, topic_a, strlen(resp), resp, 1, false);
+  int ret = mosquitto_publish(mosq, &mid_sent, topic_a, strlen(resp), resp, 2, false);
   json_object_put(jobj);
+  check_message_sent(ret);
 }
 
 int dial_mqtt()
@@ -381,7 +416,6 @@ int dial_mqtt()
   }
 
   if (options.tls == true) {
-    debug("Connecting via encrypted channel");
     if (strcmp(options.cacrt, "") == 0) {
       debug("[ERROR] Missing ca file");
     }
@@ -392,7 +426,9 @@ int dial_mqtt()
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
+  mosquitto_reconnect_delay_set(mosq, 2, 10, 0);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
+  mosquitto_publish_callback_set(mosq, my_publish_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
   if (strcmp(options.topic, "") != 0) {
