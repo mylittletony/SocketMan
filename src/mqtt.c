@@ -455,7 +455,8 @@ int dial_mqtt()
   }
 
   int rc = mosquitto_connect_async(mosq, options.mqtt_host, options.port, keepalive);
-  if (rc) {
+  if (rc && rc > 0) {
+    debug("xxxxxxxxxxxxxx");
     disconnect();
     return(rc);
   }
