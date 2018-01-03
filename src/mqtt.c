@@ -332,18 +332,13 @@ void check_message_sent(int ret) {
   }
 
   //////////////// ! should be 3 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 1 && connected == 1) {
+  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 3 && connected == 1) {
     debug("Exiting after %d failed pings", mqtt_fails);
     mqtt_fails=0;
-
-    /* mosquitto_reconnect(mosq); */
     mqtt_connect();
+  } else if (connected == 0) {
+    dial_mqtt();
   }
-}
-
-void my_publish_callback(struct mosquitto *mosq, void *obj, int mid)
-{
-  return;
 }
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
@@ -359,12 +354,12 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
     int check = check_certificates();
     if (check < 0) {
       debug("Restarting MQTT, new certificates installed");
-      dial_mqtt();
+      mqtt_connect();
+      /* dial_mqtt(); */
     }
   }
 }
 
-// Not in use
 void ping_mqtt()
 {
   debug("Ping!");
@@ -437,7 +432,6 @@ int dial_mqtt()
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
-  mosquitto_publish_callback_set(mosq, my_publish_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
   if (strcmp(options.topic, "") != 0) {
