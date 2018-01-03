@@ -332,12 +332,10 @@ void check_message_sent(int ret) {
   }
 
   //////////////// ! should be 3 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 3 && connected == 1) {
+  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 1) {
     debug("Exiting after %d failed pings", mqtt_fails);
     mqtt_fails=0;
     mqtt_connect();
-  } else if (connected == 0) {
-    dial_mqtt();
   }
 }
 
