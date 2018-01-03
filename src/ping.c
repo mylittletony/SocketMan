@@ -17,11 +17,14 @@ int should_ping() {
 
 void ping()
 {
-  if (options.noping)
+  if (options.noping) {
     return;
+  }
 
-  if (should_ping() == 0)
-    return;
+  // No longer in-use //
 
-  ping_mqtt();
+  /* if (should_ping() == 0) */
+  /*   return; */
+
+  /* ping_mqtt(); */
 }

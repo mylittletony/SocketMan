@@ -29,6 +29,7 @@ static int last_mid_sent = -1;
 static int mid_sent = 0;
 static int mode = 0;
 static bool disconnect_sent = false;
+void check_message_sent(int);
 int mqtt_fails = 0;
 
 int dial_mqtt();
@@ -188,10 +189,18 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "meta", jmeta);
   const char *report = json_object_to_json_string(jobj);
 
-  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
-
-  // Wants to sleep for a bit since the delivery is so important
-  sleep(3);
+  int ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+  if (ret != MOSQ_ERR_SUCCESS) {
+    int i;
+    for (i = 0; i < 5; i++) {
+      debug("Failed to send, retrying (%d) after 1 second", i+1);
+      sleep(1);
+      ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+      if (ret == MOSQ_ERR_SUCCESS) {
+        break;
+      }
+    }
+  }
 
   // Removing since this often fails. From now on, we will use the delivered flag and not wait
   // for the message to be processed lah. For the time being, only messages can use this on the
@@ -234,6 +243,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
   json_object_object_add(jmeta, "msg", json_object_new_string(buffer));
+
   // Should include a flag for the status of the job, maybe it fails.
   json_object_object_add(jobj, "meta", jmeta);
   report = json_object_to_json_string(jobj);
@@ -251,9 +261,19 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Worth checking the connection //
-  int ret = mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
+  ret = mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
+  if (ret != MOSQ_ERR_SUCCESS) {
+    int i;
+    for (i = 0; i < 5; i++) {
+      debug("Failed to send, retrying (%d) after 1 second", i+1);
+      sleep(1);
+      ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+      if (ret == MOSQ_ERR_SUCCESS) {
+        break;
+      }
+    }
+  }
   json_object_put(jobj);
-  /* check_message_sent(ret); */
 
   if (options.debug && ret != MOSQ_ERR_SUCCESS) {
     debug("Message published!");
@@ -264,12 +284,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
 {
-  int i;
-  counter = 0;
-  debug("Subscribed (mid: %d): %d", mid, granted_qos[0]);
-  for(i=1; i<qos_count; i++) {
-    debug("QOS: %d", granted_qos[i]);
-  }
+  debug("Connected to broker QoS %d", granted_qos[0]);
 }
 
 void *reconnect(UNUSED(void *x))
@@ -308,37 +323,31 @@ void mqtt_connect() {
 }
 
 void check_message_sent(int ret) {
-  if (ret != MOSQ_ERR_SUCCESS) {
-    mqtt_fails++;
-    debug("Message failed to send. Code: %d (%d)", ret, mqtt_fails);
-  } else if (mqtt_fails != 0) {
-    mqtt_fails=0;
-  }
+  /* if (ret != MOSQ_ERR_SUCCESS) { */
+  /*   mqtt_fails++; */
+  /*   debug("Message failed to send. Code: %d (%d)", ret, mqtt_fails); */
+  /* } else if (mqtt_fails != 0) { */
+  /*   mqtt_fails=0; */
+  /* } */
 
-  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 3) {
-    debug("Exiting after %d failed pings", mqtt_fails);
-    mqtt_connect();
-  }
+  /* if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 10) { */
+  /*   debug("Exiting after %d failed pings", mqtt_fails); */
+  /*   mqtt_fails=0; */
+
+  /*   /1* mosquitto_reconnect(mosq); *1/ */
+  /*   /1* mqtt_connect(); *1/ */
+  /* } */
 }
 
 void my_publish_callback(struct mosquitto *mosq, void *obj, int mid)
 {
-  // Not in use
-  last_mid_sent = mid;
-  if(mode == 2){
-    if(mid == last_mid){
-      debug("Message successfully sent %d %d", mode, mid);
-    }
-  }
+  return;
 }
 
 void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), UNUSED(int rc))
 {
-  if (options.debug == 1) {
-    debug("Lost connection with broker: %s %d", options.mqtt_host, counter);
-  }
-
   counter++;
+  debug("Lost connection with broker");
 
   // Checks once after 60s, then will only check every 120s
   if ((counter > 20 && !certs_checked) || counter > 120) {
@@ -353,8 +362,11 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
   }
 }
 
+// Not in use
 void ping_mqtt()
 {
+  debug("Ping!");
+
   int k,n;
   k = strlen(options.key);
   n = strlen(options.topic);
@@ -382,8 +394,8 @@ void ping_mqtt()
   strcat(topic_a, options.mac);
 
   int ret = mosquitto_publish(mosq, &mid_sent, topic_a, strlen(resp), resp, 2, false);
+
   json_object_put(jobj);
-  check_message_sent(ret);
 }
 
 int dial_mqtt()
@@ -421,7 +433,6 @@ int dial_mqtt()
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
-  mosquitto_reconnect_delay_set(mosq, 2, 10, 0);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
   mosquitto_publish_callback_set(mosq, my_publish_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);

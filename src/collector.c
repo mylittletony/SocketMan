@@ -649,8 +649,8 @@ void collect_data(int offline_reason)
   // Cache the results even if we have no-cache enabled at the mo
   const char *jdata = json_object_to_json_string(jobj);
   if (options.nocache) {
-    debug("Not caching results");
   } else {
+    debug("Caching results. Naughty");
     cache(jdata);
   }
 
