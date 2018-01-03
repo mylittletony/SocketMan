@@ -395,8 +395,9 @@ void ping_mqtt()
   strcat(topic_a, options.mac);
 
   int ret = mosquitto_publish(mosq, &mid_sent, topic_a, strlen(resp), resp, 2, false);
-
   json_object_put(jobj);
+
+  check_message_sent(ret);
 }
 
 int dial_mqtt()

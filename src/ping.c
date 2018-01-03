@@ -23,8 +23,8 @@ void ping()
 
   // No longer in-use //
 
-  /* if (should_ping() == 0) */
-  /*   return; */
+  if (should_ping() == 0)
+    return;
 
-  /* ping_mqtt(); */
+  ping_mqtt();
 }
