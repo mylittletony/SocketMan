@@ -193,19 +193,16 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   if (ret != MOSQ_ERR_SUCCESS) {
     int i;
     for (i = 0; i < 5; i++) {
-      debug("Failed to send, retrying (%d) after 1 second", i+1);
-      sleep(1);
+      int sl = ((i*2)+1);
+      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
+      sleep(sl);
       ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
       if (ret == MOSQ_ERR_SUCCESS) {
         break;
       }
     }
   }
-
-  // Removing since this often fails. From now on, we will use the delivered flag and not wait
-  // for the message to be processed lah. For the time being, only messages can use this on the
-  // backend since commands can take network down. When this happens, the job is never send and we
-  // continue to mark the job as failed.
+  check_message_sent(ret);
 
   // Message processing
   FILE *fp;
@@ -265,8 +262,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   if (ret != MOSQ_ERR_SUCCESS) {
     int i;
     for (i = 0; i < 5; i++) {
-      debug("Failed to send, retrying (%d) after 1 second", i+1);
-      sleep(1);
+      int sl = ((i*2)+1);
+      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
+      sleep(sl);
+
       ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
       if (ret == MOSQ_ERR_SUCCESS) {
         break;
@@ -274,6 +273,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     }
   }
   json_object_put(jobj);
+
+  check_message_sent(ret);
 
   if (options.debug && ret != MOSQ_ERR_SUCCESS) {
     debug("Message published!");

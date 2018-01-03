@@ -21,8 +21,6 @@ void ping()
     return;
   }
 
-  // No longer in-use //
-
   if (should_ping() == 0)
     return;
 
