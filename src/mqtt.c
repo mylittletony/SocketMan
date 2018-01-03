@@ -323,20 +323,21 @@ void mqtt_connect() {
 }
 
 void check_message_sent(int ret) {
-  /* if (ret != MOSQ_ERR_SUCCESS) { */
-  /*   mqtt_fails++; */
-  /*   debug("Message failed to send. Code: %d (%d)", ret, mqtt_fails); */
-  /* } else if (mqtt_fails != 0) { */
-  /*   mqtt_fails=0; */
-  /* } */
+  if (ret != MOSQ_ERR_SUCCESS) {
+    mqtt_fails++;
+    debug("Message failed to send. Code: %d (%d)", ret, mqtt_fails);
+  } else if (mqtt_fails != 0) {
+    mqtt_fails=0;
+  }
 
-  /* if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 10) { */
-  /*   debug("Exiting after %d failed pings", mqtt_fails); */
-  /*   mqtt_fails=0; */
+  //////////////// ! should be 3 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 1 && connected == 1) {
+    debug("Exiting after %d failed pings", mqtt_fails);
+    mqtt_fails=0;
 
-  /*   /1* mosquitto_reconnect(mosq); *1/ */
-  /*   /1* mqtt_connect(); *1/ */
-  /* } */
+    /* mosquitto_reconnect(mosq); */
+    mqtt_connect();
+  }
 }
 
 void my_publish_callback(struct mosquitto *mosq, void *obj, int mid)
