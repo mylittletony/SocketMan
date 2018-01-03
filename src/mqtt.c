@@ -314,11 +314,11 @@ void mqtt_connect() {
   if (!rc)
     return;
 
-  pthread_t conn_thread;
-  if(pthread_create(&conn_thread, NULL, reconnect, NULL)) {
-    fprintf(stderr, "Error creating thread\n");
-    return;
-  }
+  /* pthread_t conn_thread; */
+  /* if(pthread_create(&conn_thread, NULL, reconnect, NULL)) { */
+  /*   fprintf(stderr, "Error creating thread\n"); */
+  /*   return; */
+  /* } */
 
   return;
 }
