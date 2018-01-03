@@ -144,7 +144,7 @@ comfast_cf_e520n:
   radios:   ["radio0"]
 
 comfast_cf_e530n:
-  lan_wan:  ["eth1", "eth0"]
+  lan_wan:  ["eth0", "eth1"]
   radios:   ["radio0"]
 
 comfast_cf_e316n_v2:
