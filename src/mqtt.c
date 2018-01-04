@@ -28,15 +28,13 @@ static int last_mid = -1;
 static int last_mid_sent = -1;
 static int mid_sent = 0;
 static int mode = 0;
+int mqtt_fails = 0;
 static bool disconnect_sent = false;
 void check_message_sent(int);
-int mqtt_fails = 0;
-
 int dial_mqtt();
 
 void read_message()
 {
-
 }
 
 void my_connect_callback(struct mosquitto *mosq, UNUSED(void *userdata), int result)
@@ -327,7 +325,6 @@ void my_disconnect_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdat
     if (check < 0) {
       debug("Restarting MQTT, new certificates installed");
       mqtt_connect();
-      /* dial_mqtt(); */
     }
   }
 }
