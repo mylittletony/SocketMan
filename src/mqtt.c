@@ -305,7 +305,7 @@ void check_message_sent(int ret) {
   }
 
   if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 3) {
-    debug("Exiting after %d failed pings", mqtt_fails);
+    debug("Reconnecting after %d failed pings", mqtt_fails);
     mqtt_fails=0;
     mqtt_connect();
   }
