@@ -288,20 +288,6 @@ void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata
   debug("Connected to broker QoS %d", granted_qos[0]);
 }
 
-void *reconnect(UNUSED(void *x))
-{
-  while(!connected) {
-    debug("Unable to connect to %s. Sleeping 15", options.mqtt_host);
-    sleep(5);
-    // Swap port, test connection //
-    if (!dial_mqtt()) {
-      debug("Reconnected to %s, yay!", options.mqtt_host);
-      break;
-    }
-  }
-  return NULL;
-}
-
 void mqtt_connect() {
   disconnect();
   if (strcmp(options.mqtt_host, "") == 0) {
@@ -309,18 +295,7 @@ void mqtt_connect() {
     return;
   }
 
-  int rc = dial_mqtt();
-
-  if (!rc)
-    return;
-
-  /* pthread_t conn_thread; */
-  /* if(pthread_create(&conn_thread, NULL, reconnect, NULL)) { */
-  /*   fprintf(stderr, "Error creating thread\n"); */
-  /*   return; */
-  /* } */
-
-  return;
+  dial_mqtt();
 }
 
 void check_message_sent(int ret) {
@@ -331,8 +306,7 @@ void check_message_sent(int ret) {
     mqtt_fails=0;
   }
 
-  //////////////// ! should be 3 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 1) {
+  if (ret != MOSQ_ERR_SUCCESS && mqtt_fails >= 3) {
     debug("Exiting after %d failed pings", mqtt_fails);
     mqtt_fails=0;
     mqtt_connect();
