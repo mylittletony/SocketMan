@@ -45,8 +45,9 @@ void process_response(char *msg)
   json_object *jcmd;
   json_object_object_get_ex(jobj, "cmd", &jcmd);
 
-  if (jcmd == NULL)
+  if (jcmd == NULL) {
     return;
+  }
 
   int i = json_object_get_string_len(jcmd);
   char cmd[i+1];
