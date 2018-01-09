@@ -187,14 +187,18 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "meta", jmeta);
   const char *report = json_object_to_json_string(jobj);
 
-  int ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+  int publish_message(const char *report) {
+    return mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+  }
+
+  int ret = publish_message(report);
   if (ret != MOSQ_ERR_SUCCESS) {
     int i;
     for (i = 0; i < 5; i++) {
       int sl = ((i*2)+1);
       debug("Failed to send, retrying (%d) after %d second", i+1, sl);
       sleep(sl);
-      ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+      ret = publish_message(report);
       if (ret == MOSQ_ERR_SUCCESS) {
         break;
       }
@@ -256,7 +260,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Worth checking the connection //
-  ret = mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
+  // refactor refactor refactor
+  ret = publish_message(report);
   if (ret != MOSQ_ERR_SUCCESS) {
     int i;
     for (i = 0; i < 5; i++) {
@@ -264,7 +269,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
       debug("Failed to send, retrying (%d) after %d second", i+1, sl);
       sleep(sl);
 
-      ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
+      ret = publish_message(report);
       if (ret == MOSQ_ERR_SUCCESS) {
         break;
       }
