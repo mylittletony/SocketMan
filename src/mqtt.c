@@ -275,17 +275,17 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     }
   }
 
-  debug("-x-");
-
   json_object_put(jobj);
 
-  /* check_message_sent(ret); */
+  // This seems to break the whole thing //
+  check_message_sent(ret);
 
   if (options.debug && ret == MOSQ_ERR_SUCCESS) {
     debug("Message published!");
+    return;
   }
 
-  return;
+  debug("XX Message not published!! XX");
 }
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
