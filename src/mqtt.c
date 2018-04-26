@@ -277,7 +277,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   debug("-x-");
 
-  /* json_object_put(jobj); */
+  json_object_put(jobj); */
 
   /* check_message_sent(ret); */
 
