@@ -259,8 +259,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     strcat(pub, suffix);
   }
 
-  // Worth checking the connection //
-  // refactor refactor refactor
+  // Worth checking the connection (refactor) //
   ret = publish_message(report);
   if (ret != MOSQ_ERR_SUCCESS) {
     int i;
@@ -275,11 +274,14 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
       }
     }
   }
+
+  debug("-x-");
+
   json_object_put(jobj);
 
   check_message_sent(ret);
 
-  if (options.debug && ret != MOSQ_ERR_SUCCESS) {
+  if (options.debug && ret == MOSQ_ERR_SUCCESS) {
     debug("Message published!");
   }
 
