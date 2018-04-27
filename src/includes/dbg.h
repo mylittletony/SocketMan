@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <syslog.h>
 
-/* void logger(char * fmt); */
-
 #ifdef NDEBUG
 #define debug(M, ...)
 #else
@@ -16,7 +14,7 @@
   if (getenv("DEBUG")!=NULL) { \
     fprintf(stderr, "DEBUG %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
   } else { \
-    syslog(LOG_DEBUG, "DEBUG %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    syslog(LOG_INFO, "" M "\n", ##__VA_ARGS__); \
   }
 #endif
 

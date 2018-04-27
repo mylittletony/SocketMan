@@ -28,7 +28,6 @@
 #include "boot.h"
 #include <string.h>
 #include <signal.h>
-/* #include "mqtt.h" */
 #include "platform.h"
 #include <sys/wait.h>
 #include <compiler.h>
@@ -260,6 +259,8 @@ int main( int argc,char **argv)
   }
 
   validate_options();
+
+  openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
 
   if (strcmp(OS, "OPENWRT") == 0) {
     debug("I am an OpenWRT box, yay!");

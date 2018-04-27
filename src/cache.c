@@ -18,7 +18,9 @@ int compress_cache();
 void cache(const char *postData)
 {
 
-  debug("Caching the datas!");
+  if (options.debug) {
+    debug("Caching the datas!");
+  }
 
   FILE *out = fopen(options.cache, "a");
 

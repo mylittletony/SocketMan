@@ -220,7 +220,7 @@ int post_cache()
   long resp = do_curl(curl, url);
 
   if (resp == 0) {
-    debug("Data could not be sent (%ld)", resp);
+    debug("DATA NOT SENT. DEVICE NOT SENDING STATS. Code (%ld)", resp);
     goto cleanup;
   }
 
