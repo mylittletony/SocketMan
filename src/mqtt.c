@@ -275,6 +275,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     }
   }
 
+  sleep(1);
+  
   json_object_put(jobj);
 
   // This seems to break the whole thing //
