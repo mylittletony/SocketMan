@@ -768,8 +768,8 @@ tp_link_tl_wr941n_nd_v6:
   lan_wan:  ["eth1", "eth0"]
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
-  
-tp_link_tl_wr841n_nd_v13:
+
+tp_link_tl_wr841n_v13:
   lan_wan: ["eth0", "eth1"]
   switch: ["0 1 2 3 4"]
   radios: ["radio0"]
