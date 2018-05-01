@@ -262,7 +262,6 @@ int main( int argc,char **argv)
 
   openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
 
-    debug("I am an xx box, yay! %s", CT_VERSION);
 #ifdef CT_VERSION
     debug("I am an xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx box, yay!");
 #endif
