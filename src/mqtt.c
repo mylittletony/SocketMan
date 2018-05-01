@@ -209,7 +209,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Message processing
   FILE *fp;
   int response = -1;
-  char buffer[1000];
+  char buffer[51200];
   buffer[0] = '\0';
 
   fp = popen(cmd, "r");
@@ -217,7 +217,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     response = 0;
     memset(buffer, '\0', sizeof(buffer));
     /* memset(buffer, (char)NULL, sizeof(buffer)); */
-    fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp);
+    /* fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp); */
+    fread(buffer, sizeof(char), 51200, fp);
     pclose(fp);
   }
 
