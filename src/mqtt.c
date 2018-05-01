@@ -260,6 +260,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     strcat(pub, suffix);
   }
 
+  sleep(1);
   // Worth checking the connection (refactor) //
   ret = publish_message(report);
   /* if (ret != MOSQ_ERR_SUCCESS) { */
