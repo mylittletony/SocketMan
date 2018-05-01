@@ -204,6 +204,9 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
       }
     }
   }
+
+  json_object_put(jobj);
+
   check_message_sent(ret);
 
   // Message processing
@@ -238,16 +241,19 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Refactor
   // Else, let's publish back
-  jobj = json_object_new_object();
-  json_object_object_add(jobj, "id", json_object_new_string(mid));
-  json_object_object_add(jobj, "app", json_object_new_string("socketman"));
-  json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
-  json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
-  json_object_object_add(jmeta, "msg", json_object_new_string("xxxxxxxxxxxxxxxxxxxxxx"));
+  /* jobj = json_object_new_object(); */
+  json_object *jobjp = json_object_new_object();
+  json_object *jmetap = json_object_new_object();
+
+  json_object_object_add(jobjp, "id", json_object_new_string(mid));
+  json_object_object_add(jobjp, "app", json_object_new_string("socketman"));
+  json_object_object_add(jobjp, "timestamp", json_object_new_int(time(NULL)));
+  json_object_object_add(jobjp, "event_type", json_object_new_string("PROCESSED"));
+  json_object_object_add(jmetap, "msg", json_object_new_string("xxxxxxxxxxxxxxxxxxxxxx"));
 
   // Should include a flag for the status of the job, maybe it fails.
-  json_object_object_add(jobj, "meta", jmeta);
-  report = json_object_to_json_string(jobj);
+  json_object_object_add(jobjp, "meta", jmeta);
+  report = json_object_to_json_string(jobjp);
 
   char pub[112];
   strcpy(pub, "pub/");
@@ -277,7 +283,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   /*   } */
   /* } */
 
-  json_object_put(jobj);
+  json_object_put(jobjp);
 
   // This seems to break the whole thing //
   /* check_message_sent(ret); */
