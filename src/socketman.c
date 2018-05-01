@@ -262,10 +262,13 @@ int main( int argc,char **argv)
 
   openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
 
-  /* debug("[%s]\n", CT_VERSION); */
-  if (strcmp(OS, "CT_VERSION") == 0) {
-    debug("I am an xxxxxxxxxxxxxxxxxxxxxxxxx box, yay!");
-  }
+#ifdef CT_VERSION
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
+#endif
+
+  /* if (strcmp(OS, "CT_VERSION") == 0) { */
+  /*   debug("I am an xxxxxxxxxxxxxxxxxxxxxxxxx box, yay!"); */
+  /* } */
 
   if (strcmp(OS, "OPENWRT") == 0) {
     debug("I am an OpenWRT box, yay!");
