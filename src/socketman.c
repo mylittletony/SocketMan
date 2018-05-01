@@ -263,7 +263,13 @@ int main( int argc,char **argv)
   openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
 
 #ifdef CT_VERSION
-  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf %s", CT_VERSION);
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
+  debug("xkjahsdkfhaskdjfhaskjdfhaksjdhfkasjdhfkasjdhfkajshdf");
 #endif
 
   /* if (strcmp(OS, "CT_VERSION") == 0) { */
