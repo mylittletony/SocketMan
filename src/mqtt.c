@@ -209,14 +209,14 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Message processing
   FILE *fp;
   int response = -1;
-  char buffer[10000];
-  /* buffer[0] = '\0'; */
+  char buffer[1000];
+  buffer[0] = '\0';
 
   fp = popen(cmd, "r");
   if (fp != NULL) {
     response = 0;
-    /* memset(buffer, '\0', sizeof(buffer)); */
-    memset(buffer, (char)NULL, sizeof(buffer));
+    memset(buffer, '\0', sizeof(buffer));
+    /* memset(buffer, (char)NULL, sizeof(buffer)); */
     fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp);
     pclose(fp);
   }
@@ -276,10 +276,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     }
   }
 
-  json_object_put(jobj);
+  /* json_object_put(jobj); */
 
   // This seems to break the whole thing //
-  check_message_sent(ret);
+  /* check_message_sent(ret); */
 
   if (ret == MOSQ_ERR_SUCCESS) {
     debug("Message published!");
