@@ -759,6 +759,11 @@ tp_link_tl_wr841n_nd_v11:
   switch:   ["0 1 2 3 4"]
   radios:   ["radio0"]
 
+tp_link_tl_wr841n_v13:
+  lan_wan:  ["eth0", "eth1"]
+  switch:   ["0 1 2 3 4"]
+  radios:   ["radio0"]
+
 tp_link_tl_wr941n_nd_v5:
   lan_wan:  ["eth1", "eth0"]
   switch:   ["0 1 2 3 4"]
@@ -924,3 +929,8 @@ netgear_wndr3400_v3:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0 1 2 3 5t",  "4 5t"]
   radios:   ["radio0", "radio1"]
+
+zbt_we826:
+  lan_wan: ["eth0.1","eth0.2"]
+  radios: ["radio0"]
+  switch: ["0 1 2 3 6t", "4 6t"]
