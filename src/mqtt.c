@@ -209,14 +209,14 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Message processing
   FILE *fp;
   int response = -1;
-  char buffer[51200];
+  char buffer[1000];
   buffer[0] = '\0';
 
   fp = popen(cmd, "r");
   if (fp != NULL) {
     response = 0;
     memset(buffer, '\0', sizeof(buffer));
-    fread(buffer, sizeof(char), 51200, fp);
+    fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp);
     pclose(fp);
   }
 
@@ -274,8 +274,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
       }
     }
   }
-
-  sleep(1);
   
   json_object_put(jobj);
 
