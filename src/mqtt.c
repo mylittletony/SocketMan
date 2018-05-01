@@ -270,7 +270,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
       debug("Failed to send, retrying (%d) after %d second", i+1, sl);
       sleep(sl);
 
-      ret = publish_message(report, sub);
+      ret = publish_message(report, pub);
       if (ret == MOSQ_ERR_SUCCESS) {
         break;
       }
