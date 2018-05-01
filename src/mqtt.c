@@ -158,56 +158,56 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   // Refactor
-  char delivery[117];
-  strcpy(delivery, "delivery/");
-  strcat(delivery, options.topic);
-  strcat(delivery, "/");
-  strcat(delivery, options.key);
-  strcat(delivery, "/");
-  strcat(delivery, options.mac);
+  /* char delivery[117]; */
+  /* strcpy(delivery, "delivery/"); */
+  /* strcat(delivery, options.topic); */
+  /* strcat(delivery, "/"); */
+  /* strcat(delivery, options.key); */
+  /* strcat(delivery, "/"); */
+  /* strcat(delivery, options.mac); */
 
-  char *suffix = NULL;
-  if (mid[0] == '\0') {
-    suffix = "/messages";
-    strcat(delivery, suffix);
-    rand_string(mid, "sm_", 44);
-    debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery);
-  }
-  // Needs check if running, check time, check live cmd.
+  /* char *suffix = NULL; */
+  /* if (mid[0] == '\0') { */
+  /*   suffix = "/messages"; */
+  /*   strcat(delivery, suffix); */
+  /*   rand_string(mid, "sm_", 44); */
+  /*   debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery); */
+  /* } */
+  /* // Needs check if running, check time, check live cmd. */
 
-  json_object *jobj = json_object_new_object();
-  json_object *jmeta = json_object_new_object();
+  /* json_object *jobj = json_object_new_object(); */
+  /* json_object *jmeta = json_object_new_object(); */
 
-  // Refactor
-  json_object_object_add(jobj, "id", json_object_new_string(mid));
-  json_object_object_add(jobj, "app", json_object_new_string("socketman"));
-  json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
-  json_object_object_add(jobj, "event_type", json_object_new_string("DELIVERED"));
-  json_object_object_add(jmeta, "delivered", json_object_new_boolean(1));
-  json_object_object_add(jobj, "meta", jmeta);
-  const char *report = json_object_to_json_string(jobj);
+  /* // Refactor */
+  /* json_object_object_add(jobj, "id", json_object_new_string(mid)); */
+  /* json_object_object_add(jobj, "app", json_object_new_string("socketman")); */
+  /* json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL))); */
+  /* json_object_object_add(jobj, "event_type", json_object_new_string("DELIVERED")); */
+  /* json_object_object_add(jmeta, "delivered", json_object_new_boolean(1)); */
+  /* json_object_object_add(jobj, "meta", jmeta); */
+  /* const char *report = json_object_to_json_string(jobj); */
 
-  int publish_message(const char *report) {
-    return mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
-  }
+  /* int publish_message(const char *report) { */
+  /*   return mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false); */
+  /* } */
 
-  int ret = publish_message(report);
-  if (ret != MOSQ_ERR_SUCCESS) {
-    int i;
-    for (i = 0; i < 5; i++) {
-      int sl = ((i*2)+1);
-      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
-      sleep(sl);
-      ret = publish_message(report);
-      if (ret == MOSQ_ERR_SUCCESS) {
-        break;
-      }
-    }
-  }
+  /* int ret = publish_message(report); */
+  /* if (ret != MOSQ_ERR_SUCCESS) { */
+  /*   int i; */
+  /*   for (i = 0; i < 5; i++) { */
+  /*     int sl = ((i*2)+1); */
+  /*     debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
+  /*     sleep(sl); */
+  /*     ret = publish_message(report); */
+  /*     if (ret == MOSQ_ERR_SUCCESS) { */
+  /*       break; */
+  /*     } */
+  /*   } */
+  /* } */
 
-  json_object_put(jobj);
+  /* json_object_put(jobj); */
 
-  check_message_sent(ret);
+  /* check_message_sent(ret); */
 
   // Message processing
   FILE *fp;
@@ -252,8 +252,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jmetap, "msg", json_object_new_string("xxxxxxxxxxxxxxxxxxxxxx"));
 
   // Should include a flag for the status of the job, maybe it fails.
-  json_object_object_add(jobjp, "meta", jmeta);
-  report = json_object_to_json_string(jobjp);
+  json_object_object_add(jobjp, "meta", jmetap);
+
+  const char *report = json_object_to_json_string(jobjp);
+  /* report = json_object_to_json_string(jobjp); */
 
   char pub[112];
   strcpy(pub, "pub/");
@@ -263,12 +265,14 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   strcat(pub, "/");
   strcat(pub, options.mac);
 
-  if (suffix != NULL) {
-    strcat(pub, suffix);
-  }
+  /* if (suffix != NULL) { */
+  /*   strcat(pub, suffix); */
+  /* } */
+
+  mosquitto_publish(mosq, 0, report, strlen(report), report, 1, false);
 
   // Worth checking the connection (refactor) //
-  ret = publish_message(report);
+  /* ret = publish_message(report); */
   /* if (ret != MOSQ_ERR_SUCCESS) { */
   /*   int i; */
   /*   for (i = 0; i < 5; i++) { */
