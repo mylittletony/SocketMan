@@ -259,8 +259,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     strcat(pub, suffix);
   }
 
-  /* ret = mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false); */
-
   // Worth checking the connection (refactor) //
   ret = publish_message(report, pub);
   if (ret != MOSQ_ERR_SUCCESS) {
@@ -279,7 +277,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   json_object_put(jobj);
 
-  // This seems to break the whole thing //
   check_message_sent(ret);
 
   if (ret == MOSQ_ERR_SUCCESS) {
