@@ -262,19 +262,19 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Worth checking the connection (refactor) //
   ret = publish_message(report);
-  if (ret != MOSQ_ERR_SUCCESS) {
-    int i;
-    for (i = 0; i < 5; i++) {
-      int sl = ((i*2)+1);
-      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
-      sleep(sl);
+  /* if (ret != MOSQ_ERR_SUCCESS) { */
+  /*   int i; */
+  /*   for (i = 0; i < 5; i++) { */
+  /*     int sl = ((i*2)+1); */
+  /*     debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
+  /*     sleep(sl); */
 
-      ret = publish_message(report);
-      if (ret == MOSQ_ERR_SUCCESS) {
-        break;
-      }
-    }
-  }
+  /*     ret = publish_message(report); */
+  /*     if (ret == MOSQ_ERR_SUCCESS) { */
+  /*       break; */
+  /*     } */
+  /*   } */
+  /* } */
 
   /* json_object_put(jobj); */
 
