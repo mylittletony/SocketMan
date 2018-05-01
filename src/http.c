@@ -68,7 +68,7 @@ void append_url_token(char *url, char *buf)
     strcat(buf, options.mac);
   }
   if (strcmp(CT_VERSION, "") != 0) {
-    debug("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+    debug("ssssssssssssssssssssssssssssssssss %s", CT_VERSION);
     strcat(buf, "&v=");
     char version[6];
     snprintf(version, sizeof version, "%.10s", CT_VERSION);
