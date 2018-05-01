@@ -207,34 +207,33 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   check_message_sent(ret);
 
   // Message processing
-  /* FILE *fp; */
-  /* int response = -1; */
-  /* char buffer[51200]; */
-  /* buffer[0] = '\0'; */
+  FILE *fp;
+  int response = -1;
+  char buffer[1000];
+  buffer[0] = '\0';
 
-  /* fp = popen(cmd, "r"); */
-  /* if (fp != NULL) { */
-  /*   response = 0; */
-  /*   memset(buffer, '\0', sizeof(buffer)); */
-  /*   /1* memset(buffer, (char)NULL, sizeof(buffer)); *1/ */
-  /*   fread(buffer, sizeof(char), 51200, fp); */
-  /*   /1* fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp); *1/ */
-  /*   pclose(fp); */
-  /* } */
+  fp = popen(cmd, "r");
+  if (fp != NULL) {
+    response = 0;
+    memset(buffer, '\0', sizeof(buffer));
+    /* memset(buffer, (char)NULL, sizeof(buffer)); */
+    fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp);
+    pclose(fp);
+  }
 
-  /* if (options.debug) { */
-  /*   debug("%s", buffer); */
-  /* } */
+  if (options.debug) {
+    debug("%s", buffer);
+  }
 
-  /* if (strlen(buffer) == 0) { */
-  /*   strcpy(buffer, "DNE"); */
-  /* } */
+  if (strlen(buffer) == 0) {
+    strcpy(buffer, "DNE");
+  }
 
-  /* // Will publish the job back to CT via REST API */
-  /* if (options.rest) { */
-  /*   cmd_notify(response, mid, buffer); */
-  /*   return; */
-  /* } */
+  // Will publish the job back to CT via REST API
+  if (options.rest) {
+    cmd_notify(response, mid, buffer);
+    return;
+  }
 
   // Refactor
   // Else, let's publish back
@@ -243,11 +242,11 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
   json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
-  json_object_object_add(jmeta, "msg", json_object_new_string("xxx"));
+  json_object_object_add(jmeta, "msg", json_object_new_string(buffer));
 
   // Should include a flag for the status of the job, maybe it fails.
-  /* json_object_object_add(jobj, "meta", jmeta); */
-  /* report = json_object_to_json_string(jobj); */
+  json_object_object_add(jobj, "meta", jmeta);
+  report = json_object_to_json_string(jobj);
 
   char pub[112];
   strcpy(pub, "pub/");
@@ -261,7 +260,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     strcat(pub, suffix);
   }
 
-  sleep(1);
   // Worth checking the connection (refactor) //
   ret = publish_message(report);
   /* if (ret != MOSQ_ERR_SUCCESS) { */
