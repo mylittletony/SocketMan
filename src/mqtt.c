@@ -246,8 +246,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   json_object_object_add(jmeta, "msg", json_object_new_string("xxx"));
 
   // Should include a flag for the status of the job, maybe it fails.
-  json_object_object_add(jobj, "meta", jmeta);
-  report = json_object_to_json_string(jobj);
+  /* json_object_object_add(jobj, "meta", jmeta); */
+  /* report = json_object_to_json_string(jobj); */
 
   char pub[112];
   strcpy(pub, "pub/");
