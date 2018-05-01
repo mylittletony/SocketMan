@@ -924,3 +924,8 @@ netgear_wndr3400_v3:
   lan_wan:  ["eth0.1", "eth0.2"]
   switch:   ["0 1 2 3 5t",  "4 5t"]
   radios:   ["radio0", "radio1"]
+
+zbt_we826:
+  lan_wan: ["eth0.1","eth0.2"]
+  radios: ["radio0"]
+  switch: ["0 1 2 3 6t", "4 6t"]
