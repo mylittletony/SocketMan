@@ -209,7 +209,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Message processing
   FILE *fp;
   int response = -1;
-  char buffer[10000];
+  char buffer[1000];
   buffer[0] = '\0';
 
   fp = popen(cmd, "r");
@@ -259,21 +259,23 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     strcat(pub, suffix);
   }
 
-  // Worth checking the connection (refactor) //
-  ret = publish_message(report);
-  if (ret != MOSQ_ERR_SUCCESS) {
-    int i;
-    for (i = 0; i < 5; i++) {
-      int sl = ((i*2)+1);
-      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
-      sleep(sl);
+  ret = mosquitto_publish(mosq, 0, pub, strlen(report), report, 1, false);
 
-      ret = publish_message(report);
-      if (ret == MOSQ_ERR_SUCCESS) {
-        break;
-      }
-    }
-  }
+  // Worth checking the connection (refactor) //
+  /* ret = publish_message(report); */
+  /* if (ret != MOSQ_ERR_SUCCESS) { */
+  /*   int i; */
+  /*   for (i = 0; i < 5; i++) { */
+  /*     int sl = ((i*2)+1); */
+  /*     debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
+  /*     sleep(sl); */
+
+  /*     ret = publish_message(report); */
+  /*     if (ret == MOSQ_ERR_SUCCESS) { */
+  /*       break; */
+  /*     } */
+  /*   } */
+  /* } */
 
   json_object_put(jobj);
 
