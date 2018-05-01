@@ -292,10 +292,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // This seems to break the whole thing //
   /* check_message_sent(ret); */
 
-  if (ret == MOSQ_ERR_SUCCESS) {
-    debug("Message published!");
-    return;
-  }
+  /* if (ret == MOSQ_ERR_SUCCESS) { */
+  /*   debug("Message published!"); */
+  /*   return; */
+  /* } */
 
   debug("XX Message not published!! XX");
 }
