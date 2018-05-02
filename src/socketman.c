@@ -262,10 +262,10 @@ int main( int argc,char **argv)
 
   openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
 
-  debug("I am an xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx box, yay! %s", CT_VERSION);
+  debug("I am an xxxxx box, yay! %s", CT_VERSION);
 
   if (strcmp(OS, "OPENWRT") == 0) {
-    debug("I am an OpenWRT box, yay!");
+    debug("I am an OpenWRT box!");
   }
 
   boot();
