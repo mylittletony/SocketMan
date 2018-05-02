@@ -16,6 +16,7 @@
 #include <ctype.h>
 #include "http.h"
 #include "cache.h"
+#include "version.h"
 
 time_t last_collect = 0;
 int collected;
@@ -584,6 +585,13 @@ void collect_data(int offline_reason)
     json_object *jmachine = json_object_new_string(machine);
     json_object_object_add(jattr, "machine_type", jmachine);
   }
+
+  char version[256];
+  strncpy(version, global_version, 10);
+  version[10] = 0;
+
+  json_object *jsmv = json_object_new_string(version);
+  json_object_object_add(jattr, "smv", jsmv);
 
   json_object *jmac = json_object_new_string(options.mac);
   json_object_object_add(jattr, "mac", jmac);

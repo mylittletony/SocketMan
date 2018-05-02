@@ -263,10 +263,7 @@ int main( int argc,char **argv)
 
   openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
 
-  char dest[256];
-  strncpy(dest, global_version, 5);
-  dest[5] = 0;
-  debug("SocketMan Build: %s (%s)", global_version, dest);
+  debug("SocketMan Build: %s", global_version);
 
   if (strcmp(OS, "OPENWRT") == 0) {
     debug("I am an OpenWRT box!");
