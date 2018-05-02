@@ -3,7 +3,7 @@ IDIR = "./includes"
 PKG_SOURCE_VERSION:=$(COMMIT)
 INCLUDES = "-I/usr/include/libnl3"
 
-CFLAGS= -g -O2 -Wall -Wextra -Isrc -I$(IDIR) $(INCLUDES) $(CT_ARCH)
+CFLAGS= -g -O2 -Wall -Wextra -Isrc -I$(IDIR) $(INCLUDES) $(CT_ARCH) -DCT_VERSION='"$(TEST)"'
 
 ODIR=obj
 LDIR =../lib
