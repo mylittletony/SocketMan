@@ -31,6 +31,7 @@
 #include "platform.h"
 #include <sys/wait.h>
 #include <compiler.h>
+#include "git.h"
 
 int verbose_flag, cpid;
 
@@ -262,7 +263,7 @@ int main( int argc,char **argv)
 
   openlog ("socketman", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER);
 
-  debug("I am an xxxxx box, yay! %s", CT_VERSION);
+  debug("I am an xxxxx box, yay! %s", version);
 
   if (strcmp(OS, "OPENWRT") == 0) {
     debug("I am an OpenWRT box!");
