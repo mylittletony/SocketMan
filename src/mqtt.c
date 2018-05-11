@@ -143,10 +143,15 @@ void delivered(struct mosquitto *mosq, char *mid)
   const char *report = json_object_to_json_string(jobj);
 
   int publish_message(const char *report, char *topic) {
+    debug("Sleeping for 1 second");
+    // Otherwise the network interfaces can restart before delivery
+    sleep(1);
+
     return mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
   }
 
   int ret = publish_message(report, delivery);
+
   if (ret != MOSQ_ERR_SUCCESS) {
     int i;
     for (i = 0; i < 5; i++) {
@@ -159,11 +164,7 @@ void delivered(struct mosquitto *mosq, char *mid)
       }
     }
   }
-  check_message_sent(ret);
-
-  // Otherwise the network interfaces can restart before delivery
-  debug("Sleeping for 1 second");
-  sleep(1);
+  /* check_message_sent(ret); */
 }
 
 // Refactor whole function
