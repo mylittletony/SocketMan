@@ -152,20 +152,20 @@ void delivered(struct mosquitto *mosq, char *mid)
     return val;
   }
 
-  int ret = publish_message(report, delivery);
+  publish_message(report, delivery);
 
-  if (ret != MOSQ_ERR_SUCCESS) {
-    int i;
-    for (i = 0; i < 5; i++) {
-      int sl = ((i*2)+1);
-      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
-      sleep(sl);
-      ret = publish_message(report, delivery);
-      if (ret == MOSQ_ERR_SUCCESS) {
-        break;
-      }
-    }
-  }
+  /* if (ret != MOSQ_ERR_SUCCESS) { */
+  /*   int i; */
+  /*   for (i = 0; i < 5; i++) { */
+  /*     int sl = ((i*2)+1); */
+  /*     debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
+  /*     sleep(sl); */
+  /*     ret = publish_message(report, delivery); */
+  /*     if (ret == MOSQ_ERR_SUCCESS) { */
+  /*       break; */
+  /*     } */
+  /*   } */
+  /* } */
   /* check_message_sent(ret); */
 }
 
