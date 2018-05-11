@@ -117,47 +117,8 @@ void disconnect() {
   }
 }
 
-// Refactor whole function
-void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const struct mosquitto_message *message)
+void delivered(struct mosquitto *mosq, char *mid)
 {
-  if (!message->payloadlen) {
-    debug("Error decoding JSON, not processing payload.");
-    return;
-  }
-
-  time_t now = time(NULL);
-  debug("Message received at %lld", (long long)now);
-
-  if (!message->payloadlen) {
-    return;
-  }
-
-  char type[10];
-  char mid[36+1];
-
-  char cmd[strlen(message->payload)+1];
-
-  mid[0] = '\0';
-  cmd[0] = '\0';
-
-  // Unmarshalls the payload into logical parts
-  process_message((const char*)message->payload, cmd, mid, type, strlen(message->payload)+1);
-
-  // Runs special commands, based on the type of request
-  run_special(type);
-
-  // If payload missing, do nothing!
-  if (cmd[0] == '\0') {
-    debug("Payload missing CMD or ID, exiting.");
-    return;
-  }
-
-  // Save output to file if debug flag is set
-  if (options.debug) {
-    save_config("/tmp/.configs", cmd);
-  }
-
-  // Refactor
   char delivery[117];
   strcpy(delivery, "delivery/");
   strcat(delivery, options.topic);
@@ -205,6 +166,50 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     }
   }
   check_message_sent(ret);
+}
+
+// Refactor whole function
+void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const struct mosquitto_message *message)
+{
+  if (!message->payloadlen) {
+    debug("Error decoding JSON, not processing payload.");
+    return;
+  }
+
+  time_t now = time(NULL);
+  debug("Message received at %lld", (long long)now);
+
+  if (!message->payloadlen) {
+    return;
+  }
+
+  char type[10];
+  char mid[36+1];
+
+  char cmd[strlen(message->payload)+1];
+
+  mid[0] = '\0';
+  cmd[0] = '\0';
+
+  // Send delivery notification
+  delivered(mosq, mid);
+
+  // Unmarshalls the payload into logical parts
+  process_message((const char*)message->payload, cmd, mid, type, strlen(message->payload)+1);
+
+  // Runs special commands, based on the type of request
+  run_special(type);
+
+  // If payload missing, do nothing!
+  if (cmd[0] == '\0') {
+    debug("Payload missing CMD or ID, exiting.");
+    return;
+  }
+
+  // Save output to file if debug flag is set
+  if (options.debug) {
+    save_config("/tmp/.configs", cmd);
+  }
 
   // Message processing
   FILE *fp;
