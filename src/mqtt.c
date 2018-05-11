@@ -119,6 +119,8 @@ void disconnect() {
 
 void delivered(struct mosquitto *mosq, char *mid)
 {
+  debug("MSG: %s", mid);
+
   char delivery[117];
   strcpy(delivery, "delivery/");
   strcat(delivery, options.topic);
