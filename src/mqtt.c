@@ -162,6 +162,7 @@ void delivered(struct mosquitto *mosq, char *mid)
   check_message_sent(ret);
 
   // Otherwise the network interfaces can restart before delivery
+  debug("Sleeping for 1 second");
   sleep(1);
 }
 
