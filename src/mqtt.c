@@ -143,11 +143,11 @@ void delivered(struct mosquitto *mosq, char *mid)
   const char *report = json_object_to_json_string(jobj);
 
   int publish_message(const char *report, char *topic) {
+    int val = mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
     debug("Sleeping for 1 second");
     // Otherwise the network interfaces can restart before delivery
     sleep(1);
-
-    return mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
+    return val;
   }
 
   int ret = publish_message(report, delivery);
