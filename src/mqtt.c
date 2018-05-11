@@ -127,13 +127,6 @@ void delivered(struct mosquitto *mosq, char *mid)
   strcat(delivery, "/");
   strcat(delivery, options.mac);
 
-  char *suffix = NULL;
-  if (mid[0] == '\0') {
-    suffix = "/messages";
-    strcat(delivery, suffix);
-    rand_string(mid, "sm_", 44);
-    debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery);
-  }
   // Needs check if running, check time, check live cmd.
 
   json_object *jobj = json_object_new_object();
@@ -167,6 +160,9 @@ void delivered(struct mosquitto *mosq, char *mid)
     }
   }
   check_message_sent(ret);
+
+  // Otherwise the network interfaces can restart before delivery
+  sleep(1);
 }
 
 // Refactor whole function
@@ -186,17 +182,17 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   char type[10];
   char mid[36+1];
-
+  /* char *suffix = NULL; */
   char cmd[strlen(message->payload)+1];
 
   mid[0] = '\0';
   cmd[0] = '\0';
 
-  // Send delivery notification
-  delivered(mosq, mid);
-
   // Unmarshalls the payload into logical parts
   process_message((const char*)message->payload, cmd, mid, type, strlen(message->payload)+1);
+
+  // Send delivery notification
+  delivered(mosq, mid);
 
   // Runs special commands, based on the type of request
   run_special(type);
@@ -264,40 +260,47 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   strcat(pub, "/");
   strcat(pub, options.mac);
 
+  /* if (mid[0] == '\0') { */
+  /*   suffix = "/messages"; */
+  /*   strcat(delivery, suffix); */
+  /*   rand_string(mid, "sm_", 44); */
+  /*   debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery); */
+  /* } */
+
   /* if (suffix != NULL) { */
   /*   strcat(pub, suffix); */
   /* } */
 
-  /* // Worth checking the connection (refactor) // */
-  /* int publish_message(const char *report, char *topic) { */
-  /*   return mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false); */
-  /* } */
+  // Worth checking the connection (refactor) //
+  int publish_message(const char *report, char *topic) {
+    return mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
+  }
 
-  /* int ret = publish_message(report, pub); */
-  /* if (ret != MOSQ_ERR_SUCCESS) { */
-  /*   int i; */
-  /*   for (i = 0; i < 5; i++) { */
-  /*     int sl = ((i*2)+1); */
-  /*     debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
-  /*     sleep(sl); */
+  int ret = publish_message(report, pub);
+  if (ret != MOSQ_ERR_SUCCESS) {
+    int i;
+    for (i = 0; i < 5; i++) {
+      int sl = ((i*2)+1);
+      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
+      sleep(sl);
 
-  /*     ret = publish_message(report, pub); */
-  /*     if (ret == MOSQ_ERR_SUCCESS) { */
-  /*       break; */
-  /*     } */
-  /*   } */
-  /* } */
+      ret = publish_message(report, pub);
+      if (ret == MOSQ_ERR_SUCCESS) {
+        break;
+      }
+    }
+  }
 
-  /* json_object_put(jobj); */
+  json_object_put(jobj);
 
-  /* check_message_sent(ret); */
+  check_message_sent(ret);
 
-  /* if (ret == MOSQ_ERR_SUCCESS) { */
-  /*   debug("Message published!"); */
-  /*   return; */
-  /* } */
+  if (ret == MOSQ_ERR_SUCCESS) {
+    debug("Message published!");
+    return;
+  }
 
-  /* debug("XX Message not published!! XX"); */
+  debug("XX Message not published!! XX");
 }
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
