@@ -146,9 +146,9 @@ void delivered(struct mosquitto *mosq, char *mid)
 
   int publish_message(const char *report, char *topic) {
     int val = mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
-    debug("Sleeping for 1 second");
+    debug("Sleeping for 0 second");
     // Otherwise the network interfaces can restart before delivery
-    sleep(1);
+    /* sleep(1); */
     return val;
   }
 
@@ -211,8 +211,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   if (options.debug) {
     save_config("/tmp/.configs", cmd);
   }
-
-  return;
 
   // Message processing
   FILE *fp;
