@@ -146,6 +146,7 @@ void delivered(struct mosquitto *mosq, char *mid)
   json_object_object_add(jobj, "event_type", json_object_new_string("DELIVERED"));
   json_object_object_add(jmeta, "delivered", json_object_new_boolean(1));
   json_object_object_add(jobj, "meta", jmeta);
+
   const char *report = json_object_to_json_string(jobj);
 
   int publish_message(const char *report, char *topic) {
@@ -241,7 +242,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Refactor
   // Else, let's publish back
-  jobj = json_object_new_object();
+
+  json_object *jobj = json_object_new_object();
+  json_object *jmeta = json_object_new_object();
+
   json_object_object_add(jobj, "id", json_object_new_string(mid));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
@@ -250,7 +254,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Should include a flag for the status of the job, maybe it fails.
   json_object_object_add(jobj, "meta", jmeta);
-  report = json_object_to_json_string(jobj);
+  const char *report = json_object_to_json_string(jobj);
 
   char pub[112];
   strcpy(pub, "pub/");
@@ -260,36 +264,40 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   strcat(pub, "/");
   strcat(pub, options.mac);
 
-  if (suffix != NULL) {
-    strcat(pub, suffix);
-  }
+  /* if (suffix != NULL) { */
+  /*   strcat(pub, suffix); */
+  /* } */
 
-  // Worth checking the connection (refactor) //
-  ret = publish_message(report, pub);
-  if (ret != MOSQ_ERR_SUCCESS) {
-    int i;
-    for (i = 0; i < 5; i++) {
-      int sl = ((i*2)+1);
-      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
-      sleep(sl);
+  /* // Worth checking the connection (refactor) // */
+  /* int publish_message(const char *report, char *topic) { */
+  /*   return mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false); */
+  /* } */
 
-      ret = publish_message(report, pub);
-      if (ret == MOSQ_ERR_SUCCESS) {
-        break;
-      }
-    }
-  }
+  /* int ret = publish_message(report, pub); */
+  /* if (ret != MOSQ_ERR_SUCCESS) { */
+  /*   int i; */
+  /*   for (i = 0; i < 5; i++) { */
+  /*     int sl = ((i*2)+1); */
+  /*     debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
+  /*     sleep(sl); */
 
-  json_object_put(jobj);
+  /*     ret = publish_message(report, pub); */
+  /*     if (ret == MOSQ_ERR_SUCCESS) { */
+  /*       break; */
+  /*     } */
+  /*   } */
+  /* } */
 
-  check_message_sent(ret);
+  /* json_object_put(jobj); */
 
-  if (ret == MOSQ_ERR_SUCCESS) {
-    debug("Message published!");
-    return;
-  }
+  /* check_message_sent(ret); */
 
-  debug("XX Message not published!! XX");
+  /* if (ret == MOSQ_ERR_SUCCESS) { */
+  /*   debug("Message published!"); */
+  /*   return; */
+  /* } */
+
+  /* debug("XX Message not published!! XX"); */
 }
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
