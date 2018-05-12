@@ -229,6 +229,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   char buffer[51200];
   buffer[0] = '\0';
 
+  return;
+
   fp = popen(cmd, "r");
   if (fp != NULL) {
     response = 0;
@@ -251,7 +253,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
-  return;
 
   // Refactor
   // Else, let's publish back
