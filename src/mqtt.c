@@ -161,7 +161,8 @@ void delivered(struct mosquitto *mosq, char *mid)
   /* publish_message(report, delivery); */
 
   debug("Sleeping for 1 second");
-  sleep(10);
+  sleep(1000);
+  debug("Sleeping for 1 second");
 
   /* if (ret != MOSQ_ERR_SUCCESS) { */
   /*   int i; */
