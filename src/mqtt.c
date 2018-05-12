@@ -134,13 +134,6 @@ void delivered(struct mosquitto *mosq, char *mid)
   json_object *jobj = json_object_new_object();
   json_object *jmeta = json_object_new_object();
 
-  if (mid[0] == '\0') {
-    /* char *suffix = "/messages"; */
-    strcat(delivery, "/messages");
-    rand_string(mid, "sm_", 44);
-    debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery);
-  }
-
   json_object_object_add(jobj, "id", json_object_new_string(mid));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
@@ -203,6 +196,21 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Unmarshalls the payload into logical parts
   process_message((const char*)message->payload, cmd, mid, type, strlen(message->payload)+1);
+
+  // just in case we recv. a blank message
+  if (mid[0] == '\0') {
+    /* char *suffix = "/messages"; */
+    /* strcat(delivery, "/messages"); */
+    rand_string(mid, "sm_", 44);
+    /* debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery); */
+  }
+
+  // What type of message are we?
+  char msg_type [36+1];
+  strncpy(msg_type, mid, 3);
+  msg_type[3] = 0;
+
+  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %s", msg_type);
 
   /* debug("Sleeping for 1 second"); */
   /* sleep(1); */
