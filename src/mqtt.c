@@ -228,6 +228,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   debug("Running payload");
 
   // Message processing
+  //
+  struct timespec tstart={0,0}, tend={0,0};
+  clock_gettime(CLOCK_MONOTONIC, &tstart);
+
   FILE *fp;
   int response = -1;
   char buffer[51200];
@@ -240,6 +244,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp);
     pclose(fp);
   }
+
+  debug("Payload finished in %.5f seconds",
+      ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
+      ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
   if (options.debug) {
     debug("%s", buffer);
@@ -320,11 +328,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   debug("XX Message not published!! XX");
-}
-
-void my_publish_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
-{
-  debug("[%d] Message published", mid);
 }
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
@@ -446,9 +449,8 @@ int dial_mqtt()
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
-  mosquitto_publish_callback_set(mosq, my_publish_callback);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
-  mosquitto_max_inflight_messages_set(mosq, 0);
+  /* mosquitto_max_inflight_messages_set(mosq, 0); */
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
   if (strcmp(options.topic, "") != 0) {
