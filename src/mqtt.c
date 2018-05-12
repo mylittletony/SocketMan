@@ -244,8 +244,11 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   fp = popen(cmd, "r");
   if (fp != NULL) {
     /* response = 0; */
-    /* memset(buffer, '\0', sizeof(buffer)); */
-    /* fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp); */
+    if (strcmp(msg_type, "msg") == 0) {
+      debug("Processing a message");
+      memset(buffer, '\0', sizeof(buffer));
+      fread(buffer, sizeof(char), sizeof(char) * sizeof(buffer), fp);
+    }
     pclose(fp);
   }
 
@@ -274,68 +277,61 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   // Refactor
   // Else, let's publish back
 
-  /* json_object *jobj = json_object_new_object(); */
-  /* json_object *jmeta = json_object_new_object(); */
+  if (strcmp(msg_type, "msg") != 0) {
+    return;
+  }
 
-  /* json_object_object_add(jobj, "id", json_object_new_string(mid)); */
-  /* json_object_object_add(jobj, "app", json_object_new_string("socketman")); */
-  /* json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL))); */
-  /* json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED")); */
-  /* json_object_object_add(jmeta, "msg", json_object_new_string(buffer)); */
+  json_object *jobj = json_object_new_object();
+  json_object *jmeta = json_object_new_object();
 
-  /* // Should include a flag for the status of the job, maybe it fails. */
-  /* json_object_object_add(jobj, "meta", jmeta); */
-  /* const char *report = json_object_to_json_string(jobj); */
+  json_object_object_add(jobj, "id", json_object_new_string(mid));
+  json_object_object_add(jobj, "app", json_object_new_string("socketman"));
+  json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
+  json_object_object_add(jobj, "event_type", json_object_new_string("PROCESSED"));
+  json_object_object_add(jmeta, "msg", json_object_new_string(buffer));
 
-  /* char pub[112]; */
-  /* strcpy(pub, "pub/"); */
-  /* strcat(pub, options.topic); */
-  /* strcat(pub, "/"); */
-  /* strcat(pub, options.key); */
-  /* strcat(pub, "/"); */
-  /* strcat(pub, options.mac); */
+  // Should include a flag for the status of the job, maybe it fails.
+  json_object_object_add(jobj, "meta", jmeta);
+  const char *report = json_object_to_json_string(jobj);
 
-  /* if (mid[0] == '\0') { */
-  /*   suffix = "/messages"; */
-  /*   strcat(delivery, suffix); */
-  /*   rand_string(mid, "sm_", 44); */
-  /*   debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery); */
-  /* } */
-
-  /* if (suffix != NULL) { */
-  /*   strcat(pub, suffix); */
-  /* } */
+  char pub[112];
+  strcpy(pub, "pub/");
+  strcat(pub, options.topic);
+  strcat(pub, "/");
+  strcat(pub, options.key);
+  strcat(pub, "/");
+  strcat(pub, options.mac);
 
   // Worth checking the connection (refactor) //
-  /* int publish_message(const char *report, char *topic) { */
-  /*   return mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false); */
-  /* } */
+  int publish_message(const char *report, char *topic) {
+    return mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
+  }
 
-  /* int ret = publish_message(report, pub); */
-  /* if (ret != MOSQ_ERR_SUCCESS) { */
-  /*   int i; */
-  /*   for (i = 0; i < 5; i++) { */
-  /*     int sl = ((i*2)+1); */
-  /*     debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
-  /*     sleep(sl); */
+  int ret = publish_message(report, pub);
+  if (ret != MOSQ_ERR_SUCCESS) {
+    int i;
+    for (i = 0; i < 5; i++) {
+      int sl = ((i*2)+1);
+      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
+      sleep(sl);
 
-  /*     ret = publish_message(report, pub); */
-  /*     if (ret == MOSQ_ERR_SUCCESS) { */
-  /*       break; */
-  /*     } */
-  /*   } */
-  /* } */
+      ret = publish_message(report, pub);
+      if (ret == MOSQ_ERR_SUCCESS) {
+        break;
+      }
+    }
+  }
 
-  /* json_object_put(jobj); */
+  json_object_put(jobj);
 
-  /* check_message_sent(ret); */
+  check_message_sent(ret);
 
-  /* if (ret == MOSQ_ERR_SUCCESS) { */
-  /*   debug("Message published!"); */
-  /*   return; */
-  /* } */
+  if (ret == MOSQ_ERR_SUCCESS) {
+    debug("Message published!");
+    return;
+  }
 
-  /* debug("XX Message not published!! XX"); */
+  debug("XX Message not published!! XX");
 }
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
