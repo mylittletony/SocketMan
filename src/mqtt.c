@@ -134,7 +134,13 @@ void delivered(struct mosquitto *mosq, char *mid)
   json_object *jobj = json_object_new_object();
   json_object *jmeta = json_object_new_object();
 
-  // Refactor
+  if (mid[0] == '\0') {
+    /* char *suffix = "/messages"; */
+    strcat(delivery, "/messages");
+    rand_string(mid, "sm_", 44);
+    debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery);
+  }
+
   json_object_object_add(jobj, "id", json_object_new_string(mid));
   json_object_object_add(jobj, "app", json_object_new_string("socketman"));
   json_object_object_add(jobj, "timestamp", json_object_new_int(time(NULL)));
@@ -188,7 +194,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   char type[10];
   char mid[36+1];
-  /* char *suffix = NULL; */
   char cmd[strlen(message->payload)+1];
 
   mid[0] = '\0';
