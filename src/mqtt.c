@@ -165,18 +165,18 @@ void delivered(struct mosquitto *mosq, char *mid)
   /* debug("Sleeping for 1 second"); */
 
   if (ret != MOSQ_ERR_SUCCESS) {
-    int i;
-    for (i = 0; i < 5; i++) {
-      int sl = ((i*2)+1);
-      debug("Failed to send, retrying (%d) after %d second", i+1, sl);
-      sleep(sl);
-      ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
-      if (ret == MOSQ_ERR_SUCCESS) {
-        break;
-      }
-    }
+    /* int i; */
+    /* for (i = 0; i < 5; i++) { */
+    /*   int sl = ((i*2)+1); */
+      /* debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
+      /* sleep(sl); */
+      /* ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false); */
+      /* if (ret == MOSQ_ERR_SUCCESS) { */
+      /*   break; */
+      /* } */
+    /* } */
   }
-  check_message_sent(ret);
+  /* check_message_sent(ret); */
 }
 
 // Refactor whole function
