@@ -157,7 +157,7 @@ void delivered(struct mosquitto *mosq, char *mid)
   /*   return val; */
   /* } */
 
-  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 0, false);
+  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
   /* publish_message(report, delivery); */
 
   debug("Sleeping for 1 second");
@@ -222,7 +222,6 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   }
 
   debug("Running payload");
-  /* return; */
 
   // Message processing
   FILE *fp;
@@ -251,6 +250,8 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     cmd_notify(response, mid, buffer);
     return;
   }
+
+  return;
 
   // Refactor
   // Else, let's publish back
@@ -445,6 +446,7 @@ int dial_mqtt()
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
   mosquitto_publish_callback_set(mosq, my_publish_callback);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
+  mosquitto_max_inflight_messages_set(mosq, 0);
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
   if (strcmp(options.topic, "") != 0) {
