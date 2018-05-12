@@ -245,6 +245,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     pclose(fp);
   }
 
+  clock_gettime(CLOCK_MONOTONIC, &tend);
   debug("Payload finished in %.5f seconds",
       ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) -
       ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
