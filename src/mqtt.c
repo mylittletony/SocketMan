@@ -318,6 +318,11 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
   debug("XX Message not published!! XX");
 }
 
+void my_publish_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
+{
+  debug("Message published %d", mid);
+}
+
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
 {
   debug("Connected to broker QoS %d", granted_qos[0]);
@@ -437,6 +442,7 @@ int dial_mqtt()
   mosquitto_connect_callback_set(mosq, my_connect_callback);
   mosquitto_message_callback_set(mosq, my_message_callback);
   mosquitto_subscribe_callback_set(mosq, my_subscribe_callback);
+  mosquitto_publish_callback_set(mosq, my_publish_callback);
   mosquitto_disconnect_callback_set(mosq, my_disconnect_callback);
   mosquitto_username_pw_set(mosq, options.username, options.password);
 
