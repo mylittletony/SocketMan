@@ -148,12 +148,13 @@ void delivered(struct mosquitto *mosq, char *mid)
     int val = mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
 
     // Otherwise the network interfaces can restart before delivery
-    debug("Sleeping for 1 second");
-    sleep(1);
     return val;
   }
 
   publish_message(report, delivery);
+
+  debug("Sleeping for 1 second");
+  sleep(10);
 
   /* if (ret != MOSQ_ERR_SUCCESS) { */
   /*   int i; */
