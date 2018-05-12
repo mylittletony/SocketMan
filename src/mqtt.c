@@ -151,6 +151,7 @@ void delivered(struct mosquitto *mosq, char *mid)
   const char *report = json_object_to_json_string(jobj);
 
   int publish_message(const char *report, char *topic) {
+    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     int val = mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
 
     // Otherwise the network interfaces can restart before delivery
