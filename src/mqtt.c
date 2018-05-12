@@ -119,8 +119,6 @@ void disconnect() {
 
 void delivered(struct mosquitto *mosq, char *mid)
 {
-  debug("MSG: %s", mid);
-
   char delivery[117];
   strcpy(delivery, "delivery/");
   strcat(delivery, options.topic);
@@ -143,33 +141,7 @@ void delivered(struct mosquitto *mosq, char *mid)
 
   const char *report = json_object_to_json_string(jobj);
 
-  /* int publish_message(const char *report, char *topic) { */
-  /*   debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
-
-  /*   // Otherwise the network interfaces can restart before delivery */
-  /*   return val; */
-  /* } */
-
-  int ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
-  /* publish_message(report, delivery); */
-
-  /* debug("Sleeping for 1 second"); */
-  /* sleep(1); */
-  /* debug("Sleeping for 1 second"); */
-
-  if (ret != MOSQ_ERR_SUCCESS) {
-    /* int i; */
-    /* for (i = 0; i < 5; i++) { */
-    /*   int sl = ((i*2)+1); */
-      /* debug("Failed to send, retrying (%d) after %d second", i+1, sl); */
-      /* sleep(sl); */
-      /* ret = mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false); */
-      /* if (ret == MOSQ_ERR_SUCCESS) { */
-      /*   break; */
-      /* } */
-    /* } */
-  }
-  /* check_message_sent(ret); */
+  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
 }
 
 // Refactor whole function
@@ -199,22 +171,13 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // just in case we recv. a blank message
   if (mid[0] == '\0') {
-    /* char *suffix = "/messages"; */
-    /* strcat(delivery, "/messages"); */
     rand_string(mid, "sm_", 44);
-    /* debug("Missing ID. Auto-generating: %s. Topic: %s", mid, delivery); */
   }
 
   // What type of message are we?
   char msg_type [36+1];
   strncpy(msg_type, mid, 3);
   msg_type[3] = 0;
-
-  debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %s", msg_type);
-
-  /* debug("Sleeping for 1 second"); */
-  /* sleep(1); */
-  /* debug("Slept for 1 second"); */
 
   // Runs special commands, based on the type of request
   run_special(type);
@@ -274,9 +237,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
     return;
   }
 
-  // Refactor
-  // Else, let's publish back
-
+  // Don't publish messages that aren't messages
   if (strcmp(msg_type, "msg") != 0) {
     return;
   }
