@@ -150,15 +150,15 @@ void delivered(struct mosquitto *mosq, char *mid)
 
   const char *report = json_object_to_json_string(jobj);
 
-  int publish_message(const char *report, char *topic) {
-    debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    int val = mosquitto_publish(mosq, 0, topic, strlen(report), report, 0, false);
+  /* int publish_message(const char *report, char *topic) { */
+  /*   debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
 
-    // Otherwise the network interfaces can restart before delivery
-    return val;
-  }
+  /*   // Otherwise the network interfaces can restart before delivery */
+  /*   return val; */
+  /* } */
 
-  publish_message(report, delivery);
+  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 0, false);
+  /* publish_message(report, delivery); */
 
   debug("Sleeping for 1 second");
   sleep(10);
