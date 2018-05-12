@@ -157,12 +157,12 @@ void delivered(struct mosquitto *mosq, char *mid)
   /*   return val; */
   /* } */
 
-  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, true);
+  mosquitto_publish(mosq, 0, delivery, strlen(report), report, 1, false);
   /* publish_message(report, delivery); */
 
-  debug("Sleeping for 1 second");
-  sleep(1);
-  debug("Sleeping for 1 second");
+  /* debug("Sleeping for 1 second"); */
+  /* sleep(1); */
+  /* debug("Sleeping for 1 second"); */
 
   /* if (ret != MOSQ_ERR_SUCCESS) { */
   /*   int i; */
@@ -206,6 +206,10 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
   // Send delivery notification
   delivered(mosq, mid);
+
+  debug("Sleeping for 1 second");
+  sleep(1);
+  debug("Slept for 1 second");
 
   // Runs special commands, based on the type of request
   run_special(type);
