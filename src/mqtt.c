@@ -152,7 +152,7 @@ void delivered(struct mosquitto *mosq, char *mid)
 
   int publish_message(const char *report, char *topic) {
     debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    int val = mosquitto_publish(mosq, 0, topic, strlen(report), report, 1, false);
+    int val = mosquitto_publish(mosq, 0, topic, strlen(report), report, 0, false);
 
     // Otherwise the network interfaces can restart before delivery
     return val;
@@ -320,7 +320,7 @@ void my_message_callback(struct mosquitto *mosq, UNUSED(void *userdata), const s
 
 void my_publish_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
 {
-  debug("Message published %d", mid);
+  debug("[%d] Message published", mid);
 }
 
 void my_subscribe_callback(UNUSED(struct mosquitto *mosq), UNUSED(void *userdata), int mid, int qos_count, const int *granted_qos)
